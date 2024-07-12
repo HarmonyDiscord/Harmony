@@ -1,6 +1,6 @@
 'use client';
 
-import AppFlow from '@/components/general/AppFlow';
+import AppFlow from '../components/general/AppFlow';
 import { CacheProvider } from '@chakra-ui/next-js';
 import { ChakraProvider, ColorModeScript, extendTheme } from '@chakra-ui/react';
 

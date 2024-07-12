@@ -17,6 +17,7 @@
   },
   "author": "tnfAngel Development",
   "dependencies": {
+    "discord.js": "^14.15.3",
     "tslib": "^2.6.3"
   },
   "devDependencies": {

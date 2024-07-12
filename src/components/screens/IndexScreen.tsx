@@ -14,10 +14,13 @@ export default function IndexScreen() {
 					p='20px'
 					gap='5px'
 					zIndex={2}
+					alignItems='center'
 					backdropFilter='blur(5px)'
 				>
 					<MdMusicNote fontSize='32px' color='#FFFFFF' />
-					<Heading size='md'>Harmony</Heading>
+					<Heading size='md' fontWeight='bold'>
+						Harmony
+					</Heading>
 				</Flex>
 			</Box>
 			<Flex w='100%' p='20px'>

@@ -1,8 +1,8 @@
 'use client';
 
-import AppWrapper from '@/components/general/AppWrapper';
 import { CacheProvider } from '@chakra-ui/next-js';
 import { ChakraProvider, ColorModeScript, extendTheme } from '@chakra-ui/react';
+import AppWrapper from '../components/general/AppWrapper';
 
 const config = {
 	initialColorMode: 'dark',

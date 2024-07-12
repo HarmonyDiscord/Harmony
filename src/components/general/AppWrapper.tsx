@@ -1,12 +1,13 @@
 'use client';
 
+import { loadingAtom } from '@/atoms/LoadingAtom';
 import { Box, ScaleFade } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useAtom } from 'jotai';
 import IndexLoadingScreen from '../screens/LoadingScreen';
 import AppFlow from './AppFlow';
 
 export default function AppWrapper({ children }: Readonly<{ children: any }>) {
-	const [isLoading, setIsLoading] = useState(true);
+	const [isLoading] = useAtom(loadingAtom);
 
 	return (
 		<AppFlow>

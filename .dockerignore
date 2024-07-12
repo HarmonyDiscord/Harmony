@@ -1,6 +1,9 @@
 *
+!public/
 !src/
 !bun.lockb
 !bunfig.toml
+!next.config.js
 !package.json
 !tsconfig.json
+!.env.production

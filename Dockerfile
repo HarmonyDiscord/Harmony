@@ -1,14 +1,19 @@
-# Runner
-FROM docker.io/oven/bun:latest AS runner
-WORKDIR /zenith/
+# Builder
+FROM docker.io/imbios/bun-node:1.1-21-alpine AS builder
 
 COPY . ./
 
-ENV NODE_ENV=production
+RUN bun install --production --frozen-lockfile && \
+    NEXT_OUTPUT=standalone bun run build
 
-RUN bun install --production --frozen-lockfile
-RUN bun run build:bundle
+# Runner
+FROM cgr.dev/chainguard/bun:latest
+WORKDIR /home/nonroot
 
-RUN ls -la
+COPY --chown=nonroot --from=builder /home/bun/app/.next/standalone ./
+COPY --chown=nonroot --from=builder /home/bun/app/.next/static ./.next/static
+COPY --chown=nonroot --from=builder /home/bun/app/public ./public
 
-CMD ["bun", "run", "start:dist"]
+EXPOSE 3000/tcp
+
+CMD ["server.js"]

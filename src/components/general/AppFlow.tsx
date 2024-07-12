@@ -1,7 +1,7 @@
-import { loadingAtom } from '@/atoms/LoadingAtom';
 import { DiscordSDK } from '@discord/embedded-app-sdk';
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
+import { loadingAtom } from '../../atoms/LoadingAtom';
 
 const clientId = process.env['NEXT_PUBLIC_DISCORD_CLIENT_ID'] ?? '';
 

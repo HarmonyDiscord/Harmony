@@ -1,8 +1,8 @@
 'use client';
 
-import { loadingAtom } from '@/atoms/LoadingAtom';
 import { Box, ScaleFade } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
+import { loadingAtom } from '../../atoms/LoadingAtom';
 import IndexLoadingScreen from '../screens/LoadingScreen';
 import AppFlow from './AppFlow';
 

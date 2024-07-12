@@ -1,0 +1,29 @@
+{
+  "name": "@harmony-discord/harmony",
+  "version": "1.0.0",
+  "description": "Harmony client",
+  "type": "module",
+  "scripts": {
+    "build": "bun run build:bundle",
+    "build:bundle": "bun build --target bun --format esm --minify --outdir ./dist/ ./src/index.ts",
+    "build:standalone": "bun build --compile --target bun --format esm --minify --outfile ./dist/vermilion ./src/index.ts",
+    "lint": "bun run lint:biome && bun run lint:tsc",
+    "lint:biome": "bun biome check --write .",
+    "lint:tsc": "bun tsc --noEmit",
+    "start": "bun run build && bun ./dist/index.js",
+    "dev": "NODE_ENV=development bun --hot src/index.ts",
+    "production:build": "bun run build:standalone",
+  },
+  "author": "tnfAngel Development",
+  "dependencies": {
+    "tslib": "^2.6.3"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.8.3",
+    "@types/bun": "^1.1.6",
+    "typescript": "5.5.3"
+  },
+  "trustedDependencies": [
+    "@biomejs/biome"
+  ]
+}

@@ -24,6 +24,7 @@
 		"@emotion/styled": "^11.11.5",
 		"bufferutil": "^4.0.8",
 		"framer-motion": "^11.3.2",
+		"jotai": "^2.9.0",
 		"million": "2.6.4",
 		"next": "14.2.5",
 		"pagination-hook": "^1.0.2",

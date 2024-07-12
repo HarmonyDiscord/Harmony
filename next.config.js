@@ -9,8 +9,6 @@ const nextConfig = {
 
 		]
 	},
-	env: {
-	},
 	async headers() {
 		return [
 			{

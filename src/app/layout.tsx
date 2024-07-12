@@ -1,5 +1,6 @@
 'use client';
 
+import AppFlow from '@/components/general/AppFlow';
 import { CacheProvider } from '@chakra-ui/next-js';
 import { ChakraProvider, ColorModeScript, extendTheme } from '@chakra-ui/react';
 
@@ -44,7 +45,9 @@ export default function RootLayout({
 			<body style={{ width: '100%', height: '100%' }}>
 				<ColorModeScript initialColorMode={theme['config'].initialColorMode} />
 				<ChakraProvider theme={theme}>
-					<CacheProvider>{children}</CacheProvider>
+					<CacheProvider>
+						<AppFlow>{children}</AppFlow>
+					</CacheProvider>
 				</ChakraProvider>
 			</body>
 		</html>

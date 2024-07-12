@@ -11,8 +11,9 @@
     "lint:biome": "bun biome check --write .",
     "lint:tsc": "bun tsc --noEmit",
     "start": "bun run build && bun ./dist/index.js",
+    "start:dist": "bun ./dist/index.js",
     "dev": "NODE_ENV=development bun --hot src/index.ts",
-    "production:build": "bun run build:standalone",
+    "production:build": "bun run build:standalone"
   },
   "author": "tnfAngel Development",
   "dependencies": {

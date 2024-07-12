@@ -27,7 +27,7 @@ jobs:
 
         steps:
             - name: 'Checkout'
-              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+              uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
             - name: 'Setup tags'
               id: setup-tags
@@ -44,7 +44,7 @@ jobs:
 
             - name: 'Build image'
               id: build-image
-              uses: redhat-actions/buildah-build@c79846fb306beeba490e89fb75d2d1af95831e79 # master
+              uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # master
               with:
                   archs: amd64
                   containerfiles: Dockerfile
@@ -53,7 +53,7 @@ jobs:
                   tags: ${{ steps.setup-tags.outputs.build-tags }}
 
             - name: 'Push to GHCR'
-              uses: redhat-actions/push-to-registry@9986a6552bc4571882a4a67e016b17361412b4df # v2.7.1
+              uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c # v2.8
               env:
                   REGISTRY_USER: ${{ github.actor }}
                   REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}

@@ -5,7 +5,7 @@ import { loadingAtom } from '../../atoms/LoadingAtom';
 
 const clientId = process.env['NEXT_PUBLIC_DISCORD_CLIENT_ID'] ?? '';
 
-const discordSdk = new DiscordSDK(clientId);
+const discordSDK = new DiscordSDK(clientId);
 
 export default function AppFlow({
 	children
@@ -15,9 +15,9 @@ export default function AppFlow({
 	const [_isLoading, setIsLoading] = useAtom(loadingAtom);
 
 	async function setup() {
-		await discordSdk.ready();
+		await discordSDK.ready();
 
-		const { code } = await discordSdk.commands.authorize({
+		const { code } = await discordSDK.commands.authorize({
 			client_id: clientId,
 			response_type: 'code',
 			prompt: 'none',
@@ -36,7 +36,7 @@ export default function AppFlow({
 
 		const { access_token } = await response.json();
 
-		const auth = await discordSdk.commands.authenticate({
+		const auth = await discordSDK.commands.authenticate({
 			access_token
 		});
 

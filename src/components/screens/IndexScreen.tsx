@@ -1,14 +1,29 @@
 'use client';
 
 import { Box, Flex, Heading, Text } from '@chakra-ui/react';
+import { MdMusicNote } from 'react-icons/md';
 
 export default function IndexScreen() {
 	return (
 		<Box w='100%' h='100%'>
-			<Flex w='100%' bg='#00000020' p='10px'>
-				<Heading size='md'>Harmony</Heading>
-			</Flex>
-			<Flex w='100%'>
+			<Box w='100%' p='20px' pb='0px'>
+				<Flex
+					w='100%'
+					bg='#FFFFFF10'
+					borderRadius='10px'
+					p='20px'
+					gap='5px'
+					zIndex={2}
+					alignItems='center'
+					backdropFilter='blur(5px)'
+				>
+					<MdMusicNote fontSize='32px' color='#FFFFFF' />
+					<Heading size='md' fontWeight='bold'>
+						Harmony
+					</Heading>
+				</Flex>
+			</Box>
+			<Flex w='100%' p='20px'>
 				<Text>Hola</Text>
 			</Flex>
 		</Box>

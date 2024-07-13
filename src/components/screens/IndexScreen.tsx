@@ -1,31 +1,16 @@
 'use client';
 
-import { Box, Flex, Heading, Text } from '@chakra-ui/react';
-import { MdMusicNote } from 'react-icons/md';
+import { Flex, Spacer } from '@chakra-ui/react';
+import Navbar from '../layout/Navbar';
+import Controls from '../layout/Controls';
 
 export default function IndexScreen() {
 	return (
-		<Box w='100%' h='100%'>
-			<Box w='100%' p='20px' pb='0px'>
-				<Flex
-					w='100%'
-					bg='#FFFFFF10'
-					borderRadius='10px'
-					p='20px'
-					gap='5px'
-					zIndex={2}
-					alignItems='center'
-					backdropFilter='blur(5px)'
-				>
-					<MdMusicNote fontSize='32px' color='#FFFFFF' />
-					<Heading size='md' fontWeight='bold'>
-						Harmony
-					</Heading>
-				</Flex>
-			</Box>
-			<Flex w='100%' p='20px'>
-				<Text>Hola</Text>
-			</Flex>
-		</Box>
+		<Flex w='100%' h='100%' direction='column'>
+			<Navbar />
+			<Flex w='100%' p='20px'></Flex>
+			<Spacer />
+			<Controls />
+		</Flex>
 	);
 }

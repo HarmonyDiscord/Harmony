@@ -18,7 +18,13 @@ const fonts = {
 const theme = extendTheme({
 	config,
 	fonts,
-
+	styles: {
+		global: () => ({
+			body: {
+				bg: '#000000'
+			}
+		})
+	},
 	shadows: {
 		outline: `0 0 0 2px #ffffff10`
 	}
@@ -46,7 +52,7 @@ export default function RootLayout({
 					{`::-webkit-scrollbar{width:6px;z-index:100000}::-webkit-scrollbar-track{border-radius:10px}::-webkit-scrollbar-track:hover{background-color:#00000020}::-webkit-scrollbar-thumb{border-radius:10px;background-color:#00000050}::-webkit-scrollbar-thumb:hover{background-color:#00000060}`}
 				</style>
 			</head>
-			<body style={{ width: '100%', height: '100%', background: '#000000' }}>
+			<body style={{ width: '100%', height: '100%' }}>
 				<ChakraProvider theme={theme}>
 					<CacheProvider>
 						<AppWrapper>{children}</AppWrapper>

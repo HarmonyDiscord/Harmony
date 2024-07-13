@@ -2,6 +2,7 @@ import { DiscordSDK } from '@discord/embedded-app-sdk';
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
 import { loadingAtom } from '../../atoms/LoadingAtom';
+import { userAtom } from 'src/atoms/UserAtom';
 
 const clientId = process.env['NEXT_PUBLIC_DISCORD_CLIENT_ID'] ?? '';
 
@@ -13,6 +14,7 @@ export default function AppFlow({
 	children: any;
 }>) {
 	const [_isLoading, setIsLoading] = useAtom(loadingAtom);
+	const [_user, setUser] = useAtom(userAtom);
 
 	async function setup() {
 		await discordSDK.ready();
@@ -38,6 +40,13 @@ export default function AppFlow({
 
 		const auth = await discordSDK.commands.authenticate({
 			access_token
+		});
+
+		setUser({
+			name: auth.user.id,
+			avatarURL: auth.user.avatar
+				? `https://cdn.discordapp.com/avatars/${auth.user.id}/${auth.user.avatar}.png`
+				: undefined
 		});
 
 		setIsLoading(false);

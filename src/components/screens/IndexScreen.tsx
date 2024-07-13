@@ -3,7 +3,7 @@
 import { Center, Flex, Heading, SimpleGrid, SlideFade, Spacer, Spinner } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
-import search from '../../app/actions/search';
+import searchSongs from '../../app/actions/searchSongs';
 import { feedAtom } from '../../atoms/FeedAtom';
 import { useDebounce } from '../../hooks/useDebounce';
 import type { Song } from '../../types/Song';
@@ -32,7 +32,7 @@ export default function IndexScreen() {
 			setIsSearchLoading(true);
 
 			const currentSearchCount = ++searchCountRef.current;
-			const results = await search(debouncedSearchInput);
+			const results = await searchSongs(debouncedSearchInput);
 
 			if (currentSearchCount === searchCountRef.current) {
 				if (!results) {

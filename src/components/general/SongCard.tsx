@@ -1,12 +1,12 @@
 import { Card, CardBody, Center, Flex, Heading, Spacer, Text } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useAtom } from 'jotai';
 import Image from 'next/image';
 import { useState } from 'react';
 import { MdPlayCircle } from 'react-icons/md';
+import { currentSongAtom } from '../../atoms/CurrentSongAtom';
 import { useDebounce } from '../../hooks/useDebounce';
 import type { Song } from '../../types/Song';
-import { currentSongAtom } from '../../atoms/CurrentSongAtom';
-import { useAtom } from 'jotai';
 
 export default function SongCard(song: Readonly<Song>) {
 	const [isHovering, setIsHovering] = useState(false);

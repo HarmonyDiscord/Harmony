@@ -1,13 +1,13 @@
 'use client';
 
-import Image from 'next/image';
 import { Box, Fade, ScaleFade } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
+import Image from 'next/image';
+import { useState } from 'react';
+import gradient from '../../../public/svg/gradient.svg';
 import { loadingAtom } from '../../atoms/LoadingAtom';
 import IndexLoadingScreen from '../screens/LoadingScreen';
 import AppFlow from './AppFlow';
-import gradient from '../../../public/svg/gradient.svg';
-import { useState } from 'react';
 
 export default function AppWrapper({ children }: Readonly<{ children: any }>) {
 	const [isLoading] = useAtom(loadingAtom);

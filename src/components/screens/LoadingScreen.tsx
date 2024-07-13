@@ -8,7 +8,7 @@ export default function LoadingScreen() {
 	return (
 		<Center h='100%' w='100%'>
 			<Stack alignItems='center'>
-				<MdMusicNote fontSize='200px' color='#FFFFFF'/>
+				<MdMusicNote fontSize='200px' color='#FFFFFF' />
 				<BarLoader
 					color='#FFFFFF'
 					loading={true}

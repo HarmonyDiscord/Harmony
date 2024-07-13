@@ -1,4 +1,16 @@
-import { Avatar, Box, Flex, Heading, Input, InputGroup, InputLeftElement, Spacer } from '@chakra-ui/react';
+import {
+	Avatar,
+	Box,
+	CloseButton,
+	Flex,
+	Heading,
+	Input,
+	InputGroup,
+	InputLeftElement,
+	InputRightElement,
+	SlideFade,
+	Spacer
+} from '@chakra-ui/react';
 import { useAtom } from 'jotai';
 import { MdMusicNote, MdSearch } from 'react-icons/md';
 import { userAtom } from '../../atoms/UserAtom';
@@ -34,6 +46,11 @@ export default function Navbar({ searchInput, setSearchInput }: any) {
 						value={searchInput}
 						onChange={(e) => setSearchInput(e.target.value)}
 					/>
+					<SlideFade in={!!searchInput} offsetX={8} offsetY={0} unmountOnExit>
+						<InputRightElement>
+							<CloseButton size='sm' onClick={() => setSearchInput('')} />
+						</InputRightElement>
+					</SlideFade>
 				</InputGroup>
 				{user ? <Avatar width='40px' height='40px' src={user?.avatarURL} /> : null}
 			</Flex>

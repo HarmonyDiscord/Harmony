@@ -3,7 +3,7 @@
 import YTMusic, { SongDetailed } from 'ytmusic-api';
 import type { Song } from '../../types/Song';
 
-export default async function search(query: string) {
+export default async function searchSongs(query: string) {
 	const ytmusic = new YTMusic();
 	await ytmusic.initialize();
 
@@ -25,7 +25,6 @@ export default async function search(query: string) {
 
 		return videos.map((video) => parseSearchResult(video));
 	} catch (err) {
-		console.error(err);
 		throw new Error('Failed to search');
 	}
 }

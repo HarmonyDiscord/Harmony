@@ -1,7 +1,7 @@
 import { DiscordSDK } from '@discord/embedded-app-sdk';
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
-import search from '../../app/actions/search';
+import searchSongs from '../../app/actions/searchSongs';
 import { feedAtom } from '../../atoms/FeedAtom';
 import { loadingAtom } from '../../atoms/LoadingAtom';
 import { userAtom } from '../../atoms/UserAtom';
@@ -24,7 +24,7 @@ export default function AppFlow({
 	const [_feed, setFeed] = useAtom(feedAtom);
 
 	async function setup() {
-		const results = await search(' ');
+		const results = await searchSongs(' ');
 
 		if (!results) return setFeed(null);
 

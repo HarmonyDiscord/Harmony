@@ -24,10 +24,8 @@ export default function SongCard(song: Readonly<Song>) {
 			whileTap={{
 				scale: 0.98
 			}}
-			maxW='sm'
 			bg='#00000010'
 			height='200px'
-			width='250px'
 			p='0px'
 			onMouseEnter={() => setIsHovering(true)}
 			onMouseLeave={() => setIsHovering(false)}
@@ -44,6 +42,7 @@ export default function SongCard(song: Readonly<Song>) {
 					objectFit='cover'
 					style={{
 						height: '200px',
+						width: '100%',
 						opacity: 0.8,
 						objectPosition: 'center top',
 						position: 'absolute',

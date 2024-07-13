@@ -1,12 +1,12 @@
 import { Card, CardBody, Center, Flex, Heading, Spacer, Text } from '@chakra-ui/react';
-import Image from 'next/image';
-import type { Song } from '../../types/Song';
-import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
+import { useState } from 'react';
 import { MdPlayCircle } from 'react-icons/md';
 import { useDebounce } from '../../hooks/useDebounce';
+import type { Song } from '../../types/Song';
 
-export default function SongCard({ id, title, album, artist, cover, duration }: Readonly<Partial<Song>>) {
+export default function SongCard({ title, album, artist, cover, duration }: Readonly<Partial<Song>>) {
 	const [isHovering, setIsHovering] = useState(false);
 	const debouncedIsHovering = useDebounce(isHovering, 100);
 

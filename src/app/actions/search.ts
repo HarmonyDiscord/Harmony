@@ -43,7 +43,6 @@ function formatDuration(duration: number) {
 }
 
 function parseSearchResult(results: SongDetailed): Song {
-
 	return {
 		id: results.videoId,
 		title: results.name,

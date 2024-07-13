@@ -1,11 +1,11 @@
 'use client';
 
 import { Card, CardBody, Flex, Heading, SimpleGrid, Spacer } from '@chakra-ui/react';
+import { useAtom } from 'jotai';
 import Image from 'next/image';
+import { feedAtom } from '../../atoms/FeedAtom';
 import Controls from '../layout/Controls';
 import Navbar from '../layout/Navbar';
-import { feedAtom } from '../../atoms/FeedAtom';
-import { useAtom } from 'jotai';
 
 export default function IndexScreen() {
 	const [feed] = useAtom(feedAtom);

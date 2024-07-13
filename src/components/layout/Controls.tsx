@@ -29,24 +29,34 @@ export default function Controls() {
 						alignItems='center'
 						backdropFilter='blur(5px)'
 					>
-						<Flex gap='12px' alignItems='center'>
-							<Image
-								width='48px'
-								height='48px'
-								src={currentSong.cover}
-								alt='si'
-								objectFit='cover'
-								style={{
-									borderRadius: '5px'
-								}}
-							/>
-							<Flex gap='4px' direction='column'>
-								<Heading size='md'>{currentSong.title}</Heading>
-								<Text>
-									{currentSong.album} – {currentSong.artist}
-								</Text>
+						<AnimatePresence mode='wait'>
+							<Flex
+								key={currentSong.id}
+								as={motion.div}
+								gap='12px'
+								alignItems='center'
+								initial={{ y: -10, opacity: 0 }}
+								animate={{ y: 0, opacity: 1 }}
+								exit={{ y: 10, opacity: 0 }}
+							>
+								<Image
+									width='48px'
+									height='48px'
+									src={currentSong.cover}
+									alt='si'
+									objectFit='cover'
+									style={{
+										borderRadius: '5px'
+									}}
+								/>
+								<Flex gap='4px' direction='column'>
+									<Heading size='md'>{currentSong.title}</Heading>
+									<Text>
+										{currentSong.album} – {currentSong.artist}
+									</Text>
+								</Flex>
 							</Flex>
-						</Flex>
+						</AnimatePresence>
 						<Flex gap='10px' w='100%' position='absolute'>
 							<Spacer />
 							<IconButton icon={<MdSkipPrevious fontSize='24px' />} aria-label='Previous' />

@@ -3,7 +3,7 @@ import { useAtom } from 'jotai';
 import { MdMusicNote, MdSearch } from 'react-icons/md';
 import { userAtom } from '../../atoms/UserAtom';
 
-export default function Navbar() {
+export default function Navbar({ searchInput, setSearchInput }: any) {
 	const [user] = useAtom(userAtom);
 
 	return (
@@ -27,7 +27,13 @@ export default function Navbar() {
 					<InputLeftElement pointerEvents='none'>
 						<MdSearch fontSize='22px' />
 					</InputLeftElement>
-					<Input variant='filled' focusBorderColor='#FFFFFF30' placeholder='Search for a song...' />
+					<Input
+						variant='filled'
+						focusBorderColor='#FFFFFF30'
+						placeholder='Search for a song...'
+						value={searchInput}
+						onChange={(e) => setSearchInput(e.target.value)}
+					/>
 				</InputGroup>
 				{user ? <Avatar width='40px' height='40px' src={user?.avatarURL} /> : null}
 			</Flex>

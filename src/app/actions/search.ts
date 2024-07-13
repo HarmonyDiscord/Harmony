@@ -29,6 +29,19 @@ export default async function search(query: string) {
 	}
 }
 
+function formatDuration(duration: number) {
+	const hr = Math.floor(duration / 3600);
+	const mr = Math.floor((duration % 3600) / 60);
+	const sr = duration % 60;
+
+	return (
+		(hr > 0 ? hr.toString().padStart(2, '0') + ':' : '') +
+		mr.toString().padStart(2, '0') +
+		':' +
+		sr.toString().padStart(2, '0')
+	);
+}
+
 function parseSearchResult(results: SongDetailed): Song {
 	return {
 		id: results.videoId,
@@ -36,7 +49,7 @@ function parseSearchResult(results: SongDetailed): Song {
 		artist: results.artist.name,
 		album: results.album?.name || 'unknown',
 		cover: results.thumbnails.at(0)?.url.replace('w60', 'w250').replace('h60', 'h250'),
-		duration: results.duration?.toString() || '0'
+		duration: formatDuration(results.duration ?? 0)
 	};
 }
 

@@ -26,7 +26,7 @@
 		"@fontsource/hanken-grotesk": "^5.0.20",
 		"@googleapis/youtube": "^19.0.0",
 		"bufferutil": "^4.0.8",
-		"framer-motion": "^11.3.2",
+		"framer-motion": "11.0.10",
 		"jotai": "^2.9.0",
 		"million": "2.6.4",
 		"next": "14.2.5",

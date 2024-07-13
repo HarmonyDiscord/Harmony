@@ -58,9 +58,16 @@ export default function IndexScreen() {
 				</Center>
 			) : gridItems && gridItems.length > 0 ? (
 				<SimpleGrid w='100%' p='20px' minChildWidth='250px' gap='20px'>
-					{gridItems.map(({ id, title, album, artist, cover }, i) => (
+					{gridItems.map(({ id, title, album, artist, cover, duration }, i) => (
 						<SlideFade in delay={i * 0.02} key={id}>
-							<SongCard id={id} title={title} album={album} artist={artist} cover={cover} />
+							<SongCard
+								id={id}
+								title={title}
+								album={album}
+								artist={artist}
+								cover={cover}
+								duration={duration}
+							/>
 						</SlideFade>
 					))}
 				</SimpleGrid>

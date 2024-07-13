@@ -5,10 +5,15 @@ import { useState } from 'react';
 import { MdPlayCircle } from 'react-icons/md';
 import { useDebounce } from '../../hooks/useDebounce';
 import type { Song } from '../../types/Song';
+import { currentSongAtom } from '../../atoms/CurrentSongAtom';
+import { useAtom } from 'jotai';
 
-export default function SongCard({ title, album, artist, cover, duration }: Readonly<Partial<Song>>) {
+export default function SongCard(song: Readonly<Song>) {
 	const [isHovering, setIsHovering] = useState(false);
 	const debouncedIsHovering = useDebounce(isHovering, 100);
+	const [_currentSong, setCurrentSong] = useAtom(currentSongAtom);
+
+	const { title, album, artist, cover, duration } = song;
 
 	return (
 		<Card
@@ -26,6 +31,7 @@ export default function SongCard({ title, album, artist, cover, duration }: Read
 			p='0px'
 			onMouseEnter={() => setIsHovering(true)}
 			onMouseLeave={() => setIsHovering(false)}
+			onClick={() => setCurrentSong(song)}
 		>
 			{cover && (
 				<Image

@@ -6,6 +6,7 @@ import type { Song } from '../../types/Song';
 export default async function search(query: string) {
 	const ytmusic = new YTMusic();
 	await ytmusic.initialize();
+
 	try {
 		if (!query) return [];
 

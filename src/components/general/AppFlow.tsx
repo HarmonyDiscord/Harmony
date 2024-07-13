@@ -24,7 +24,7 @@ export default function AppFlow({
 	const [_feed, setFeed] = useAtom(feedAtom);
 
 	async function setup() {
-		const results = await search('robe');
+		const results = await search('robe / extremoduro');
 
 		if (!results) return setFeed(null);
 

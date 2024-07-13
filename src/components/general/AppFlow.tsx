@@ -6,7 +6,11 @@ import { userAtom } from '../../atoms/UserAtom';
 
 const clientId = process.env['NEXT_PUBLIC_DISCORD_CLIENT_ID'] ?? '';
 
-const discordSDK = new DiscordSDK(clientId);
+let discordSDK: DiscordSDK | null = null;
+
+try {
+	discordSDK = new DiscordSDK(clientId);
+} catch {}
 
 export default function AppFlow({
 	children
@@ -17,41 +21,42 @@ export default function AppFlow({
 	const [_user, setUser] = useAtom(userAtom);
 
 	async function setup() {
-		await discordSDK.ready();
+		if (discordSDK) {
+			await discordSDK.ready();
 
-		const { code } = await discordSDK.commands.authorize({
-			client_id: clientId,
-			response_type: 'code',
-			prompt: 'none',
-			scope: ['identify']
-		});
+			const { code } = await discordSDK.commands.authorize({
+				client_id: clientId,
+				response_type: 'code',
+				prompt: 'none',
+				scope: ['identify']
+			});
 
-		const response = await fetch('/api/token', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				code
-			})
-		});
+			const response = await fetch('/api/token', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					code
+				})
+			});
 
-		const { access_token } = await response.json();
+			const { access_token } = await response.json();
 
-		const auth = await discordSDK.commands.authenticate({
-			access_token
-		});
+			const auth = await discordSDK.commands.authenticate({
+				access_token
+			});
 
-		setUser({
-			name: auth.user.id,
-			avatarURL: auth.user.avatar
-				? `https://cdn.discordapp.com/avatars/${auth.user.id}/${auth.user.avatar}.png`
-				: undefined
-		});
+			console.log(auth);
+			setUser({
+				name: auth.user.id,
+				avatarURL: auth.user.avatar
+					? `https://cdn.discordapp.com/avatars/${auth.user.id}/${auth.user.avatar}.png`
+					: undefined
+			});
+		}
 
 		setIsLoading(false);
-
-		console.log(auth);
 	}
 
 	useEffect(() => {

@@ -29,7 +29,7 @@ export default function Navbar() {
 					</InputLeftElement>
 					<Input variant='filled' focusBorderColor='#FFFFFF30' placeholder='Search for a song...' />
 				</InputGroup>
-				<Avatar width='40px' height='40px' src={user?.avatarURL} />
+				{user ? <Avatar width='40px' height='40px' src={user?.avatarURL} /> : null}
 			</Flex>
 		</Box>
 	);

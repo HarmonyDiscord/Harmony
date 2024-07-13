@@ -1,8 +1,8 @@
 'use client';
 
 import { Flex, Spacer } from '@chakra-ui/react';
-import Navbar from '../layout/Navbar';
 import Controls from '../layout/Controls';
+import Navbar from '../layout/Navbar';
 
 export default function IndexScreen() {
 	return (

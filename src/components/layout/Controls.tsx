@@ -1,4 +1,4 @@
-import { Box, Text, Flex, Image, Heading, IconButton, Spacer } from '@chakra-ui/react';
+import { Box, Flex, Heading, IconButton, Image, Spacer, Text } from '@chakra-ui/react';
 import { MdLoop, MdPlayArrow, MdShuffle, MdSkipNext, MdSkipPrevious, MdVolumeUp } from 'react-icons/md';
 
 export default function Controls() {

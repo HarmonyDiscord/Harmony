@@ -1,7 +1,7 @@
 import { Avatar, Box, Flex, Heading, Input, InputGroup, InputLeftElement, Spacer } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
 import { MdMusicNote, MdSearch } from 'react-icons/md';
-import { userAtom } from 'src/atoms/UserAtom';
+import { userAtom } from '../../atoms/UserAtom';
 
 export default function Navbar() {
 	const [user] = useAtom(userAtom);

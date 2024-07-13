@@ -1,6 +1,8 @@
 import { DiscordSDK } from '@discord/embedded-app-sdk';
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
+import search from '../../app/actions/search';
+import { feedAtom } from '../../atoms/FeedAtom';
 import { loadingAtom } from '../../atoms/LoadingAtom';
 import { userAtom } from '../../atoms/UserAtom';
 
@@ -19,8 +21,17 @@ export default function AppFlow({
 }>) {
 	const [_isLoading, setIsLoading] = useAtom(loadingAtom);
 	const [_user, setUser] = useAtom(userAtom);
+	const [_feed, setFeed] = useAtom(feedAtom);
 
 	async function setup() {
+		const results = await search('robe');
+
+		if (!results) return setFeed(null);
+
+		setFeed(results);
+
+		console.log(results);
+
 		if (discordSDK) {
 			await discordSDK.ready();
 
@@ -47,7 +58,6 @@ export default function AppFlow({
 				access_token
 			});
 
-			console.log(auth);
 			setUser({
 				name: auth.user.id,
 				avatarURL: auth.user.avatar

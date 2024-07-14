@@ -4,6 +4,7 @@ import {
 	CloseButton,
 	Flex,
 	Heading,
+	IconButton,
 	Input,
 	InputGroup,
 	InputLeftElement,
@@ -12,11 +13,15 @@ import {
 	Spacer
 } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
-import { MdMusicNote, MdSearch } from 'react-icons/md';
+import { MdMenu, MdMusicNote, MdSearch } from 'react-icons/md';
+import { currentSongAtom } from '../../atoms/CurrentSongAtom';
+import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
 import { userAtom } from '../../atoms/UserAtom';
 
 export default function Navbar({ searchInput, setSearchInput }: any) {
 	const [user] = useAtom(userAtom);
+	const [songControls, setSongControls] = useAtom(songControlsAtom);
+	const [currentSong] = useAtom(currentSongAtom);
 
 	return (
 		<Box w='100%' p='20px' pb='0px'>
@@ -30,7 +35,9 @@ export default function Navbar({ searchInput, setSearchInput }: any) {
 				alignItems='center'
 				backdropFilter='blur(5px)'
 			>
-				<MdMusicNote fontSize='36px' color='#FFFFFF' />
+				<Box minW='36px'>
+					<MdMusicNote fontSize='36px' color='#FFFFFF' />
+				</Box>
 				<Heading size='md' fontWeight='bold'>
 					Harmony
 				</Heading>
@@ -53,6 +60,18 @@ export default function Navbar({ searchInput, setSearchInput }: any) {
 					</SlideFade>
 				</InputGroup>
 				{user ? <Avatar width='40px' height='40px' src={user?.avatarURL} /> : null}
+				{currentSong && songControls?.isSidePanelClosed && (
+					<IconButton
+						icon={<MdMenu />}
+						aria-label='Open menu'
+						onClick={() =>
+							setSongControls({
+								...(songControls ?? defaultSongControls),
+								isSidePanelClosed: false
+							})
+						}
+					/>
+				)}
 			</Flex>
 		</Box>
 	);

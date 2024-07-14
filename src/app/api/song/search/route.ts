@@ -11,7 +11,7 @@ export async function GET(req: Request) {
 	await ytmusic.initialize();
 
 	try {
-		if (!query) return [];
+		if (!query) return Response.json([]);
 
 		const videoId = getYouTubeVideoId(query);
 
@@ -19,9 +19,9 @@ export async function GET(req: Request) {
 			const video = await ytmusic.searchSongs(videoId);
 			const firstVideo = video[0];
 
-			if (!firstVideo) return [];
+			if (!firstVideo) return Response.json([]);
 
-			return [parseSearchResult(firstVideo)];
+			return Response.json([parseSearchResult(firstVideo)]);
 		}
 
 		const videos = await ytmusic.searchSongs(query);

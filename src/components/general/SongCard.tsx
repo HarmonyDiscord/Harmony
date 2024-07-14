@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
 import { useState } from 'react';
-import { MdPause, MdPlayCircle } from 'react-icons/md';
+import { MdPauseCircle, MdPlayCircle } from 'react-icons/md';
 import { currentSongAtom } from '../../atoms/CurrentSongAtom';
 import { useDebounce } from '../../hooks/useDebounce';
 import type { Song } from '../../types/Song';
@@ -100,7 +100,7 @@ export default function SongCard(song: Readonly<Song>) {
 								exit={{ y: 10, opacity: 0 }}
 							>
 								{songControls?.isPlaying && isCurrentSong ? (
-									<MdPause fontSize='60px' />
+									<MdPauseCircle fontSize='60px' />
 								) : (
 									<MdPlayCircle fontSize='60px' />
 								)}

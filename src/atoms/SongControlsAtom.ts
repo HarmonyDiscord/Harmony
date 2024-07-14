@@ -7,4 +7,5 @@ export const defaultSongControls = {
     volume: 1,
     isPlaying: false,
     isLooping: false,
+    isLoading: false
 }

@@ -17,9 +17,20 @@ export default function Controls() {
 		async function setup() {
 			if (!currentSong) return null;
 
-			const url = await getSongURL(currentSong.id);
+			setSongControls({
+				...(songControls ?? defaultSongControls),
+				isPlaying: false,
+				isLoading: true
+			});
 
+			const url = await getSongURL(currentSong.id);
+			
 			setSongURL(url);
+			setSongControls({
+				...(songControls ?? defaultSongControls),
+				isPlaying: true,
+				isLoading: false
+			});
 		}
 
 		setup();

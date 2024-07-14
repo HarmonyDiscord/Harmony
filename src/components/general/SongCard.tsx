@@ -1,4 +1,4 @@
-import { Card, CardBody, Center, Flex, Heading, Spacer, Text } from '@chakra-ui/react';
+import { Card, CardBody, Center, CircularProgress, Flex, Heading, Spacer, Text } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
@@ -37,7 +37,6 @@ export default function SongCard(song: Readonly<Song>) {
 				if (songControls?.isPlaying && isCurrentSong)
 					return setSongControls({ ...(songControls ?? defaultSongControls), isPlaying: false });
 
-				setSongControls({ ...(songControls ?? defaultSongControls), isPlaying: true });
 				setCurrentSong(song);
 			}}
 		>
@@ -101,6 +100,8 @@ export default function SongCard(song: Readonly<Song>) {
 							>
 								{songControls?.isPlaying && isCurrentSong ? (
 									<MdPauseCircle fontSize='60px' />
+								) : songControls?.isLoading && isCurrentSong ? (
+									<CircularProgress isIndeterminate color='grey' size='60px' />
 								) : (
 									<MdPlayCircle fontSize='60px' />
 								)}

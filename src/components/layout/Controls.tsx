@@ -31,6 +31,7 @@ import { BarLoader } from 'react-spinners';
 import getSongURL from '../../app/actions/getSongURL';
 import { currentSongAtom } from '../../atoms/CurrentSongAtom';
 import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
+import formatDuration from '../../util/formatDuration';
 
 export default memo(function Controls() {
 	const [currentSong, setCurrentSong] = useAtom(currentSongAtom);
@@ -38,6 +39,7 @@ export default memo(function Controls() {
 	const [songURL, setSongURL] = useState<string | undefined>(undefined);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const [progress, setProgress] = useState(0);
+	const [currentTime, setCurrentTime] = useState('00:00');
 
 	useEffect(() => {
 		async function setup() {
@@ -60,6 +62,23 @@ export default memo(function Controls() {
 				isPlaying: true,
 				isLoading: false
 			});
+
+			if ('mediaSession' in navigator) {
+				navigator.mediaSession.metadata = new MediaMetadata({
+					title: currentSong.title,
+					artist: currentSong.artist,
+					album: currentSong.album,
+					artwork: currentSong.cover
+						? [
+								{
+									src: currentSong.cover,
+									sizes: '250x250',
+									type: 'image/png'
+								}
+							]
+						: []
+				});
+			}
 		}
 
 		setup();
@@ -82,6 +101,8 @@ export default memo(function Controls() {
 		if (songControls?.isLoading) return;
 
 		const value = (audio.currentTime / audio.duration) * 100;
+
+		setCurrentTime(formatDuration(audio.currentTime));
 
 		if (!isNaN(value)) setProgress(value);
 	};
@@ -128,23 +149,27 @@ export default memo(function Controls() {
 						<Box w='100%'>
 							<AnimatePresence mode='wait'>
 								{!songControls?.isLoading ? (
-									<Slider
-										as={motion.div}
-										key='slider'
-										aria-label='track'
-										colorScheme='gray'
-										value={progress}
-										onChange={handleProgressChange}
-										focusThumbOnChange={false}
-										initial={{ opacity: 0 }}
-										animate={{ opacity: 1, transition: { duration: 0.1 } }}
-										exit={{ opacity: 0, transition: { duration: 0.1 } }}
-									>
-										<SliderTrack>
-											<SliderFilledTrack />
-										</SliderTrack>
-										<SliderThumb />
-									</Slider>
+									<Flex w='100%' gap='12px'>
+										<Text>{currentTime}</Text>
+										<Slider
+											as={motion.div}
+											key='slider'
+											aria-label='track'
+											colorScheme='gray'
+											value={progress}
+											onChange={handleProgressChange}
+											focusThumbOnChange={false}
+											initial={{ opacity: 0 }}
+											animate={{ opacity: 1, transition: { duration: 0.1 } }}
+											exit={{ opacity: 0, transition: { duration: 0.1 } }}
+										>
+											<SliderTrack>
+												<SliderFilledTrack />
+											</SliderTrack>
+											<SliderThumb />
+										</Slider>
+										<Text>{formatDuration(currentSong.duration)}</Text>
+									</Flex>
 								) : (
 									<motion.div
 										key='loader'

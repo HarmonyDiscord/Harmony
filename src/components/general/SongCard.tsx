@@ -8,6 +8,7 @@ import { currentSongAtom } from '../../atoms/CurrentSongAtom';
 import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
 import { useDebounce } from '../../hooks/useDebounce';
 import type { Song } from '../../types/Song';
+import formatDuration from '../../util/formatDuration';
 
 export default function SongCard(song: Readonly<Song>) {
 	const [isHovering, setIsHovering] = useState(false);
@@ -139,7 +140,7 @@ export default function SongCard(song: Readonly<Song>) {
 								animate={{ y: 0, opacity: 1 }}
 								exit={{ y: 10, opacity: 0 }}
 							>
-								{isCurrentSong ? 'Now playing' : 'Play'} - {duration}
+								{isCurrentSong ? 'Now playing' : 'Play'} - {formatDuration(duration)}
 							</Heading>
 						)}
 					</AnimatePresence>

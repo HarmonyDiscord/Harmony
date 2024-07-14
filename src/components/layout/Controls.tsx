@@ -29,9 +29,9 @@ import {
 } from 'react-icons/md';
 import { BarLoader } from 'react-spinners';
 import { currentSongAtom } from '../../atoms/CurrentSongAtom';
-import { filterFormats, getInfo } from 'ytdl-core';
 import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
 import formatDuration from '../../util/formatDuration';
+import axios from 'axios';
 
 export default memo(function Controls() {
 	const [currentSong, setCurrentSong] = useAtom(currentSongAtom);
@@ -53,11 +53,10 @@ export default memo(function Controls() {
 				isLoading: true
 			});
 
-			const info = await getInfo(`http://www.youtube.com/watch?v=${currentSong.id}`);
-
-			const audioFormats = filterFormats(info.formats, 'audioonly');
-
-			const url = audioFormats[0]?.url;
+			const url = await axios
+				.get(`/api/song/url?id=${encodeURIComponent(currentSong.id)}`)
+				.then((res) => res.data)
+				.catch(() => null);
 
 			setSongURL(url);
 

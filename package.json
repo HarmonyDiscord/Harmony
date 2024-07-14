@@ -19,6 +19,7 @@
 		"@chakra-ui/react": "2.8.2",
 		"@chakra-ui/system": "^2.6.2",
 		"@discord/embedded-app-sdk": "^1.4.0",
+		"@distube/ytdl-core": "^4.13.5",
 		"@emotion/cache": "^11.11.0",
 		"@emotion/react": "^11.11.4",
 		"@emotion/styled": "^11.11.5",
@@ -38,7 +39,6 @@
 		"sharp": "^0.33.4",
 		"tslib": "^2.6.3",
 		"utf-8-validate": "^6.0.4",
-		"ytdl-core": "^4.11.5",
 		"ytmusic-api": "^5.2.2"
 	},
 	"devDependencies": {

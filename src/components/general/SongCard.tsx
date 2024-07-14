@@ -53,7 +53,6 @@ export default function SongCard(song: Readonly<Song>) {
 					alt=' '
 					width={250}
 					height={200}
-					unoptimized
 					priority
 					objectFit='cover'
 					style={{

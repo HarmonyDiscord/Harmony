@@ -4,5 +4,5 @@ export type Song = {
 	artist: string;
 	album?: string;
 	cover?: string;
-	duration: string;
+	duration: number;
 };

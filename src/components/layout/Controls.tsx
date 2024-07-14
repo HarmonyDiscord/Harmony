@@ -15,12 +15,13 @@ import {
 } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import {
 	MdClose,
-	MdLoop,
 	MdPause,
 	MdPlayArrow,
+	MdRepeat,
+	MdRepeatOn,
 	MdSkipNext,
 	MdSkipPrevious,
 	MdVolumeOff,
@@ -30,14 +31,16 @@ import { BarLoader } from 'react-spinners';
 import getSongURL from '../../app/actions/getSongURL';
 import { currentSongAtom } from '../../atoms/CurrentSongAtom';
 import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
+import formatDuration from '../../util/formatDuration';
 
-export default function Controls() {
+export default memo(function Controls() {
 	const [currentSong, setCurrentSong] = useAtom(currentSongAtom);
 	const [songControls, setSongControls] = useAtom(songControlsAtom);
 	const [songURL, setSongURL] = useState<string | undefined>(undefined);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const [progress, setProgress] = useState(0);
 	const [volume, setVolume] = useState(songControls ? (songControls.volume * 100 ?? defaultSongControls.volume * 100) : defaultSongControls.volume * 100);
+	const [currentTime, setCurrentTime] = useState('00:00');
 
 	useEffect(() => {
 		async function setup() {
@@ -60,6 +63,23 @@ export default function Controls() {
 				isPlaying: true,
 				isLoading: false
 			});
+
+			if ('mediaSession' in navigator) {
+				navigator.mediaSession.metadata = new MediaMetadata({
+					title: currentSong.title,
+					artist: currentSong.artist,
+					album: currentSong.album,
+					artwork: currentSong.cover
+						? [
+								{
+									src: currentSong.cover,
+									sizes: '250x250',
+									type: 'image/png'
+								}
+							]
+						: []
+				});
+			}
 		}
 
 		setup();
@@ -82,6 +102,8 @@ export default function Controls() {
 		if (songControls?.isLoading) return;
 
 		const value = (audio.currentTime / audio.duration) * 100;
+
+		setCurrentTime(formatDuration(audio.currentTime));
 
 		if (!isNaN(value)) setProgress(value);
 	};
@@ -107,6 +129,13 @@ export default function Controls() {
 		});
 	};
 
+	const toggleLoop = () => {
+		setSongControls({
+			...(songControls ?? defaultSongControls),
+			isLooping: !songControls?.isLooping
+		});
+	};
+
 	return (
 		<AnimatePresence mode='popLayout'>
 			{currentSong && (
@@ -119,28 +148,49 @@ export default function Controls() {
 					animate={{ y: 0, opacity: 1 }}
 					exit={{ y: 10, opacity: 0 }}
 				>
-					<Center my='5px' height='16px'>
-						{!songControls?.isLoading ? (
-							<Slider
-								aria-label='track'
-								colorScheme='pink'
-								value={progress}
-								onChange={handleProgressChange}
-							>
-								<SliderTrack>
-									<SliderFilledTrack />
-								</SliderTrack>
-								<SliderThumb />
-							</Slider>
-						) : (
-							<BarLoader
-								color='#FFFFFF'
-								loading={true}
-								width='100%'
-								cssOverride={{ borderRadius: '10px', display: 'block' }}
-								aria-label='Loading'
-							/>
-						)}
+					<Center my='5px' h='16px'>
+						<Box w='100%'>
+							<AnimatePresence mode='wait'>
+								{!songControls?.isLoading ? (
+									<Flex w='100%' gap='12px'>
+										<Text>{currentTime}</Text>
+										<Slider
+											as={motion.div}
+											key='slider'
+											aria-label='track'
+											colorScheme='gray'
+											value={progress}
+											onChange={handleProgressChange}
+											focusThumbOnChange={false}
+											initial={{ opacity: 0 }}
+											animate={{ opacity: 1, transition: { duration: 0.1 } }}
+											exit={{ opacity: 0, transition: { duration: 0.1 } }}
+										>
+											<SliderTrack>
+												<SliderFilledTrack />
+											</SliderTrack>
+											<SliderThumb />
+										</Slider>
+										<Text>{formatDuration(currentSong.duration)}</Text>
+									</Flex>
+								) : (
+									<motion.div
+										key='loader'
+										initial={{ width: '0%', opacity: 0 }}
+										animate={{ width: '100%', opacity: 1, transition: { duration: 0.1 } }}
+										exit={{ width: '0%', opacity: 0, transition: { duration: 0.1 } }}
+									>
+										<BarLoader
+											color='#FFFFFF'
+											width='100%'
+											loading={true}
+											cssOverride={{ borderRadius: '10px', display: 'block' }}
+											aria-label='Loading'
+										/>
+									</motion.div>
+								)}
+							</AnimatePresence>
+						</Box>
 					</Center>
 					<Flex
 						w='100%'
@@ -186,13 +236,13 @@ export default function Controls() {
 							<IconButton icon={<MdSkipPrevious fontSize='24px' />} aria-label='Previous' />
 							<IconButton
 								icon={
-									songControls?.isPlaying ? (
+									songControls?.isPlaying || songControls?.isLoading ? (
 										<MdPause fontSize='24px' />
 									) : (
 										<MdPlayArrow fontSize='24px' />
 									)
 								}
-								isLoading={songControls?.isLoading}
+								isDisabled={songControls?.isLoading}
 								onClick={() =>
 									setSongControls({
 										...(songControls ?? defaultSongControls),
@@ -222,6 +272,12 @@ export default function Controls() {
 									isPlaying: false
 								})
 							}
+							onEnded={() =>
+								setSongControls({
+									...(songControls ?? defaultSongControls),
+									isPlaying: false
+								})
+							}
 						/>
 						<Hide below='sm'>
 							<Spacer />
@@ -229,7 +285,7 @@ export default function Controls() {
 								<Flex w='200px' gap='20px'>
 									<Slider
 										aria-label='volume'
-										colorScheme='pink'
+										colorScheme='gray'
 										defaultValue={(songControls?.volume ?? 100) * 100}
 										onChange={handleVolumeChange}
 										value={songControls?.isMuted ? 0 : volume}
@@ -257,7 +313,17 @@ export default function Controls() {
 										aria-label='Volume'
 									/>
 								</Flex>
-								<IconButton icon={<MdLoop fontSize='24px' />} aria-label='Loop' />
+								<IconButton
+									icon={
+										songControls?.isLooping ? (
+											<MdRepeatOn fontSize='24px' />
+										) : (
+											<MdRepeat fontSize='24px' />
+										)
+									}
+									aria-label='Toggle Loop'
+									onClick={() => toggleLoop()}
+								/>
 								<IconButton
 									icon={<MdClose fontSize='24px' />}
 									aria-label='Close'
@@ -270,4 +336,4 @@ export default function Controls() {
 			)}
 		</AnimatePresence>
 	);
-}
+});

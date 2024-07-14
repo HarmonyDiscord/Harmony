@@ -1,8 +1,31 @@
-import { Box, Flex, Heading, Hide, IconButton, Image, Spacer, Text } from '@chakra-ui/react';
+import {
+	Box,
+	Flex,
+	Heading,
+	Hide,
+	IconButton,
+	Image,
+	Slider,
+	SliderFilledTrack,
+	SliderThumb,
+	SliderTrack,
+	Spacer,
+	Text
+} from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
-import { MdClose, MdLoop, MdPause, MdPlayArrow, MdSkipNext, MdSkipPrevious, MdVolumeUp } from 'react-icons/md';
+import {
+	MdClose,
+	MdLoop,
+	MdPause,
+	MdPlayArrow,
+	MdSkipNext,
+	MdSkipPrevious,
+	MdVolumeMute,
+	MdVolumeOff,
+	MdVolumeUp
+} from 'react-icons/md';
 import getSongURL from '../../app/actions/getSongURL';
 import { currentSongAtom } from '../../atoms/CurrentSongAtom';
 import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
@@ -12,6 +35,7 @@ export default function Controls() {
 	const [songControls, setSongControls] = useAtom(songControlsAtom);
 	const [songURL, setSongURL] = useState<string | undefined>(undefined);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
+	const [progress, setProgress] = useState(0);
 
 	useEffect(() => {
 		async function setup() {
@@ -45,21 +69,31 @@ export default function Controls() {
 		if (songControls?.isPlaying) audio.play().catch(() => null);
 		else audio.pause();
 
-		if (songControls?.volume) audio.volume = songControls.volume;
+		if (songControls?.isMuted) audio.volume = 0;
+		else if (songControls?.volume) audio.volume = songControls.volume;
 	}, [songControls]);
-	/*
+
 	const handleTimeUpdate = () => {
-		setCurrentTime(audioRef.current.currentTime);
+		if (!audio) return;
+
+		const value = (audio.currentTime / audio.duration) * 100;
+		setProgress(value);
 	};
 
-	const handleLoadedMetadata = () => {
-		setDuration(audioRef.current.duration);
+	const handleProgressChange = (value: number) => {
+		if (!audio) return;
+
+		const newTime = (value / 100) * audio.duration;
+		audio.currentTime = newTime;
+		setProgress(value);
 	};
 
-	const handleSeekChange = (e) => {
-		audioRef.current.currentTime = e.target.value;
-		setCurrentTime(e.target.value);
-	};*/
+	const handleVolumeChange = (value: number) => {
+		setSongControls({
+			...(songControls ?? defaultSongControls),
+			volume: value / 100
+		});
+	};
 
 	return (
 		<AnimatePresence mode='popLayout'>
@@ -73,6 +107,12 @@ export default function Controls() {
 					animate={{ y: 0, opacity: 1 }}
 					exit={{ y: 10, opacity: 0 }}
 				>
+					<Slider aria-label='track' colorScheme='pink' value={progress} onChange={handleProgressChange}>
+						<SliderTrack>
+							<SliderFilledTrack />
+						</SliderTrack>
+						<SliderThumb />
+					</Slider>
 					<Flex
 						w='100%'
 						bg='#FFFFFF10'
@@ -140,13 +180,40 @@ export default function Controls() {
 							autoPlay
 							ref={audioRef}
 							src={songURL}
-							/*	onTimeUpdate={handleTimeUpdate}
-							onLoadedMetadata={handleLoadedMetadata}*/
+							onTimeUpdate={handleTimeUpdate}
 						/>
 						<Hide below='sm'>
 							<Spacer />
-							<Flex gap='10px'>
-								<IconButton icon={<MdVolumeUp fontSize='24px' />} aria-label='Volume' />
+							<Flex gap='10px' alignItems='center'>
+								<Flex w='200px' gap='20px'>
+									<Slider
+										aria-label='volume'
+										colorScheme='pink'
+										defaultValue={(songControls?.volume ?? 100) * 100}
+										onChange={handleVolumeChange}
+									>
+										<SliderTrack>
+											<SliderFilledTrack />
+										</SliderTrack>
+										<SliderThumb />
+									</Slider>
+									<IconButton
+										icon={
+											songControls?.isMuted ? (
+												<MdVolumeOff fontSize='24px' />
+											) : (
+												<MdVolumeUp fontSize='24px' />
+											)
+										}
+										onClick={() =>
+											setSongControls({
+												...(songControls ?? defaultSongControls),
+												isMuted: !songControls?.isMuted
+											})
+										}
+										aria-label='Volume'
+									/>
+								</Flex>
 								<IconButton icon={<MdLoop fontSize='24px' />} aria-label='Loop' />
 								<IconButton
 									icon={<MdClose fontSize='24px' />}

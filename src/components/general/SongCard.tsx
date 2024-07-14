@@ -9,11 +9,13 @@ import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsA
 import { useDebounce } from '../../hooks/useDebounce';
 import type { Song } from '../../types/Song';
 import formatDuration from '../../util/formatDuration';
+import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 
 export default function SongCard(song: Readonly<Song>) {
 	const [isHovering, setIsHovering] = useState(false);
 	const debouncedIsHovering = useDebounce(isHovering, 100);
 	const [currentSong, setCurrentSong] = useAtom(currentSongAtom);
+	const [_currentPlaylist, setCurrentPlaylist] = useAtom(currentPlaylistAtom);
 	const [songControls, setSongControls] = useAtom(songControlsAtom);
 
 	const { id, title, album, artist, cover, duration } = song;
@@ -42,6 +44,7 @@ export default function SongCard(song: Readonly<Song>) {
 					});
 
 				setCurrentSong(song);
+				setCurrentPlaylist([song]);
 			}}
 		>
 			{cover && (

@@ -24,8 +24,9 @@ export default function Controls() {
 			});
 
 			const url = await getSongURL(currentSong.id);
-			
+
 			setSongURL(url);
+
 			setSongControls({
 				...(songControls ?? defaultSongControls),
 				isPlaying: true,
@@ -41,7 +42,7 @@ export default function Controls() {
 	useEffect(() => {
 		if (!audio) return;
 
-		if (songControls?.isPlaying) audio.play();
+		if (songControls?.isPlaying) audio.play().catch(() => null);
 		else audio.pause();
 
 		if (songControls?.volume) audio.volume = songControls.volume;
@@ -122,6 +123,7 @@ export default function Controls() {
 										<MdPlayArrow fontSize='24px' />
 									)
 								}
+								isLoading={songControls?.isLoading}
 								onClick={() =>
 									setSongControls({
 										...(songControls ?? defaultSongControls),
@@ -134,19 +136,18 @@ export default function Controls() {
 							<Spacer />
 						</Flex>
 						<audio
+							key='current-song'
 							autoPlay
-							key={songURL}
 							ref={audioRef}
-						/*	onTimeUpdate={handleTimeUpdate}
+							src={songURL}
+							/*	onTimeUpdate={handleTimeUpdate}
 							onLoadedMetadata={handleLoadedMetadata}*/
-						>
-							{songURL && <source src={songURL} type='audio/mpeg' />}
-						</audio>
+						/>
 						<Hide below='sm'>
 							<Spacer />
 							<Flex gap='10px'>
-								<IconButton icon={<MdVolumeUp fontSize='24px' />} aria-label='Previous' />
-								<IconButton icon={<MdLoop fontSize='24px' />} aria-label='Play' />
+								<IconButton icon={<MdVolumeUp fontSize='24px' />} aria-label='Volume' />
+								<IconButton icon={<MdLoop fontSize='24px' />} aria-label='Loop' />
 								<IconButton
 									icon={<MdClose fontSize='24px' />}
 									aria-label='Close'

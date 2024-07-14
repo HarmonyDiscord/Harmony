@@ -1,13 +1,13 @@
-import { Card, CardBody, Center, CircularProgress, Flex, Heading, Spacer, Text } from '@chakra-ui/react';
+import { Card, CardBody, Center, Flex, Heading, Spacer, Spinner, Text } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
 import { useState } from 'react';
 import { MdPauseCircle, MdPlayCircle } from 'react-icons/md';
 import { currentSongAtom } from '../../atoms/CurrentSongAtom';
+import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
 import { useDebounce } from '../../hooks/useDebounce';
 import type { Song } from '../../types/Song';
-import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
 
 export default function SongCard(song: Readonly<Song>) {
 	const [isHovering, setIsHovering] = useState(false);
@@ -101,7 +101,7 @@ export default function SongCard(song: Readonly<Song>) {
 								{songControls?.isPlaying && isCurrentSong ? (
 									<MdPauseCircle fontSize='60px' />
 								) : songControls?.isLoading && isCurrentSong ? (
-									<CircularProgress isIndeterminate color='grey' size='60px' />
+									<Spinner size='xl' thickness='4px' />
 								) : (
 									<MdPlayCircle fontSize='60px' />
 								)}

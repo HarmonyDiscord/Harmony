@@ -22,7 +22,6 @@ import {
 	MdPlayArrow,
 	MdRepeat,
 	MdRepeatOn,
-	MdRepeatOne,
 	MdSkipNext,
 	MdSkipPrevious,
 	MdVolumeOff,
@@ -125,28 +124,45 @@ export default memo(function Controls() {
 					animate={{ y: 0, opacity: 1 }}
 					exit={{ y: 10, opacity: 0 }}
 				>
-					<Center my='5px' height='16px'>
-						{!songControls?.isLoading ? (
-							<Slider
-								aria-label='track'
-								colorScheme='gray'
-								value={progress}
-								onChange={handleProgressChange}
-							>
-								<SliderTrack>
-									<SliderFilledTrack />
-								</SliderTrack>
-								<SliderThumb />
-							</Slider>
-						) : (
-							<BarLoader
-								color='#FFFFFF'
-								loading={true}
-								width='100%'
-								cssOverride={{ borderRadius: '10px', display: 'block' }}
-								aria-label='Loading'
-							/>
-						)}
+					<Center my='5px' h='16px'>
+						<Box w='100%'>
+							<AnimatePresence mode='wait'>
+								{!songControls?.isLoading ? (
+									<Slider
+										as={motion.div}
+										key='slider'
+										aria-label='track'
+										colorScheme='gray'
+										value={progress}
+										onChange={handleProgressChange}
+										focusThumbOnChange={false}
+										initial={{ opacity: 0 }}
+										animate={{ opacity: 1, transition: { duration: 0.1 } }}
+										exit={{ opacity: 0, transition: { duration: 0.1 } }}
+									>
+										<SliderTrack>
+											<SliderFilledTrack />
+										</SliderTrack>
+										<SliderThumb />
+									</Slider>
+								) : (
+									<motion.div
+										key='loader'
+										initial={{ width: '0%', opacity: 0 }}
+										animate={{ width: '100%', opacity: 1, transition: { duration: 0.1 } }}
+										exit={{ width: '0%', opacity: 0, transition: { duration: 0.1 } }}
+									>
+										<BarLoader
+											color='#FFFFFF'
+											width='100%'
+											loading={true}
+											cssOverride={{ borderRadius: '10px', display: 'block' }}
+											aria-label='Loading'
+										/>
+									</motion.div>
+								)}
+							</AnimatePresence>
+						</Box>
 					</Center>
 					<Flex
 						w='100%'

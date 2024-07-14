@@ -1,5 +1,6 @@
 import {
 	Box,
+	Center,
 	Flex,
 	Heading,
 	Hide,
@@ -14,22 +15,24 @@ import {
 } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import {
 	MdClose,
-	MdLoop,
 	MdPause,
 	MdPlayArrow,
+	MdRepeat,
+	MdRepeatOn,
 	MdSkipNext,
 	MdSkipPrevious,
 	MdVolumeOff,
 	MdVolumeUp
 } from 'react-icons/md';
+import { BarLoader } from 'react-spinners';
 import getSongURL from '../../app/actions/getSongURL';
 import { currentSongAtom } from '../../atoms/CurrentSongAtom';
 import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
 
-export default function Controls() {
+export default memo(function Controls() {
 	const [currentSong, setCurrentSong] = useAtom(currentSongAtom);
 	const [songControls, setSongControls] = useAtom(songControlsAtom);
 	const [songURL, setSongURL] = useState<string | undefined>(undefined);
@@ -102,6 +105,13 @@ export default function Controls() {
 		});
 	};
 
+	const toggleLoop = () => {
+		setSongControls({
+			...(songControls ?? defaultSongControls),
+			isLooping: !songControls?.isLooping
+		});
+	};
+
 	return (
 		<AnimatePresence mode='popLayout'>
 			{currentSong && (
@@ -114,12 +124,46 @@ export default function Controls() {
 					animate={{ y: 0, opacity: 1 }}
 					exit={{ y: 10, opacity: 0 }}
 				>
-					<Slider aria-label='track' colorScheme='pink' value={progress} onChange={handleProgressChange}>
-						<SliderTrack>
-							<SliderFilledTrack />
-						</SliderTrack>
-						<SliderThumb />
-					</Slider>
+					<Center my='5px' h='16px'>
+						<Box w='100%'>
+							<AnimatePresence mode='wait'>
+								{!songControls?.isLoading ? (
+									<Slider
+										as={motion.div}
+										key='slider'
+										aria-label='track'
+										colorScheme='gray'
+										value={progress}
+										onChange={handleProgressChange}
+										focusThumbOnChange={false}
+										initial={{ opacity: 0 }}
+										animate={{ opacity: 1, transition: { duration: 0.1 } }}
+										exit={{ opacity: 0, transition: { duration: 0.1 } }}
+									>
+										<SliderTrack>
+											<SliderFilledTrack />
+										</SliderTrack>
+										<SliderThumb />
+									</Slider>
+								) : (
+									<motion.div
+										key='loader'
+										initial={{ width: '0%', opacity: 0 }}
+										animate={{ width: '100%', opacity: 1, transition: { duration: 0.1 } }}
+										exit={{ width: '0%', opacity: 0, transition: { duration: 0.1 } }}
+									>
+										<BarLoader
+											color='#FFFFFF'
+											width='100%'
+											loading={true}
+											cssOverride={{ borderRadius: '10px', display: 'block' }}
+											aria-label='Loading'
+										/>
+									</motion.div>
+								)}
+							</AnimatePresence>
+						</Box>
+					</Center>
 					<Flex
 						w='100%'
 						bg='#FFFFFF10'
@@ -164,13 +208,13 @@ export default function Controls() {
 							<IconButton icon={<MdSkipPrevious fontSize='24px' />} aria-label='Previous' />
 							<IconButton
 								icon={
-									songControls?.isPlaying ? (
+									songControls?.isPlaying || songControls?.isLoading ? (
 										<MdPause fontSize='24px' />
 									) : (
 										<MdPlayArrow fontSize='24px' />
 									)
 								}
-								isLoading={songControls?.isLoading}
+								isDisabled={songControls?.isLoading}
 								onClick={() =>
 									setSongControls({
 										...(songControls ?? defaultSongControls),
@@ -200,6 +244,12 @@ export default function Controls() {
 									isPlaying: false
 								})
 							}
+							onEnded={() =>
+								setSongControls({
+									...(songControls ?? defaultSongControls),
+									isPlaying: false
+								})
+							}
 						/>
 						<Hide below='sm'>
 							<Spacer />
@@ -207,7 +257,7 @@ export default function Controls() {
 								<Flex w='200px' gap='20px'>
 									<Slider
 										aria-label='volume'
-										colorScheme='pink'
+										colorScheme='gray'
 										defaultValue={(songControls?.volume ?? 100) * 100}
 										onChange={handleVolumeChange}
 										isDisabled={songControls?.isLoading}
@@ -234,7 +284,17 @@ export default function Controls() {
 										aria-label='Volume'
 									/>
 								</Flex>
-								<IconButton icon={<MdLoop fontSize='24px' />} aria-label='Loop' />
+								<IconButton
+									icon={
+										songControls?.isLooping ? (
+											<MdRepeatOn fontSize='24px' />
+										) : (
+											<MdRepeat fontSize='24px' />
+										)
+									}
+									aria-label='Toggle Loop'
+									onClick={() => toggleLoop()}
+								/>
 								<IconButton
 									icon={<MdClose fontSize='24px' />}
 									aria-label='Close'
@@ -247,4 +307,4 @@ export default function Controls() {
 			)}
 		</AnimatePresence>
 	);
-}
+});

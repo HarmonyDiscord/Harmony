@@ -24,14 +24,14 @@ export default function IndexScreen() {
 			if (!debouncedSearchInput) {
 				setSearchResults(null);
 				setIsSearchLoading(false);
+
 				return;
 			}
 
-			if (isSearchLoading) return;
+			const currentSearchCount = ++searchCountRef.current;
 
 			setIsSearchLoading(true);
 
-			const currentSearchCount = ++searchCountRef.current;
 			const results = await searchSongs(debouncedSearchInput);
 
 			if (currentSearchCount === searchCountRef.current) {
@@ -40,6 +40,7 @@ export default function IndexScreen() {
 				} else {
 					setSearchResults(results);
 				}
+
 				setIsSearchLoading(false);
 			}
 		};

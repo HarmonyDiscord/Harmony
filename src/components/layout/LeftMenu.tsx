@@ -13,13 +13,13 @@ import {
 	Tabs,
 	Text
 } from '@chakra-ui/react';
+import axios from 'axios';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { memo, useEffect, useState } from 'react';
-import getSongLyrics from '../../app/actions/getSongLyrics';
+import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { currentSongAtom } from '../../atoms/CurrentSongAtom';
 import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
-import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 
 const Playlist = memo(function Playlist() {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
@@ -42,7 +42,12 @@ const Lyrics = memo(function Lyrics({ songId }: Readonly<{ songId?: string }>) {
 			if (!songId) return;
 
 			setIsLoading(true);
-			setLyrics(await getSongLyrics(songId));
+			setLyrics(
+				await axios
+					.get(`/api/song/lyrics?id=${encodeURIComponent(songId)}`)
+					.then((res) => res.data)
+					.catch(() => null)
+			);
 			setIsLoading(false);
 		}
 		setup();

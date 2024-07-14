@@ -1,19 +1,9 @@
 'use client';
 
-import {
-	Center,
-	Flex,
-	Heading,
-	Show,
-	SimpleGrid,
-	SlideFade,
-	Spacer,
-	Spinner,
-	useBreakpointValue
-} from '@chakra-ui/react';
+import { Center, Flex, Heading, SimpleGrid, SlideFade, Spacer, Spinner, useBreakpointValue } from '@chakra-ui/react';
+import axios from 'axios';
 import { useAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
-import searchSongs from '../../app/actions/searchSongs';
 import { currentSongAtom } from '../../atoms/CurrentSongAtom';
 import { feedAtom } from '../../atoms/FeedAtom';
 import { songControlsAtom } from '../../atoms/SongControlsAtom';
@@ -48,7 +38,10 @@ export default function IndexScreen() {
 
 			setIsSearchLoading(true);
 
-			const results = await searchSongs(debouncedSearchInput);
+			const results = await axios
+				.get(`/api/song/search?q=${encodeURIComponent(debouncedSearchInput)}`)
+				.then((res) => res.data)
+				.catch(() => null);
 
 			if (currentSearchCount === searchCountRef.current) {
 				if (!results) {

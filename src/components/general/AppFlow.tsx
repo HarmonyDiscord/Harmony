@@ -1,10 +1,10 @@
 import { DiscordSDK } from '@discord/embedded-app-sdk';
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
-import searchSongs from '../../app/actions/searchSongs';
 import { feedAtom } from '../../atoms/FeedAtom';
 import { loadingAtom } from '../../atoms/LoadingAtom';
 import { userAtom } from '../../atoms/UserAtom';
+import axios from 'axios';
 
 const clientId = process.env['NEXT_PUBLIC_DISCORD_CLIENT_ID'] ?? '';
 
@@ -24,7 +24,10 @@ export default function AppFlow({
 	const [_feed, setFeed] = useAtom(feedAtom);
 
 	async function setup() {
-		const results = await searchSongs(' ');
+		const results = await axios
+			.get(`/api/song/search?q=${encodeURIComponent(' ')}`)
+			.then((res) => res.data)
+			.catch(() => null);
 
 		if (!results) return setFeed(null);
 

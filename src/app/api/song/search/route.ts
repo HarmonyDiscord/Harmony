@@ -1,9 +1,12 @@
-'use server';
-
 import YTMusic, { type SongDetailed } from 'ytmusic-api';
-import type { Song } from '../../types/Song';
+import type { Song } from '../../../../types/Song';
 
-export default async function searchSongs(query: string) {
+export async function GET(req: Request) {
+	const { searchParams } = new URL(req.url);
+	const query = searchParams.get('q');
+
+	if (!query) return new Response('Invalid', { status: 400 });
+
 	const ytmusic = new YTMusic();
 	await ytmusic.initialize();
 
@@ -23,9 +26,9 @@ export default async function searchSongs(query: string) {
 
 		const videos = await ytmusic.searchSongs(query);
 
-		return videos.map((video) => parseSearchResult(video));
+		return Response.json(videos.map((video) => parseSearchResult(video)));
 	} catch (err) {
-		throw new Error('Failed to search');
+		return new Response('Failed to search', { status: 409 });
 	}
 }
 

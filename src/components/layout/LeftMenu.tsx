@@ -60,7 +60,7 @@ export default memo(function LeftMenu() {
 				<Box
 					as={motion.div}
 					p='20px'
-					pl='10px'
+					pl={['20px', '20px', '10px']}
 					h='100%'
 					w={['100%', '100%', '500px']}
 					minW={['100%', '100%', '500px']}

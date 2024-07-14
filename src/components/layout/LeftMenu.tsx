@@ -19,6 +19,19 @@ import { memo, useEffect, useState } from 'react';
 import getSongLyrics from '../../app/actions/getSongLyrics';
 import { currentSongAtom } from '../../atoms/CurrentSongAtom';
 import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
+import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
+
+const Playlist = memo(function Playlist() {
+	const [currentPlaylist] = useAtom(currentPlaylistAtom);
+
+	return (
+		<Flex w='100%' h='100%' direction='column' overflowY='auto' gap='10px'>
+			{currentPlaylist.map((song) => (
+				<Flex key={song.id}>{song.title}</Flex>
+			))}
+		</Flex>
+	);
+});
 
 const Lyrics = memo(function Lyrics({ songId }: Readonly<{ songId?: string }>) {
 	const [lyrics, setLyrics] = useState<null | string[]>(null);
@@ -99,13 +112,13 @@ export default memo(function LeftMenu() {
 						<TabIndicator mt='2px' px='2px' height='2px' bg='white' borderRadius='1px' />
 						<TabPanels h='100%' w='100%'>
 							<TabPanel h='100%' w='100%'>
-								<p>one!</p>
+								<Playlist />
 							</TabPanel>
 							<TabPanel h='100%' w='100%' pb='40px'>
 								<Lyrics songId={currentSong.id} />
 							</TabPanel>
 							<TabPanel h='100%' w='100%'>
-								<p>three!</p>
+								Working on it!
 							</TabPanel>
 						</TabPanels>
 					</Tabs>

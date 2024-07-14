@@ -10,6 +10,8 @@ import type { Song } from '../../types/Song';
 import SongCard from '../general/SongCard';
 import Controls from '../layout/Controls';
 import Navbar from '../layout/Navbar';
+import LeftMenu from '../layout/LeftMenu';
+import { motion } from 'framer-motion';
 
 export default function IndexScreen() {
 	const [feed] = useAtom(feedAtom);
@@ -51,32 +53,50 @@ export default function IndexScreen() {
 	const gridItems = searchResults || feed;
 
 	return (
-		<Flex w='100%' h='100%' direction='column'>
+		<Flex w='100%' h='100%' direction='column' overflow='hidden'>
 			<Navbar searchInput={searchInput} setSearchInput={setSearchInput} />
-			{isSearchLoading ? (
-				<Center w='100%' h='100%'>
-					<Spinner size='xl' thickness='4px' />
-				</Center>
-			) : gridItems && gridItems.length > 0 ? (
-				<SimpleGrid w='100%' p='20px' minChildWidth='250px' gap='20px' overflowY='auto'>
-					{gridItems.map(({ id, title, album, artist, cover, duration }, i) => (
-						<SlideFade in delay={i * 0.02} key={id}>
-							<SongCard
-								id={id}
-								title={title}
-								album={album}
-								artist={artist}
-								cover={cover}
-								duration={duration}
-							/>
-						</SlideFade>
-					))}
-				</SimpleGrid>
-			) : (
-				<Center w='100%' h='100%'>
-					<Heading>Sorry, no results found.</Heading>
-				</Center>
-			)}
+			<Flex w='100%' h='100%' maxH='100%' overflow='hidden'>
+				{isSearchLoading ? (
+					<Center w='100%' h='100%'>
+						<Spinner size='xl' thickness='4px' />
+					</Center>
+				) : gridItems && gridItems.length > 0 ? (
+					<SimpleGrid
+						as={motion.div}
+						w='100%'
+						p='20px'
+						layout
+						layoutId='grid'
+						style={{
+							mask: 'linear-gradient(to top, transparent 0%, #000000 5%, #000000 95%, transparent 100%)',
+							maskMode: 'alpha'
+						}}
+						minChildWidth='250px'
+						gap='20px'
+						overflowY='auto'
+						maxH='100%'
+						zIndex={1}
+					>
+						{gridItems.map(({ id, title, album, artist, cover, duration }, i) => (
+							<SlideFade in delay={i * 0.02} key={id}>
+								<SongCard
+									id={id}
+									title={title}
+									album={album}
+									artist={artist}
+									cover={cover}
+									duration={duration}
+								/>
+							</SlideFade>
+						))}
+					</SimpleGrid>
+				) : (
+					<Center w='100%' h='100%'>
+						<Heading>Sorry, no results found.</Heading>
+					</Center>
+				)}
+				<LeftMenu />
+			</Flex>
 			<Spacer />
 			<Controls />
 		</Flex>

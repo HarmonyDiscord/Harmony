@@ -120,6 +120,7 @@ export default memo(function Controls() {
 	};
 
 	const handleVolumeChange = (value: number) => {
+		setSongControls({ ...(songControls ?? defaultSongControls), isMuted: false });
 		setSongControls({
 			...(songControls ?? defaultSongControls),
 			volume: value / 100
@@ -145,188 +146,196 @@ export default memo(function Controls() {
 					animate={{ y: 0, opacity: 1 }}
 					exit={{ y: 10, opacity: 0 }}
 				>
-					<Center my='5px' h='16px'>
-						<Box w='100%'>
+					<Flex w='100%' h='100%' direction='column' gap='10px'>
+						<Center my='5px' h='16px'>
+							<Box w='100%'>
+								<AnimatePresence mode='wait'>
+									{!songControls?.isLoading ? (
+										<Flex w='100%' gap='12px'>
+											<Text>{currentTime}</Text>
+											<Slider
+												as={motion.div}
+												key='slider'
+												aria-label='track'
+												colorScheme='gray'
+												value={progress}
+												onChange={handleProgressChange}
+												focusThumbOnChange={false}
+												initial={{ opacity: 0 }}
+												animate={{ opacity: 1, transition: { duration: 0.1 } }}
+												exit={{ opacity: 0, transition: { duration: 0.1 } }}
+											>
+												<SliderTrack>
+													<SliderFilledTrack />
+												</SliderTrack>
+												<SliderThumb />
+											</Slider>
+											<Text>{formatDuration(currentSong.duration)}</Text>
+										</Flex>
+									) : (
+										<motion.div
+											key='loader'
+											initial={{ width: '0%', opacity: 0 }}
+											animate={{ width: '100%', opacity: 1, transition: { duration: 0.1 } }}
+											exit={{ width: '0%', opacity: 0, transition: { duration: 0.1 } }}
+										>
+											<BarLoader
+												color='#FFFFFF'
+												width='100%'
+												loading={true}
+												cssOverride={{ borderRadius: '10px', display: 'block' }}
+												aria-label='Loading'
+											/>
+										</motion.div>
+									)}
+								</AnimatePresence>
+							</Box>
+						</Center>
+						<Flex
+							w='100%'
+							bg='#FFFFFF10'
+							borderRadius='10px'
+							p='20px'
+							gap='20px'
+							zIndex={2}
+							alignItems='center'
+							backdropFilter='blur(5px)'
+							direction={['column', 'column', 'row']}
+						>
 							<AnimatePresence mode='wait'>
-								{!songControls?.isLoading ? (
-									<Flex w='100%' gap='12px'>
-										<Text>{currentTime}</Text>
+								<Flex
+									key={currentSong.id}
+									as={motion.div}
+									gap='12px'
+									alignItems='center'
+									initial={{ y: -10, opacity: 0 }}
+									animate={{ y: 0, opacity: 1 }}
+									exit={{ y: 10, opacity: 0 }}
+								>
+									<Image
+										width='48px'
+										height='48px'
+										src={currentSong.cover}
+										alt='Song icon'
+										objectFit='cover'
+										style={{
+											borderRadius: '5px'
+										}}
+									/>
+									<Flex gap='4px' direction='column'>
+										<Heading size='md'>{currentSong.title}</Heading>
+										<Text>
+											{currentSong.album} – {currentSong.artist}
+										</Text>
+									</Flex>
+								</Flex>
+							</AnimatePresence>
+							<Flex
+								gap='10px'
+								w='100%'
+								position={['relative', 'relative', 'absolute']}
+								alignItems='center'
+							>
+								<Spacer />
+								<IconButton icon={<MdSkipPrevious fontSize='24px' />} aria-label='Previous' />
+								<IconButton
+									icon={
+										songControls?.isPlaying || songControls?.isLoading ? (
+											<MdPause fontSize='26px' />
+										) : (
+											<MdPlayArrow fontSize='26px' />
+										)
+									}
+									size='lg'
+									isDisabled={songControls?.isLoading}
+									onClick={() =>
+										setSongControls({
+											...(songControls ?? defaultSongControls),
+											isPlaying: !songControls?.isPlaying
+										})
+									}
+									aria-label='Play'
+								/>
+								<IconButton icon={<MdSkipNext fontSize='24px' />} aria-label='Next' />
+								<Spacer />
+							</Flex>
+							<audio
+								key='current-song'
+								autoPlay
+								ref={audioRef}
+								src={songURL}
+								onTimeUpdate={handleTimeUpdate}
+								onPlay={() =>
+									setSongControls({
+										...(songControls ?? defaultSongControls),
+										isPlaying: true
+									})
+								}
+								onPause={() =>
+									setSongControls({
+										...(songControls ?? defaultSongControls),
+										isPlaying: false
+									})
+								}
+								onEnded={() =>
+									setSongControls({
+										...(songControls ?? defaultSongControls),
+										isPlaying: false
+									})
+								}
+							/>
+							<Hide below='sm'>
+								<Spacer />
+								<Flex gap='10px' alignItems='center'>
+									<Flex w='200px' gap='20px'>
 										<Slider
-											as={motion.div}
-											key='slider'
-											aria-label='track'
+											aria-label='volume'
 											colorScheme='gray'
-											value={progress}
-											onChange={handleProgressChange}
-											focusThumbOnChange={false}
-											initial={{ opacity: 0 }}
-											animate={{ opacity: 1, transition: { duration: 0.1 } }}
-											exit={{ opacity: 0, transition: { duration: 0.1 } }}
+											defaultValue={(songControls?.volume ?? 100) * 100}
+											onChange={handleVolumeChange}
+											value={songControls?.isMuted ? 0 : (songControls?.volume ?? 100) * 100}
 										>
 											<SliderTrack>
 												<SliderFilledTrack />
 											</SliderTrack>
 											<SliderThumb />
 										</Slider>
-										<Text>{formatDuration(currentSong.duration)}</Text>
-									</Flex>
-								) : (
-									<motion.div
-										key='loader'
-										initial={{ width: '0%', opacity: 0 }}
-										animate={{ width: '100%', opacity: 1, transition: { duration: 0.1 } }}
-										exit={{ width: '0%', opacity: 0, transition: { duration: 0.1 } }}
-									>
-										<BarLoader
-											color='#FFFFFF'
-											width='100%'
-											loading={true}
-											cssOverride={{ borderRadius: '10px', display: 'block' }}
-											aria-label='Loading'
+										<IconButton
+											icon={
+												songControls?.isMuted ? (
+													<MdVolumeOff fontSize='24px' />
+												) : (
+													<MdVolumeUp fontSize='24px' />
+												)
+											}
+											onClick={() =>
+												setSongControls({
+													...(songControls ?? defaultSongControls),
+													isMuted: !songControls?.isMuted
+												})
+											}
+											aria-label='Volume'
 										/>
-									</motion.div>
-								)}
-							</AnimatePresence>
-						</Box>
-					</Center>
-					<Flex
-						w='100%'
-						bg='#FFFFFF10'
-						borderRadius='10px'
-						p='20px'
-						gap='20px'
-						zIndex={2}
-						alignItems='center'
-						backdropFilter='blur(5px)'
-						direction={['column', 'column', 'row']}
-					>
-						<AnimatePresence mode='wait'>
-							<Flex
-								key={currentSong.id}
-								as={motion.div}
-								gap='12px'
-								alignItems='center'
-								initial={{ y: -10, opacity: 0 }}
-								animate={{ y: 0, opacity: 1 }}
-								exit={{ y: 10, opacity: 0 }}
-							>
-								<Image
-									width='48px'
-									height='48px'
-									src={currentSong.cover}
-									alt='si'
-									objectFit='cover'
-									style={{
-										borderRadius: '5px'
-									}}
-								/>
-								<Flex gap='4px' direction='column'>
-									<Heading size='md'>{currentSong.title}</Heading>
-									<Text>
-										{currentSong.album} – {currentSong.artist}
-									</Text>
-								</Flex>
-							</Flex>
-						</AnimatePresence>
-						<Flex gap='10px' w='100%' position={['relative', 'relative', 'absolute']}>
-							<Spacer />
-							<IconButton icon={<MdSkipPrevious fontSize='24px' />} aria-label='Previous' />
-							<IconButton
-								icon={
-									songControls?.isPlaying || songControls?.isLoading ? (
-										<MdPause fontSize='24px' />
-									) : (
-										<MdPlayArrow fontSize='24px' />
-									)
-								}
-								isDisabled={songControls?.isLoading}
-								onClick={() =>
-									setSongControls({
-										...(songControls ?? defaultSongControls),
-										isPlaying: !songControls?.isPlaying
-									})
-								}
-								aria-label='Play'
-							/>
-							<IconButton icon={<MdSkipNext fontSize='24px' />} aria-label='Next' />
-							<Spacer />
-						</Flex>
-						<audio
-							key='current-song'
-							autoPlay
-							ref={audioRef}
-							src={songURL}
-							onTimeUpdate={handleTimeUpdate}
-							onPlay={() =>
-								setSongControls({
-									...(songControls ?? defaultSongControls),
-									isPlaying: true
-								})
-							}
-							onPause={() =>
-								setSongControls({
-									...(songControls ?? defaultSongControls),
-									isPlaying: false
-								})
-							}
-							onEnded={() =>
-								setSongControls({
-									...(songControls ?? defaultSongControls),
-									isPlaying: false
-								})
-							}
-						/>
-						<Hide below='sm'>
-							<Spacer />
-							<Flex gap='10px' alignItems='center'>
-								<Flex w='200px' gap='20px'>
-									<Slider
-										aria-label='volume'
-										colorScheme='gray'
-										defaultValue={(songControls?.volume ?? 100) * 100}
-										onChange={handleVolumeChange}
-										isDisabled={songControls?.isLoading}
-									>
-										<SliderTrack>
-											<SliderFilledTrack />
-										</SliderTrack>
-										<SliderThumb />
-									</Slider>
+									</Flex>
 									<IconButton
 										icon={
-											songControls?.isMuted ? (
-												<MdVolumeOff fontSize='24px' />
+											songControls?.isLooping ? (
+												<MdRepeatOn fontSize='24px' />
 											) : (
-												<MdVolumeUp fontSize='24px' />
+												<MdRepeat fontSize='24px' />
 											)
 										}
-										onClick={() =>
-											setSongControls({
-												...(songControls ?? defaultSongControls),
-												isMuted: !songControls?.isMuted
-											})
-										}
-										aria-label='Volume'
+										aria-label='Toggle Loop'
+										onClick={() => toggleLoop()}
+									/>
+									<IconButton
+										icon={<MdClose fontSize='24px' />}
+										aria-label='Close'
+										onClick={() => setCurrentSong(null)}
 									/>
 								</Flex>
-								<IconButton
-									icon={
-										songControls?.isLooping ? (
-											<MdRepeatOn fontSize='24px' />
-										) : (
-											<MdRepeat fontSize='24px' />
-										)
-									}
-									aria-label='Toggle Loop'
-									onClick={() => toggleLoop()}
-								/>
-								<IconButton
-									icon={<MdClose fontSize='24px' />}
-									aria-label='Close'
-									onClick={() => setCurrentSong(null)}
-								/>
-							</Flex>
-						</Hide>
+							</Hide>
+						</Flex>
 					</Flex>
 				</Box>
 			)}

@@ -1,6 +1,6 @@
 'use server';
 
-import YTMusic, { SongDetailed } from 'ytmusic-api';
+import YTMusic, { type SongDetailed } from 'ytmusic-api';
 import type { Song } from '../../types/Song';
 
 export default async function searchSongs(query: string) {

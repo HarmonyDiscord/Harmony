@@ -40,7 +40,7 @@ export default function AppWrapper({ children }: Readonly<{ children: any }>) {
 						backgroundPosition='center center'
 						color='#FFFFFF'
 					>
-						<Box h='100%' w='100%' overflow='auto' style={{ scrollbarGutter: 'stable' }} bg='#00000010'>
+						<Box h='100%' w='100%' style={{ scrollbarGutter: 'stable' }} bg='#00000010'>
 							{isLoading ? (
 								<IndexLoadingScreen />
 							) : (

@@ -1,26 +1,65 @@
 import { Box, Flex, Heading, Hide, IconButton, Image, Spacer, Text } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
-import { useEffect, useState } from 'react';
-import { MdClose, MdLoop, MdPlayArrow, MdSkipNext, MdSkipPrevious, MdVolumeUp } from 'react-icons/md';
+import { useEffect, useRef, useState } from 'react';
+import { MdClose, MdLoop, MdPause, MdPlayArrow, MdSkipNext, MdSkipPrevious, MdVolumeUp } from 'react-icons/md';
 import getSongURL from '../../app/actions/getSongURL';
 import { currentSongAtom } from '../../atoms/CurrentSongAtom';
+import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
 
 export default function Controls() {
 	const [currentSong, setCurrentSong] = useAtom(currentSongAtom);
+	const [songControls, setSongControls] = useAtom(songControlsAtom);
 	const [songURL, setSongURL] = useState<string | undefined>(undefined);
+	const audioRef = useRef<HTMLAudioElement | null>(null);
 
 	useEffect(() => {
 		async function setup() {
 			if (!currentSong) return null;
 
+			setSongControls({
+				...(songControls ?? defaultSongControls),
+				isPlaying: false,
+				isLoading: true
+			});
+
 			const url = await getSongURL(currentSong.id);
 
 			setSongURL(url);
+
+			setSongControls({
+				...(songControls ?? defaultSongControls),
+				isPlaying: true,
+				isLoading: false
+			});
 		}
 
 		setup();
 	}, [currentSong]);
+
+	const audio = audioRef.current;
+
+	useEffect(() => {
+		if (!audio) return;
+
+		if (songControls?.isPlaying) audio.play().catch(() => null);
+		else audio.pause();
+
+		if (songControls?.volume) audio.volume = songControls.volume;
+	}, [songControls]);
+	/*
+	const handleTimeUpdate = () => {
+		setCurrentTime(audioRef.current.currentTime);
+	};
+
+	const handleLoadedMetadata = () => {
+		setDuration(audioRef.current.duration);
+	};
+
+	const handleSeekChange = (e) => {
+		audioRef.current.currentTime = e.target.value;
+		setCurrentTime(e.target.value);
+	};*/
 
 	return (
 		<AnimatePresence mode='popLayout'>
@@ -76,20 +115,39 @@ export default function Controls() {
 						<Flex gap='10px' w='100%' position={['relative', 'relative', 'absolute']}>
 							<Spacer />
 							<IconButton icon={<MdSkipPrevious fontSize='24px' />} aria-label='Previous' />
-							<IconButton icon={<MdPlayArrow fontSize='24px' />} aria-label='Play' />
+							<IconButton
+								icon={
+									songControls?.isPlaying ? (
+										<MdPause fontSize='24px' />
+									) : (
+										<MdPlayArrow fontSize='24px' />
+									)
+								}
+								isLoading={songControls?.isLoading}
+								onClick={() =>
+									setSongControls({
+										...(songControls ?? defaultSongControls),
+										isPlaying: !songControls?.isPlaying
+									})
+								}
+								aria-label='Play'
+							/>
 							<IconButton icon={<MdSkipNext fontSize='24px' />} aria-label='Next' />
 							<Spacer />
 						</Flex>
-						{songURL && (
-							<audio autoPlay key={songURL}>
-								<source src={songURL} type='audio/mpeg' />
-							</audio>
-						)}
+						<audio
+							key='current-song'
+							autoPlay
+							ref={audioRef}
+							src={songURL}
+							/*	onTimeUpdate={handleTimeUpdate}
+							onLoadedMetadata={handleLoadedMetadata}*/
+						/>
 						<Hide below='sm'>
 							<Spacer />
 							<Flex gap='10px'>
-								<IconButton icon={<MdVolumeUp fontSize='24px' />} aria-label='Previous' />
-								<IconButton icon={<MdLoop fontSize='24px' />} aria-label='Play' />
+								<IconButton icon={<MdVolumeUp fontSize='24px' />} aria-label='Volume' />
+								<IconButton icon={<MdLoop fontSize='24px' />} aria-label='Loop' />
 								<IconButton
 									icon={<MdClose fontSize='24px' />}
 									aria-label='Close'

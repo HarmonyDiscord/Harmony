@@ -62,6 +62,23 @@ export default memo(function Controls() {
 				isPlaying: true,
 				isLoading: false
 			});
+
+			if ('mediaSession' in navigator) {
+				navigator.mediaSession.metadata = new MediaMetadata({
+					title: currentSong.title,
+					artist: currentSong.artist,
+					album: currentSong.album,
+					artwork: currentSong.cover
+						? [
+								{
+									src: currentSong.cover,
+									sizes: '250x250',
+									type: 'image/png'
+								}
+							]
+						: []
+				});
+			}
 		}
 
 		setup();

@@ -4,12 +4,12 @@ import { useAtom } from 'jotai';
 import Image from 'next/image';
 import { useState } from 'react';
 import { MdPauseCircle, MdPlayCircle } from 'react-icons/md';
+import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { currentSongAtom } from '../../atoms/CurrentSongAtom';
 import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
 import { useDebounce } from '../../hooks/useDebounce';
 import type { Song } from '../../types/Song';
 import formatDuration from '../../util/formatDuration';
-import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 
 export default function SongCard(song: Readonly<Song>) {
 	const [isHovering, setIsHovering] = useState(false);

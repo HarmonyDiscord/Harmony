@@ -28,7 +28,6 @@ import {
 	MdVolumeUp
 } from 'react-icons/md';
 import { BarLoader } from 'react-spinners';
-import getSongURL from '../../app/actions/getSongURL';
 import { currentSongAtom } from '../../atoms/CurrentSongAtom';
 import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
 import formatDuration from '../../util/formatDuration';
@@ -53,15 +52,9 @@ export default memo(function Controls() {
 				isLoading: true
 			});
 
-			const url = await getSongURL(currentSong.id);
+			const url = `/api/song/download?id=${encodeURIComponent(currentSong.id)}`;
 
 			setSongURL(url);
-
-			setSongControls({
-				...(songControls ?? defaultSongControls),
-				isPlaying: true,
-				isLoading: false
-			});
 
 			if ('mediaSession' in navigator) {
 				navigator.mediaSession.metadata = new MediaMetadata({
@@ -283,6 +276,12 @@ export default memo(function Controls() {
 										isPlaying: false
 									})
 								}
+								onCanPlayThrough={() => {
+									setSongControls({
+										...(songControls ?? defaultSongControls),
+										isLoading: false
+									});
+								}}
 							/>
 							<Hide below='sm'>
 								<Spacer />

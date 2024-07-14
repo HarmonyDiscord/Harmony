@@ -1,5 +1,6 @@
 import {
 	Box,
+	Center,
 	Flex,
 	Heading,
 	Hide,
@@ -26,6 +27,7 @@ import {
 	MdVolumeOff,
 	MdVolumeUp
 } from 'react-icons/md';
+import { BarLoader } from 'react-spinners';
 import getSongURL from '../../app/actions/getSongURL';
 import { currentSongAtom } from '../../atoms/CurrentSongAtom';
 import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
@@ -107,12 +109,29 @@ export default function Controls() {
 					animate={{ y: 0, opacity: 1 }}
 					exit={{ y: 10, opacity: 0 }}
 				>
-					<Slider aria-label='track' colorScheme='pink' value={progress} onChange={handleProgressChange}>
-						<SliderTrack>
-							<SliderFilledTrack />
-						</SliderTrack>
-						<SliderThumb />
-					</Slider>
+					<Center my='5px' height='16px'>
+						{!songControls?.isLoading ? (
+							<Slider
+								aria-label='track'
+								colorScheme='pink'
+								value={progress}
+								onChange={handleProgressChange}
+							>
+								<SliderTrack>
+									<SliderFilledTrack />
+								</SliderTrack>
+								<SliderThumb />
+							</Slider>
+						) : (
+							<BarLoader
+								color='#FFFFFF'
+								loading={true}
+								width='100%'
+								cssOverride={{ borderRadius: '10px', display: 'block' }}
+								aria-label='Loading'
+							/>
+						)}
+					</Center>
 					<Flex
 						w='100%'
 						bg='#FFFFFF10'

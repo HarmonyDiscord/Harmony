@@ -3,17 +3,21 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
 import { useState } from 'react';
-import { MdPlayCircle } from 'react-icons/md';
+import { MdPause, MdPlayCircle } from 'react-icons/md';
 import { currentSongAtom } from '../../atoms/CurrentSongAtom';
 import { useDebounce } from '../../hooks/useDebounce';
 import type { Song } from '../../types/Song';
+import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
 
 export default function SongCard(song: Readonly<Song>) {
 	const [isHovering, setIsHovering] = useState(false);
 	const debouncedIsHovering = useDebounce(isHovering, 100);
-	const [_currentSong, setCurrentSong] = useAtom(currentSongAtom);
+	const [currentSong, setCurrentSong] = useAtom(currentSongAtom);
+	const [songControls, setSongControls] = useAtom(songControlsAtom);
 
-	const { title, album, artist, cover, duration } = song;
+	const { id, title, album, artist, cover, duration } = song;
+
+	const isCurrentSong = currentSong?.id === id;
 
 	return (
 		<Card
@@ -29,7 +33,13 @@ export default function SongCard(song: Readonly<Song>) {
 			p='0px'
 			onMouseEnter={() => setIsHovering(true)}
 			onMouseLeave={() => setIsHovering(false)}
-			onClick={() => setCurrentSong(song)}
+			onClick={() => {
+				if (songControls?.isPlaying && isCurrentSong)
+					return setSongControls({ ...(songControls ?? defaultSongControls), isPlaying: false });
+
+				setSongControls({ ...(songControls ?? defaultSongControls), isPlaying: true });
+				setCurrentSong(song);
+			}}
 		>
 			{cover && (
 				<Image
@@ -89,7 +99,11 @@ export default function SongCard(song: Readonly<Song>) {
 								animate={{ y: 0, opacity: 1 }}
 								exit={{ y: 10, opacity: 0 }}
 							>
-								<MdPlayCircle fontSize='60px' />
+								{songControls?.isPlaying && isCurrentSong ? (
+									<MdPause fontSize='60px' />
+								) : (
+									<MdPlayCircle fontSize='60px' />
+								)}
 							</Center>
 						)}
 					</AnimatePresence>
@@ -121,7 +135,7 @@ export default function SongCard(song: Readonly<Song>) {
 								animate={{ y: 0, opacity: 1 }}
 								exit={{ y: 10, opacity: 0 }}
 							>
-								Play - {duration}
+								{isCurrentSong ? 'Now playing' : 'Play'} - {duration}
 							</Heading>
 						)}
 					</AnimatePresence>

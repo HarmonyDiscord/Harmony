@@ -1,4 +1,17 @@
-import { Box, Flex, Heading, Hide, IconButton, Image, Spacer, Text } from '@chakra-ui/react';
+import {
+	Box,
+	Flex,
+	Heading,
+	Hide,
+	IconButton,
+	Image,
+	Slider,
+	SliderFilledTrack,
+	SliderThumb,
+	SliderTrack,
+	Spacer,
+	Text
+} from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
@@ -47,19 +60,12 @@ export default function Controls() {
 
 		if (songControls?.volume) audio.volume = songControls.volume;
 	}, [songControls]);
-	/*
+
 	const handleTimeUpdate = () => {
-		setCurrentTime(audioRef.current.currentTime);
-	};
+		if (!audio) return;
 
-	const handleLoadedMetadata = () => {
-		setDuration(audioRef.current.duration);
+		const value = (audio.currentTime / audio.duration) * 100;
 	};
-
-	const handleSeekChange = (e) => {
-		audioRef.current.currentTime = e.target.value;
-		setCurrentTime(e.target.value);
-	};*/
 
 	return (
 		<AnimatePresence mode='popLayout'>
@@ -73,6 +79,12 @@ export default function Controls() {
 					animate={{ y: 0, opacity: 1 }}
 					exit={{ y: 10, opacity: 0 }}
 				>
+					<Slider aria-label='track' colorScheme='pink' defaultValue={0} ref={sliderRef}>
+						<SliderTrack>
+							<SliderFilledTrack />
+						</SliderTrack>
+						<SliderThumb />
+					</Slider>
 					<Flex
 						w='100%'
 						bg='#FFFFFF10'
@@ -140,8 +152,7 @@ export default function Controls() {
 							autoPlay
 							ref={audioRef}
 							src={songURL}
-							/*	onTimeUpdate={handleTimeUpdate}
-							onLoadedMetadata={handleLoadedMetadata}*/
+							onTimeUpdate={handleTimeUpdate}
 						/>
 						<Hide below='sm'>
 							<Spacer />

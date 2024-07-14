@@ -54,7 +54,7 @@ export default function IndexScreen() {
 			<Navbar searchInput={searchInput} setSearchInput={setSearchInput} />
 			{isSearchLoading ? (
 				<Center w='100%' h='100%'>
-					<Spinner size='xl' />
+					<Spinner size='xl' thickness='4px' />
 				</Center>
 			) : gridItems && gridItems.length > 0 ? (
 				<SimpleGrid w='100%' p='20px' minChildWidth='250px' gap='20px' overflowY='auto'>

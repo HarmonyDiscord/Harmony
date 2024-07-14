@@ -29,6 +29,7 @@ import {
 } from 'react-icons/md';
 import { BarLoader } from 'react-spinners';
 import { currentSongAtom } from '../../atoms/CurrentSongAtom';
+import { filterFormats, getInfo } from 'ytdl-core';
 import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
 import formatDuration from '../../util/formatDuration';
 
@@ -52,7 +53,11 @@ export default memo(function Controls() {
 				isLoading: true
 			});
 
-			const url = `/api/song/download?id=${encodeURIComponent(currentSong.id)}`;
+			const info = await getInfo(`http://www.youtube.com/watch?v=${currentSong.id}`);
+
+			const audioFormats = filterFormats(info.formats, 'audioonly');
+
+			const url = audioFormats[0]?.url;
 
 			setSongURL(url);
 

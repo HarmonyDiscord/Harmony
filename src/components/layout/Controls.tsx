@@ -5,7 +5,6 @@ import {
 	Heading,
 	Hide,
 	IconButton,
-	Image,
 	Slider,
 	SliderFilledTrack,
 	SliderThumb,
@@ -13,8 +12,10 @@ import {
 	Spacer,
 	Text
 } from '@chakra-ui/react';
+import axios from 'axios';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
+import Image from 'next/image';
 import { memo, useEffect, useRef, useState } from 'react';
 import {
 	MdClose,
@@ -31,7 +32,6 @@ import { BarLoader } from 'react-spinners';
 import { currentSongAtom } from '../../atoms/CurrentSongAtom';
 import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
 import formatDuration from '../../util/formatDuration';
-import axios from 'axios';
 
 export default memo(function Controls() {
 	const [currentSong, setCurrentSong] = useAtom(currentSongAtom);
@@ -210,9 +210,9 @@ export default memo(function Controls() {
 									exit={{ y: 10, opacity: 0 }}
 								>
 									<Image
-										width='48px'
-										height='48px'
-										src={currentSong.cover}
+										width={48}
+										height={48}
+										src={currentSong.cover ?? ''}
 										alt='Song icon'
 										objectFit='cover'
 										style={{

@@ -1,10 +1,10 @@
 import { DiscordSDK } from '@discord/embedded-app-sdk';
+import axios from 'axios';
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
 import { feedAtom } from '../../atoms/FeedAtom';
 import { loadingAtom } from '../../atoms/LoadingAtom';
 import { userAtom } from '../../atoms/UserAtom';
-import axios from 'axios';
 
 const clientId = process.env['NEXT_PUBLIC_DISCORD_CLIENT_ID'] ?? '';
 

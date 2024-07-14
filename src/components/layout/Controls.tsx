@@ -37,6 +37,7 @@ export default function Controls() {
 	const [songURL, setSongURL] = useState<string | undefined>(undefined);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const [progress, setProgress] = useState(0);
+	const [volume, setVolume] = useState(songControls ? (songControls.volume * 100 ?? defaultSongControls.volume * 100) : defaultSongControls.volume * 100);
 
 	useEffect(() => {
 		async function setup() {
@@ -98,6 +99,8 @@ export default function Controls() {
 	};
 
 	const handleVolumeChange = (value: number) => {
+		setSongControls({ ...(songControls ?? defaultSongControls), isMuted: false });
+		setVolume(value);
 		setSongControls({
 			...(songControls ?? defaultSongControls),
 			volume: value / 100
@@ -229,6 +232,7 @@ export default function Controls() {
 										colorScheme='pink'
 										defaultValue={(songControls?.volume ?? 100) * 100}
 										onChange={handleVolumeChange}
+										value={songControls?.isMuted ? 0 : volume}
 										isDisabled={songControls?.isLoading}
 									>
 										<SliderTrack>

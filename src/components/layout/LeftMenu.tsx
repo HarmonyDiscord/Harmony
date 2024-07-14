@@ -1,21 +1,24 @@
 import {
-	Tabs,
-	Text,
-	TabList,
+	Box,
+	Center,
+	CloseButton,
+	Flex,
+	Spacer,
+	Spinner,
 	Tab,
 	TabIndicator,
-	TabPanels,
+	TabList,
 	TabPanel,
-	Box,
-	Flex,
-	Spinner,
-	Center
+	TabPanels,
+	Tabs,
+	Text
 } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { memo, useEffect, useState } from 'react';
+import getSongLyrics from '../../app/actions/getSongLyrics';
 import { currentSongAtom } from '../../atoms/CurrentSongAtom';
-import getSongLyrics from 'src/app/actions/getSongLyrics';
+import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
 
 const Lyrics = memo(function Lyrics({ songId }: Readonly<{ songId?: string }>) {
 	const [lyrics, setLyrics] = useState<null | string[]>(null);
@@ -49,17 +52,18 @@ const Lyrics = memo(function Lyrics({ songId }: Readonly<{ songId?: string }>) {
 
 export default memo(function LeftMenu() {
 	const [currentSong] = useAtom(currentSongAtom);
+	const [songControls, setSongControls] = useAtom(songControlsAtom);
 
 	return (
 		<AnimatePresence mode='popLayout'>
-			{currentSong && (
+			{currentSong && !songControls?.isSidePanelClosed && (
 				<Box
 					as={motion.div}
 					p='20px'
 					pl='10px'
 					h='100%'
-					w='500px'
-					minW='500px'
+					w={['100%', '100%', '500px']}
+					minW={['100%', '100%', '500px']}
 					initial={{ x: 10, opacity: 0 }}
 					animate={{ x: 0, opacity: 1 }}
 					exit={{ x: 10, opacity: 0 }}
@@ -78,10 +82,19 @@ export default memo(function LeftMenu() {
 						alignItems='center'
 						backdropFilter='blur(5px)'
 					>
-						<TabList>
+						<TabList w='100%'>
 							<Tab>Playlist</Tab>
 							<Tab>Lyrics</Tab>
 							<Tab>Related</Tab>
+							<Spacer />
+							<CloseButton
+								onClick={() =>
+									setSongControls({
+										...(songControls ?? defaultSongControls),
+										isSidePanelClosed: true
+									})
+								}
+							/>
 						</TabList>
 						<TabIndicator mt='2px' px='2px' height='2px' bg='white' borderRadius='1px' />
 						<TabPanels h='100%' w='100%'>

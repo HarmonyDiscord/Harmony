@@ -4,4 +4,5 @@ export type SongControls = {
 	isPlaying: boolean;
 	isLooping: boolean;
 	isLoading: boolean;
+	isSidePanelClosed: boolean;
 };

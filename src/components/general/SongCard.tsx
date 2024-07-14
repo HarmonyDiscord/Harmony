@@ -34,8 +34,11 @@ export default function SongCard(song: Readonly<Song>) {
 			onMouseEnter={() => setIsHovering(true)}
 			onMouseLeave={() => setIsHovering(false)}
 			onClick={() => {
-				if (songControls?.isPlaying && isCurrentSong)
-					return setSongControls({ ...(songControls ?? defaultSongControls), isPlaying: false });
+				if (isCurrentSong)
+					return setSongControls({
+						...(songControls ?? defaultSongControls),
+						isPlaying: !songControls?.isPlaying
+					});
 
 				setCurrentSong(song);
 			}}

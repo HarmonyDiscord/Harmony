@@ -22,7 +22,6 @@ import {
 	MdPlayArrow,
 	MdSkipNext,
 	MdSkipPrevious,
-	MdVolumeMute,
 	MdVolumeOff,
 	MdVolumeUp
 } from 'react-icons/md';
@@ -40,6 +39,8 @@ export default function Controls() {
 	useEffect(() => {
 		async function setup() {
 			if (!currentSong) return null;
+
+			setProgress(0);
 
 			setSongControls({
 				...(songControls ?? defaultSongControls),
@@ -75,17 +76,23 @@ export default function Controls() {
 
 	const handleTimeUpdate = () => {
 		if (!audio) return;
+		if (songControls?.isLoading) return;
 
 		const value = (audio.currentTime / audio.duration) * 100;
-		setProgress(value);
+
+		if (!isNaN(value)) setProgress(value);
 	};
 
 	const handleProgressChange = (value: number) => {
 		if (!audio) return;
 
 		const newTime = (value / 100) * audio.duration;
-		audio.currentTime = newTime;
-		setProgress(value);
+
+		if (!isNaN(newTime)) {
+			audio.currentTime = newTime;
+
+			setProgress(value);
+		}
 	};
 
 	const handleVolumeChange = (value: number) => {
@@ -181,6 +188,18 @@ export default function Controls() {
 							ref={audioRef}
 							src={songURL}
 							onTimeUpdate={handleTimeUpdate}
+							onPlay={() =>
+								setSongControls({
+									...(songControls ?? defaultSongControls),
+									isPlaying: true
+								})
+							}
+							onPause={() =>
+								setSongControls({
+									...(songControls ?? defaultSongControls),
+									isPlaying: false
+								})
+							}
 						/>
 						<Hide below='sm'>
 							<Spacer />
@@ -191,6 +210,7 @@ export default function Controls() {
 										colorScheme='pink'
 										defaultValue={(songControls?.volume ?? 100) * 100}
 										onChange={handleVolumeChange}
+										isDisabled={songControls?.isLoading}
 									>
 										<SliderTrack>
 											<SliderFilledTrack />

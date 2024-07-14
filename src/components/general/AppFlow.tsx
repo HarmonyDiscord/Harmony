@@ -30,8 +30,6 @@ export default function AppFlow({
 
 		setFeed(results);
 
-		console.log(results);
-
 		if (discordSDK) {
 			await discordSDK.ready();
 

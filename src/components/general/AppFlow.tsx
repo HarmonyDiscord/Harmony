@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { feedAtom } from '../../atoms/FeedAtom';
 import { loadingAtom } from '../../atoms/LoadingAtom';
 import { userAtom } from '../../atoms/UserAtom';
+import { defaultDiscordActivityStatus, discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 
 const clientId = process.env['NEXT_PUBLIC_DISCORD_CLIENT_ID'] ?? '';
 
@@ -19,6 +20,7 @@ export default function AppFlow({
 }: Readonly<{
 	children: any;
 }>) {
+	const [discordActivityStatus, setDiscordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [_isLoading, setIsLoading] = useAtom(loadingAtom);
 	const [_user, setUser] = useAtom(userAtom);
 	const [_feed, setFeed] = useAtom(feedAtom);
@@ -34,6 +36,11 @@ export default function AppFlow({
 		setFeed(results);
 
 		if (discordSDK) {
+			setDiscordActivityStatus({
+				...(discordActivityStatus ?? defaultDiscordActivityStatus),
+				isActivity: true
+			});
+
 			await discordSDK.ready();
 
 			const { code } = await discordSDK.commands.authorize({

@@ -34,9 +34,11 @@ import { currentSongAtom } from '../../atoms/CurrentSongAtom';
 import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
 import formatDuration from '../../util/formatDuration';
 import { type CobaltResponse } from '../../types/Cobalt';
+import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 
 export default memo(function Controls() {
 	const [currentSong, setCurrentSong] = useAtom(currentSongAtom);
+	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [songControls, setSongControls] = useAtom(songControlsAtom);
 	const [songURL, setSongURL] = useState<string | undefined>(undefined);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -46,7 +48,7 @@ export default memo(function Controls() {
 	useEffect(() => {
 		async function getSongUrl(songId: string) {
 			const { data } = await axios.post<CobaltResponse>(
-				'https://api.cobalt.tools/api/json',
+				discordActivityStatus?.isActivity ? '/api/json' : 'https://api.cobalt.tools/api/json',
 				{
 					url: 'https://youtube.com/watch?v=' + songId,
 					aFormat: 'mp3'
@@ -59,7 +61,15 @@ export default memo(function Controls() {
 				}
 			);
 
-			return data.audio || data.url || '';
+			const url = discordActivityStatus?.isActivity
+				? data.url
+						?.replace('https://kityune.imput.net/api/stream', '/kityune/stream')
+						.replace('https://olly.imput.net/api/stream', '/olly/stream')
+				: data.url;
+
+			console.log('got url', url);
+
+			return url;
 		}
 
 		async function setup() {

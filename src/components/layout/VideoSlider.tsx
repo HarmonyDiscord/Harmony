@@ -10,7 +10,7 @@ import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { type CobaltResponse } from '../../types/Cobalt';
 import axios from 'axios';
 
-export default function VideoSlider({ songURL, setSongURL }: { songURL?: string; setSongURL: any }) {
+export default function MediaSlider({ songURL, setSongURL }: { songURL?: string; setSongURL: any }) {
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [currentMedia] = useAtom(currentMediaAtom);
 	const [progress, setProgress] = useState(0);

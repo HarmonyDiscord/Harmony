@@ -91,13 +91,13 @@ export default memo(function Controls() {
 
 			if ('mediaSession' in navigator) {
 				navigator.mediaSession.metadata = new MediaMetadata({
-					title: currentMedia.title,
-					artist: currentMedia.artist,
-					album: currentMedia.album,
-					artwork: currentMedia.cover
+					title: currentMedia.name,
+					artist: currentMedia.artist.name,
+					album: currentMedia.album?.name,
+					artwork: currentMedia.thumbnail
 						? [
 								{
-									src: currentMedia.cover,
+									src: currentMedia.thumbnail,
 									sizes: '250x250',
 									type: 'image/png'
 								}
@@ -241,7 +241,7 @@ export default memo(function Controls() {
 									<Image
 										width={48}
 										height={48}
-										src={currentMedia.cover ?? ''}
+										src={currentMedia.thumbnail ?? ''}
 										alt='Media icon'
 										objectFit='cover'
 										style={{
@@ -249,9 +249,9 @@ export default memo(function Controls() {
 										}}
 									/>
 									<Flex gap='4px' direction='column'>
-										<Heading size='md'>{currentMedia.title}</Heading>
+										<Heading size='md'>{currentMedia.name}</Heading>
 										<Text>
-											{currentMedia.album} – {currentMedia.artist}
+											{currentMedia.album?.name} – {currentMedia.artist.name}
 										</Text>
 									</Flex>
 								</Flex>

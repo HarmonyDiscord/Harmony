@@ -18,7 +18,7 @@ export default function MediaCard(media: Readonly<Media>) {
 	const [_currentPlaylist, setCurrentPlaylist] = useAtom(currentPlaylistAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 
-	const { id, title, album, artist, cover, duration } = media;
+	const { id, name, album, artist, thumbnail, duration } = media;
 
 	const isCurrentMedia = currentMedia?.id === id;
 
@@ -47,9 +47,9 @@ export default function MediaCard(media: Readonly<Media>) {
 				setCurrentPlaylist([media]);
 			}}
 		>
-			{cover && (
+			{thumbnail && (
 				<Image
-					src={cover}
+					src={thumbnail}
 					alt=' '
 					width={250}
 					height={200}
@@ -91,7 +91,7 @@ export default function MediaCard(media: Readonly<Media>) {
 								animate={{ y: 0, opacity: 1 }}
 								exit={{ y: -10, opacity: 0 }}
 							>
-								{title}
+								{name}
 							</Heading>
 						)}
 					</AnimatePresence>
@@ -118,7 +118,7 @@ export default function MediaCard(media: Readonly<Media>) {
 					<AnimatePresence mode='popLayout'>
 						{!debouncedIsHovering ? (
 							<Heading
-								key='media-title'
+								key='media-name'
 								size='md'
 								overflow='hidden'
 								whiteSpace='nowrap'
@@ -128,7 +128,7 @@ export default function MediaCard(media: Readonly<Media>) {
 								animate={{ y: 0, opacity: 1 }}
 								exit={{ y: -10, opacity: 0 }}
 							>
-								{title}
+								{name}
 							</Heading>
 						) : (
 							<Heading
@@ -154,11 +154,11 @@ export default function MediaCard(media: Readonly<Media>) {
 						exit={{ y: 10, opacity: 0 }}
 					>
 						<Text overflow='hidden' whiteSpace='nowrap' textOverflow='ellipsis'>
-							{album}
+							{album?.name}
 						</Text>
 						<Text>-</Text>
 						<Text whiteSpace='nowrap' textOverflow='ellipsis'>
-							{artist}
+							{artist.name}
 						</Text>
 					</Flex>
 				</Flex>

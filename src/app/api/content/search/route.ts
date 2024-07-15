@@ -41,10 +41,16 @@ function parseSearchResult(result: YtSearchResult): SearchResult {
 			return {
 				type: ContentType.Song,
 				id: result.videoId,
-				title: result.name,
-				artist: result.artist.name,
-				album: result.album?.name || 'unknown',
-				cover: result.thumbnails.at(0)?.url.replace('w60', 'w250').replace('h60', 'h250'),
+				name: result.name,
+				artist: {
+					id: result.artist.artistId,
+					name: result.artist.name,
+				},
+				album: result.album ? {
+					id: result.album?.albumId,
+					name: result.album?.name,
+				} : null,
+				thumbnail: result.thumbnails.at(0)?.url.replace('w60', 'w250').replace('h60', 'h250') ?? null,
 				duration: result.duration ?? 0
 			};
 
@@ -52,10 +58,28 @@ function parseSearchResult(result: YtSearchResult): SearchResult {
 			return {
 				type: ContentType.Video,
 				id: result.videoId,
-				title: result.name,
-				artist: result.artist.name,
-				cover: result.thumbnails.at(0)?.url.replace('w60', 'w250').replace('h60', 'h250'),
+				name: result.name,
+				artist: {
+					id: result.artist.artistId,
+					name: result.artist.name,
+				},
+				album: null,
+				thumbnail: result.thumbnails.at(0)?.url.replace('w60', 'w250').replace('h60', 'h250') ?? null,
 				duration: result.duration ?? 0
+			};
+
+		case 'ALBUM':
+			return {
+				type: ContentType.Album,
+				id: result.albumId,
+				name: result.name,
+				artist: {
+					id: result.artist.artistId,
+					name: result.artist.name,
+				},
+				thumbnail: result.thumbnails.at(0)?.url.replace('w60', 'w250').replace('h60', 'h250') ?? null,
+				playlistId: result.playlistId,
+				year: result.year
 			};
 
 		default:

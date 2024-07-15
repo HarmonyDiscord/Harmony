@@ -40,7 +40,7 @@ export default function IndexScreen() {
 			setIsSearchLoading(true);
 
 			const results = await axios
-				.get(`/api/media/search?q=${encodeURIComponent(debouncedSearchInput)}`)
+				.get(`/api/content/search?q=${encodeURIComponent(debouncedSearchInput)}`)
 				.then((res) => res.data)
 				.catch(() => null);
 
@@ -95,10 +95,10 @@ export default function IndexScreen() {
 												<MediaCard
 													id={result.id}
 													type={ContentType.Song}
-													title={result.title}
-													album={result.type == ContentType.Song ? result.album : undefined}
+													name={result.name}
+													album={result.type == ContentType.Song ? result.album : null}
 													artist={result.artist}
-													cover={result.cover}
+													thumbnail={result.thumbnail}
 													duration={result.duration}
 												/>
 											</SlideFade>

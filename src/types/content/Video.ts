@@ -3,9 +3,12 @@ import type { ContentType } from './ContentType';
 export type Video = {
 	type: ContentType.Video;
 	id: string;
-	title: string;
-	artist: string;
-	album?: string;
-	cover?: string;
+	name: string;
+	artist: {
+		id: string | null;
+		name: string;
+	};
+	album: null;
 	duration: number;
+	thumbnail: string | null;
 };

@@ -4,4 +4,4 @@ import type { Playlist } from './content/Playlist';
 import type { Song } from './content/Song';
 import type { Video } from './content/Video';
 
-export type SearchResult = Song | Video | Album | Artist | Playlist | null;
+export type SearchResult = Song | Video | Album | Artist | Playlist;

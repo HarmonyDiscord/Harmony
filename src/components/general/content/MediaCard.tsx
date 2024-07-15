@@ -4,12 +4,12 @@ import { useAtom } from 'jotai';
 import Image from 'next/image';
 import { useState } from 'react';
 import { MdPauseCircle, MdPlayCircle } from 'react-icons/md';
-import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
-import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
-import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControAtom';
-import { useDebounce } from '../../hooks/useDebounce';
-import type { Media } from '../../types/content/Media';
-import formatDuration from '../../util/formatDuration';
+import { currentMediaAtom } from '../../../atoms/CurrentMediaAtom';
+import { currentPlaylistAtom } from '../../../atoms/CurrentPlaylistAtom';
+import { defaultMediaControls, mediaControlsAtom } from '../../../atoms/MediaControlAtom';
+import { useDebounce } from '../../../hooks/useDebounce';
+import type { Media } from '../../../types/content/Media';
+import formatDuration from '../../../util/formatDuration';
 
 export default function MediaCard(media: Readonly<Media>) {
 	const [isHovering, setIsHovering] = useState(false);
@@ -64,6 +64,7 @@ export default function MediaCard(media: Readonly<Media>) {
 						objectFit: 'cover',
 						borderRadius: '10px'
 					}}
+					quality={100}
 				/>
 			)}
 			<CardBody

@@ -19,7 +19,7 @@ import { useAtom } from 'jotai';
 import { memo, useEffect, useState } from 'react';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
-import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControAtom';
+import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 
 const Playlist = memo(function Playlist() {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);

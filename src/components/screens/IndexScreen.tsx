@@ -1,28 +1,27 @@
 'use client';
 
-import { Center, Flex, Heading, SimpleGrid, SlideFade, Spacer, Spinner, useBreakpointValue } from '@chakra-ui/react';
+import { Center, Flex, Heading, Spacer, Spinner } from '@chakra-ui/react';
 import axios from 'axios';
 import { useAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
-import { ContentType } from 'src/types/content/ContentType';
-import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { feedAtom } from '../../atoms/FeedAtom';
-import { mediaControlsAtom } from '../../atoms/MediaControAtom';
 import { useDebounce } from '../../hooks/useDebounce';
 import type { SearchResult } from '../../types/SearchResult';
-import MediaCard from '../general/SongCard';
 import Controls from '../layout/Controls';
 import LeftMenu from '../layout/LeftMenu';
 import Navbar from '../layout/Navbar';
+import ContentList from '../layout/ContentList';
+import Feed from '../layout/Feed';
+import type { Media } from 'src/types/content/Media';
 
 export default function IndexScreen() {
 	const [feed] = useAtom(feedAtom);
 
 	const [searchInput, setSearchInput] = useState<string | null>(null);
 	const [searchResults, setSearchResults] = useState<SearchResult[] | null>(null);
+	const [searchResultsMedia, setSearchMediaResults] = useState<Media[] | null>(null);
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
-	const [mediaControls] = useAtom(mediaControlsAtom);
-	const [currentMedia] = useAtom(currentMediaAtom);
+
 	const searchCountRef = useRef(0);
 	const debouncedSearchInput = useDebounce(searchInput, 300);
 
@@ -30,6 +29,7 @@ export default function IndexScreen() {
 		const searchEffect = async () => {
 			if (!debouncedSearchInput) {
 				setSearchResults(null);
+				setSearchMediaResults(null);
 				setIsSearchLoading(false);
 
 				return;
@@ -39,16 +39,24 @@ export default function IndexScreen() {
 
 			setIsSearchLoading(true);
 
-			const results = await axios
-				.get(`/api/content/search?q=${encodeURIComponent(debouncedSearchInput)}`)
-				.then((res) => res.data)
-				.catch(() => null);
+			const [results, songs] = await Promise.all([
+				axios
+					.get(`/api/content/search?q=${encodeURIComponent(debouncedSearchInput)}`)
+					.then((res) => res.data)
+					.catch(() => null),
+				axios
+					.get(`/api/media/search?q=${encodeURIComponent(debouncedSearchInput)}`)
+					.then((res) => res.data)
+					.catch(() => null)
+			]);
 
 			if (currentSearchCount === searchCountRef.current) {
 				if (!results) {
 					setSearchResults(null);
+					setSearchMediaResults(null);
 				} else {
 					setSearchResults(results);
+					setSearchMediaResults(songs);
 				}
 
 				setIsSearchLoading(false);
@@ -58,9 +66,7 @@ export default function IndexScreen() {
 		searchEffect();
 	}, [debouncedSearchInput]);
 
-	const gridItems = searchResults || feed;
-
-	const isMd = useBreakpointValue([false, false, true]);
+	const content = searchResults || feed;
 
 	return (
 		<Flex w='100%' h='100%' direction='column' overflow='hidden'>
@@ -70,42 +76,14 @@ export default function IndexScreen() {
 					<Center w='100%' h='100%'>
 						<Spinner size='xl' thickness='4px' />
 					</Center>
-				) : gridItems && gridItems.length > 0 ? (
-					(!currentMedia || isMd || mediaControls?.isSidePanelClosed) && (
-						<SimpleGrid
-							w='100%'
-							h='fit-content'
-							maxH='100%'
-							p='20px'
-							style={{
-								mask: 'linear-gradient(to top, transparent 0%, #000000 5%, #000000 95%, transparent 100%)',
-								maskMode: 'alpha'
-							}}
-							minChildWidth='250px'
-							gap='20px'
-							overflowY='auto'
-							zIndex={1}
-						>
-							{gridItems.map((result, i) => {
-								switch (result?.type) {
-									case ContentType.Video:
-									case ContentType.Song:
-										return (
-											<SlideFade in delay={i * 0.02} key={result.id}>
-												<MediaCard
-													id={result.id}
-													type={ContentType.Song}
-													name={result.name}
-													album={result.type == ContentType.Song ? result.album : null}
-													artist={result.artist}
-													thumbnail={result.thumbnail}
-													duration={result.duration}
-												/>
-											</SlideFade>
-										);
-								}
-							})}
-						</SimpleGrid>
+				) : content && content.length > 0 ? (
+					searchResults || searchResultsMedia ? (
+						<Flex w='100%'>
+							{searchResultsMedia && <Feed items={searchResultsMedia} />}
+							{searchResults && <ContentList items={content} />}
+						</Flex>
+					) : (
+						feed && <Feed items={feed} />
 					)
 				) : (
 					<Center w='100%' h='100%'>

@@ -32,7 +32,7 @@ import {
 import { BarLoader } from 'react-spinners';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
-import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControAtom';
+import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import { type CobaltResponse } from '../../types/Cobalt';
 import formatDuration from '../../util/formatDuration';
 

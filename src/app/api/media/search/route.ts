@@ -25,7 +25,8 @@ export async function GET(req: Request) {
 			return Response.json([parseSearchResult(firstVideo)]);
 		}
 
-		const results = await ytmusic.search(query);
+		const results = await ytmusic.searchSongs(query);
+
 
 		return Response.json(results.map((result) => parseSearchResult(result)));
 	} catch (err) {

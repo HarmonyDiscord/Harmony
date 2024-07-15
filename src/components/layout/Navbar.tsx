@@ -16,7 +16,7 @@ import {
 import { useAtom } from 'jotai';
 import { MdMenu, MdMusicNote, MdSearch } from 'react-icons/md';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
-import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControAtom';
+import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import { userAtom } from '../../atoms/UserAtom';
 
 export default function Navbar({ searchInput, setSearchInput }: any) {

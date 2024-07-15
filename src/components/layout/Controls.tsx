@@ -31,7 +31,7 @@ import {
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
-import VideoSlider from './VideoSlider';
+import MediaSlider from './VideoSlider';
 
 export default memo(function Controls() {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
@@ -71,7 +71,7 @@ export default memo(function Controls() {
 					exit={{ y: 10, opacity: 0 }}
 				>
 					<Flex w='100%' h='100%' direction='column' gap='10px'>
-						<VideoSlider songURL={songURL} setSongURL={setSongURL} />
+						<MediaSlider songURL={songURL} setSongURL={setSongURL} />
 						<Flex
 							w='100%'
 							bg='#FFFFFF10'

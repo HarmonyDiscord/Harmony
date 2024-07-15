@@ -27,7 +27,7 @@ const Playlist = memo(function Playlist() {
 	return (
 		<Flex w='100%' h='100%' direction='column' overflowY='auto' gap='10px'>
 			{currentPlaylist.map((media) => (
-				<Flex key={media.id}>{media.title}</Flex>
+				<Flex key={media.id}>{media.name}</Flex>
 			))}
 		</Flex>
 	);

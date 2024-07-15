@@ -44,12 +44,14 @@ function parseSearchResult(result: YtSearchResult): SearchResult {
 				name: result.name,
 				artist: {
 					id: result.artist.artistId,
-					name: result.artist.name,
+					name: result.artist.name
 				},
-				album: result.album ? {
-					id: result.album?.albumId,
-					name: result.album?.name,
-				} : null,
+				album: result.album
+					? {
+							id: result.album?.albumId,
+							name: result.album?.name
+						}
+					: null,
 				thumbnail: result.thumbnails.at(0)?.url.replace('w60', 'w250').replace('h60', 'h250') ?? null,
 				duration: result.duration ?? 0
 			};
@@ -61,7 +63,7 @@ function parseSearchResult(result: YtSearchResult): SearchResult {
 				name: result.name,
 				artist: {
 					id: result.artist.artistId,
-					name: result.artist.name,
+					name: result.artist.name
 				},
 				album: null,
 				thumbnail: result.thumbnails.at(0)?.url.replace('w60', 'w250').replace('h60', 'h250') ?? null,
@@ -75,11 +77,31 @@ function parseSearchResult(result: YtSearchResult): SearchResult {
 				name: result.name,
 				artist: {
 					id: result.artist.artistId,
-					name: result.artist.name,
+					name: result.artist.name
 				},
 				thumbnail: result.thumbnails.at(0)?.url.replace('w60', 'w250').replace('h60', 'h250') ?? null,
 				playlistId: result.playlistId,
 				year: result.year
+			};
+
+		case 'ARTIST':
+			return {
+				type: ContentType.Artist,
+				id: result.artistId,
+				name: result.name,
+				thumbnail: result.thumbnails.at(0)?.url.replace('w60', 'w250').replace('h60', 'h250') ?? null
+			};
+
+		case 'PLAYLIST':
+			return {
+				type: ContentType.Playlist,
+				id: result.playlistId,
+				name: result.name,
+				artist: {
+					id: result.artist.artistId,
+					name: result.artist.name
+				},
+				thumbnail: result.thumbnails.at(0)?.url.replace('w60', 'w250').replace('h60', 'h250') ?? null
 			};
 
 		default:

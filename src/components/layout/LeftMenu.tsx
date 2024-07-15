@@ -18,6 +18,7 @@ import axios from 'axios';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { memo, useEffect, useState } from 'react';
+import { MdContentCopy } from 'react-icons/md';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
@@ -90,9 +91,26 @@ const Lyrics = memo(function Lyrics({ mediaId }: Readonly<{ mediaId?: string }>)
 					<Spinner size='xl' />
 				</Center>
 			) : (
-				lyrics?.map((l, i) => <Text key={i + '-' + l}>{l}</Text>) ?? (
-					<Text>This song does not have lyrics.</Text>
-				)
+				lyrics?.map((l, i) => (
+					<Flex
+						as={motion.div}
+						initial={{
+							backgroundColor: '#FFFFFF00'
+						}}
+						whileHover={{
+							backgroundColor: '#FFFFFF10'
+						}}
+						borderRadius='2px'
+						key={i + '-' + l}
+						w='fit-content'
+						maxW='100%'
+						gap='10px'
+						alignItems='center'
+					>
+						<Text>{l}</Text>
+						<MdContentCopy />
+					</Flex>
+				)) ?? <Text>This song does not have lyrics.</Text>
 			)}
 		</Flex>
 	);

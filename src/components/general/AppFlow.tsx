@@ -36,6 +36,15 @@ export default function AppFlow({
 		setFeed(results);
 
 		if (discordSDK) {
+			console.log('sdk suscribe');
+			discordSDK.subscribe('ACTIVITY_LAYOUT_MODE_UPDATE', ({ layout_mode }) => {
+				console.log('sdk update', layout_mode);
+				setDiscordActivityStatus({
+					...(discordActivityStatus ?? defaultDiscordActivityStatus),
+					isOverlay: layout_mode === 0
+				});
+			});
+
 			setDiscordActivityStatus({
 				...(discordActivityStatus ?? defaultDiscordActivityStatus),
 				isActivity: true

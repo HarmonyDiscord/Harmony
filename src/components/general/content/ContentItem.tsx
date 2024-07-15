@@ -1,13 +1,13 @@
 import { Center, Flex, Heading, IconButton, Spacer, Text } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useAtom } from 'jotai';
 import Image from 'next/image';
 import { useState } from 'react';
 import { MdPlayCircle, MdPlaylistAdd, MdPlaylistAddCheck } from 'react-icons/md';
+import { currentPlaylistAtom } from '../../../atoms/CurrentPlaylistAtom';
 import type { SearchResult } from '../../../types/SearchResult';
 import { ContentType } from '../../../types/content/ContentType';
 import formatDuration from '../../../util/formatDuration';
-import { useAtom } from 'jotai';
-import { currentPlaylistAtom } from '../../../atoms/CurrentPlaylistAtom';
 
 export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) {
 	const [isHovering, setIsHovering] = useState(false);

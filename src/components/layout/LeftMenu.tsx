@@ -76,6 +76,7 @@ const Lyrics = memo(function Lyrics({ mediaId }: Readonly<{ mediaId?: string }>)
 			w='100%'
 			h='100%'
 			pr='10px'
+			py='10px'
 			direction='column'
 			overflowY='auto'
 			userSelect='text'
@@ -83,7 +84,6 @@ const Lyrics = memo(function Lyrics({ mediaId }: Readonly<{ mediaId?: string }>)
 				mask: 'linear-gradient(to top, transparent 0%, #000000 5%, #000000 95%, transparent 100%)',
 				maskMode: 'alpha'
 			}}
-			py='10px'
 		>
 			{isLoading ? (
 				<Center w='100%' h='100%'>
@@ -123,8 +123,8 @@ const Related = memo(function Related({ query }: Readonly<{ query?: string }>) {
 		<Box
 			w='100%'
 			h='100%'
-			py='0px'
 			pr='10px'
+			py='10px'
 			overflowY='auto'
 			style={{
 				mask: 'linear-gradient(to top, transparent 0%, #000000 5%, #000000 95%, transparent 100%)',

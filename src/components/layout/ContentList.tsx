@@ -19,7 +19,7 @@ export default function ContentList({ items }: { items: SearchResult[] }) {
 			<Flex direction='column' w='100%' h='fit-content' maxH='100%' gap='0px'>
 				{entries.map(([type, results], i) => (
 					<SlideFade in delay={i * 0.05} key={'results-' + type + i}>
-						<Flex direction='column' w='100%' h='fit-content' gap='10px' py='20px'>
+						<Flex direction='column' w='100%' h='fit-content' gap='10px' pb='20px'>
 							<Heading size='md'>
 								{(type as any as ContentType) == ContentType.Song
 									? 'Featured'

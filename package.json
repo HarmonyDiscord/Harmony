@@ -24,7 +24,6 @@
 		"@emotion/react": "^11.11.4",
 		"@emotion/styled": "^11.11.5",
 		"@fontsource/hanken-grotesk": "^5.0.20",
-		"@googleapis/youtube": "^19.0.0",
 		"axios": "^1.7.2",
 		"bufferutil": "^4.0.8",
 		"framer-motion": "11.0.10",
@@ -49,10 +48,6 @@
 		"typescript": "5.5.3"
 	},
 	"trustedDependencies": [
-		"@biomejs/biome",
-		"@biomejs/biome",
-		"bufferutil",
-		"sharp",
-		"utf-8-validate"
+		"@biomejs/biome"
 	]
 }

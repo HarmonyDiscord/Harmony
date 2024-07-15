@@ -8,11 +8,24 @@ const nextConfig = {
 		remotePatterns: [
 			{
 				protocol: 'https',
-				hostname: 'lh3.googleusercontent.com',
+				hostname: '*.googleusercontent.com',
 				port: '',
 				pathname: '/**',
 			},
+			{
+				protocol: 'https',
+				hostname: '*.ytimg.com',
+				port: '',
+				pathname: '/**',
+			},
+			{
+				protocol: 'https',
+				hostname: '*.ggpht.com',
+				port: '',
+				pathname: '/**',
+			}
 		]
+		
 	},
 	async headers() {
 		return [

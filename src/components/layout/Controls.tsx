@@ -30,16 +30,16 @@ import {
 	MdVolumeUp
 } from 'react-icons/md';
 import { BarLoader } from 'react-spinners';
-import { currentSongAtom } from '../../atoms/CurrentSongAtom';
-import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
-import formatDuration from '../../util/formatDuration';
-import { type CobaltResponse } from '../../types/Cobalt';
+import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
+import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
+import { type CobaltResponse } from '../../types/Cobalt';
+import formatDuration from '../../util/formatDuration';
 
 export default memo(function Controls() {
-	const [currentSong, setCurrentSong] = useAtom(currentSongAtom);
+	const [currentMedia, setCurrentSong] = useAtom(currentMediaAtom);
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
-	const [songControls, setSongControls] = useAtom(songControlsAtom);
+	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 	const [songURL, setSongURL] = useState<string | undefined>(undefined);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const [progress, setProgress] = useState(0);
@@ -67,37 +67,35 @@ export default memo(function Controls() {
 						.replace('https://olly.imput.net/api/stream', '/olly/stream')
 				: data.url;
 
-			console.log('got url', url);
-
 			return url;
 		}
 
 		async function setup() {
-			if (!currentSong) return null;
+			if (!currentMedia) return null;
 
 			setProgress(0);
 
-			setSongControls({
-				...(songControls ?? defaultSongControls),
+			setMediaControls({
+				...(mediaControls ?? defaultMediaControls),
 				isPlaying: false,
 				isLoading: true
 			});
 
 			setSongURL(undefined);
 
-			const url = await getSongUrl(currentSong.id);
+			const url = await getSongUrl(currentMedia.id);
 
 			setSongURL(url);
 
 			if ('mediaSession' in navigator) {
 				navigator.mediaSession.metadata = new MediaMetadata({
-					title: currentSong.title,
-					artist: currentSong.artist,
-					album: currentSong.album,
-					artwork: currentSong.cover
+					title: currentMedia.name,
+					artist: currentMedia.artist.name,
+					album: currentMedia.album?.name,
+					artwork: currentMedia.thumbnail
 						? [
 								{
-									src: currentSong.cover,
+									src: currentMedia.thumbnail,
 									sizes: '250x250',
 									type: 'image/png'
 								}
@@ -108,25 +106,25 @@ export default memo(function Controls() {
 		}
 
 		setup();
-	}, [currentSong]);
+	}, [currentMedia]);
 
 	const audio = audioRef.current;
 
 	useEffect(() => {
 		if (!audio) return;
 
-		if (songControls?.isPlaying) audio.play().catch(() => null);
+		if (mediaControls?.isPlaying) audio.play().catch(() => null);
 		else audio.pause();
 
-		if (songControls?.isMuted) audio.volume = 0;
-		else if (songControls?.volume) audio.volume = songControls.volume;
-	}, [songControls]);
+		if (mediaControls?.isMuted) audio.volume = 0;
+		else if (mediaControls?.volume) audio.volume = mediaControls.volume;
+	}, [mediaControls]);
 
 	const handleTimeUpdate = () => {
 		if (!audio) return;
-		if (songControls?.isLoading) return;
+		if (mediaControls?.isLoading) return;
 
-		const value = (audio.currentTime / audio.duration) * 100;
+		const value = (audio.currentTime / (currentMedia?.duration ?? audio.duration)) * 100;
 
 		setCurrentTime(formatDuration(audio.currentTime));
 
@@ -136,7 +134,7 @@ export default memo(function Controls() {
 	const handleProgressChange = (value: number) => {
 		if (!audio) return;
 
-		const newTime = (value / 100) * audio.duration;
+		const newTime = (value / 100) * (currentMedia?.duration ?? audio.duration);
 
 		if (!isNaN(newTime)) {
 			audio.currentTime = newTime;
@@ -146,23 +144,23 @@ export default memo(function Controls() {
 	};
 
 	const handleVolumeChange = (value: number) => {
-		setSongControls({ ...(songControls ?? defaultSongControls), isMuted: false });
-		setSongControls({
-			...(songControls ?? defaultSongControls),
+		setMediaControls({ ...(mediaControls ?? defaultMediaControls), isMuted: false });
+		setMediaControls({
+			...(mediaControls ?? defaultMediaControls),
 			volume: value / 100
 		});
 	};
 
 	const toggleLoop = () => {
-		setSongControls({
-			...(songControls ?? defaultSongControls),
-			isLooping: !songControls?.isLooping
+		setMediaControls({
+			...(mediaControls ?? defaultMediaControls),
+			isLooping: !mediaControls?.isLooping
 		});
 	};
 
 	return (
 		<AnimatePresence mode='popLayout'>
-			{currentSong && (
+			{currentMedia && (
 				<Box
 					as={motion.div}
 					w='100%'
@@ -176,7 +174,7 @@ export default memo(function Controls() {
 						<Center my='5px' h='16px'>
 							<Box w='100%'>
 								<AnimatePresence mode='wait'>
-									{!songControls?.isLoading ? (
+									{!mediaControls?.isLoading ? (
 										<Flex w='100%' gap='12px'>
 											<Text>{currentTime}</Text>
 											<Slider
@@ -196,7 +194,7 @@ export default memo(function Controls() {
 												</SliderTrack>
 												<SliderThumb />
 											</Slider>
-											<Text>{formatDuration(currentSong.duration)}</Text>
+											<Text>{formatDuration(currentMedia.duration)}</Text>
 										</Flex>
 									) : (
 										<motion.div
@@ -230,7 +228,7 @@ export default memo(function Controls() {
 						>
 							<AnimatePresence mode='wait'>
 								<Flex
-									key={currentSong.id}
+									key={currentMedia.id}
 									as={motion.div}
 									gap='12px'
 									alignItems='center'
@@ -241,17 +239,17 @@ export default memo(function Controls() {
 									<Image
 										width={48}
 										height={48}
-										src={currentSong.cover ?? ''}
-										alt='Song icon'
+										src={currentMedia.thumbnail ?? ''}
+										alt='Media icon'
 										objectFit='cover'
 										style={{
 											borderRadius: '5px'
 										}}
 									/>
 									<Flex gap='4px' direction='column'>
-										<Heading size='md'>{currentSong.title}</Heading>
+										<Heading size='md'>{currentMedia.name}</Heading>
 										<Text>
-											{currentSong.album} – {currentSong.artist}
+											{currentMedia.album?.name} – {currentMedia.artist.name}
 										</Text>
 									</Flex>
 								</Flex>
@@ -266,18 +264,18 @@ export default memo(function Controls() {
 								<IconButton icon={<MdSkipPrevious fontSize='24px' />} aria-label='Previous' />
 								<IconButton
 									icon={
-										songControls?.isPlaying || songControls?.isLoading ? (
+										mediaControls?.isPlaying || mediaControls?.isLoading ? (
 											<MdPause fontSize='26px' />
 										) : (
 											<MdPlayArrow fontSize='26px' />
 										)
 									}
 									size='lg'
-									isDisabled={songControls?.isLoading}
+									isDisabled={mediaControls?.isLoading}
 									onClick={() =>
-										setSongControls({
-											...(songControls ?? defaultSongControls),
-											isPlaying: !songControls?.isPlaying
+										setMediaControls({
+											...(mediaControls ?? defaultMediaControls),
+											isPlaying: !mediaControls?.isPlaying
 										})
 									}
 									aria-label='Play'
@@ -292,28 +290,27 @@ export default memo(function Controls() {
 								src={songURL}
 								onTimeUpdate={handleTimeUpdate}
 								onPlay={() =>
-									setSongControls({
-										...(songControls ?? defaultSongControls),
+									setMediaControls({
+										...(mediaControls ?? defaultMediaControls),
 										isPlaying: true
 									})
 								}
 								onPause={() =>
-									setSongControls({
-										...(songControls ?? defaultSongControls),
+									setMediaControls({
+										...(mediaControls ?? defaultMediaControls),
 										isPlaying: false
 									})
 								}
 								onEnded={() =>
-									setSongControls({
-										...(songControls ?? defaultSongControls),
+									setMediaControls({
+										...(mediaControls ?? defaultMediaControls),
 										isPlaying: false
 									})
 								}
 								onCanPlayThrough={() => {
-									setSongControls({
-										...(songControls ?? defaultSongControls),
-										isLoading: false,
-										isPlaying: true
+									setMediaControls({
+										...(mediaControls ?? defaultMediaControls),
+										isLoading: false
 									});
 								}}
 							/>
@@ -324,9 +321,9 @@ export default memo(function Controls() {
 										<Slider
 											aria-label='volume'
 											colorScheme='gray'
-											defaultValue={(songControls?.volume ?? 100) * 100}
+											defaultValue={(mediaControls?.volume ?? 100) * 100}
 											onChange={handleVolumeChange}
-											value={songControls?.isMuted ? 0 : (songControls?.volume ?? 100) * 100}
+											value={mediaControls?.isMuted ? 0 : (mediaControls?.volume ?? 100) * 100}
 										>
 											<SliderTrack>
 												<SliderFilledTrack />
@@ -335,16 +332,16 @@ export default memo(function Controls() {
 										</Slider>
 										<IconButton
 											icon={
-												songControls?.isMuted ? (
+												mediaControls?.isMuted ? (
 													<MdVolumeOff fontSize='24px' />
 												) : (
 													<MdVolumeUp fontSize='24px' />
 												)
 											}
 											onClick={() =>
-												setSongControls({
-													...(songControls ?? defaultSongControls),
-													isMuted: !songControls?.isMuted
+												setMediaControls({
+													...(mediaControls ?? defaultMediaControls),
+													isMuted: !mediaControls?.isMuted
 												})
 											}
 											aria-label='Volume'
@@ -352,7 +349,7 @@ export default memo(function Controls() {
 									</Flex>
 									<IconButton
 										icon={
-											songControls?.isLooping ? (
+											mediaControls?.isLooping ? (
 												<MdRepeatOn fontSize='24px' />
 											) : (
 												<MdRepeat fontSize='24px' />

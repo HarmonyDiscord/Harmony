@@ -1,4 +1,4 @@
-export type SongControls = {
+export type MediaControls = {
 	volume: number;
 	isMuted: boolean;
 	isPlaying: boolean;

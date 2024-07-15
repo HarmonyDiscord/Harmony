@@ -29,7 +29,11 @@ export default function ContentList({ items }: { items: SearchResult[] }) {
 			>
 				{entries.map(([type, results], i) => (
 					<Flex direction='column' key={'results-' + type + i} w='100%' h='fit-content' p='20px' gap='10px'>
-						<Heading size='md'>{ContentType[type as any as ContentType]}s</Heading>
+						<Heading size='md'>
+							{(type as any as ContentType) === ContentType.Song
+								? 'Featured'
+								: ContentType[type as any as ContentType] + 's'}
+						</Heading>
 						<Flex w='100%' h='fit-content' maxH='100%' gap='20px' zIndex={1} direction='column'>
 							{results?.map((result, i) => (
 								<SearchResultItem item={result} key={result.id + i} />

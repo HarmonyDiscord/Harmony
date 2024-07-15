@@ -6,7 +6,16 @@ import type { SearchResult } from 'src/types/SearchResult';
 
 export default function SearchResultItem({ item }: Readonly<{ item: SearchResult }>) {
 	return (
-		<Flex as={motion.div} bg='#00000010' p='10px' gap='20px' alignItems='center'>
+		<Flex
+			as={motion.div}
+			bg='#FFFFFF10'
+			borderRadius='10px'
+			zIndex={2}
+			alignItems='center'
+			backdropFilter='blur(5px)'
+			p='10px'
+			gap='20px'
+		>
 			{item.thumbnail && (
 				<Image
 					src={item.thumbnail}

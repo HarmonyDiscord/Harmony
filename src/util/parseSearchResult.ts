@@ -33,7 +33,7 @@ export default function parseSearchResult(result: YtSearchResult): SearchResult 
                     name: result.artist.name
                 },
                 album: null,
-                thumbnail: result.thumbnails.at(0)?.url.replace('w60', 'w250').replace('h60', 'h250') ?? null,
+                thumbnail: result.thumbnails.at(0)?.url ?? null,
                 duration: result.duration ?? 0
             };
 
@@ -46,7 +46,7 @@ export default function parseSearchResult(result: YtSearchResult): SearchResult 
                     id: result.artist.artistId,
                     name: result.artist.name
                 },
-                thumbnail: result.thumbnails.at(0)?.url.replace('w60', 'w250').replace('h60', 'h250') ?? null,
+                thumbnail: result.thumbnails.at(0)?.url ?? null,
                 playlistId: result.playlistId,
                 year: result.year
             };
@@ -56,7 +56,7 @@ export default function parseSearchResult(result: YtSearchResult): SearchResult 
                 type: ContentType.Artist,
                 id: result.artistId,
                 name: result.name,
-                thumbnail: result.thumbnails.at(0)?.url.replace('w60', 'w250').replace('h60', 'h250') ?? null
+                thumbnail: result.thumbnails.at(0)?.url ?? null
             };
 
         case 'PLAYLIST':
@@ -68,7 +68,7 @@ export default function parseSearchResult(result: YtSearchResult): SearchResult 
                     id: result.artist.artistId,
                     name: result.artist.name
                 },
-                thumbnail: result.thumbnails.at(0)?.url.replace('w60', 'w250').replace('h60', 'h250') ?? null
+                thumbnail: result.thumbnails.at(0)?.url ?? null
             };
     }
 }

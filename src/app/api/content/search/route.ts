@@ -1,6 +1,6 @@
+import YTMusic from 'ytmusic-api';
 import getYouTubeVideoId from '../../../../util/getYouTubeVideoId';
 import parseSearchResult from '../../../../util/parseSearchResult';
-import YTMusic from 'ytmusic-api';
 
 export async function GET(req: Request) {
 	const { searchParams } = new URL(req.url);
@@ -32,4 +32,3 @@ export async function GET(req: Request) {
 		return new Response('Failed to search', { status: 409 });
 	}
 }
-

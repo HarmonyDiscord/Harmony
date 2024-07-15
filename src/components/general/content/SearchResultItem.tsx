@@ -1,8 +1,8 @@
 import { Flex, Heading, Text } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { ContentType } from 'src/types/content/ContentType';
-import type { SearchResult } from 'src/types/SearchResult';
+import type { SearchResult } from '../../../types/SearchResult';
+import { ContentType } from '../../../types/content/ContentType';
 
 export default function SearchResultItem({ item }: Readonly<{ item: SearchResult }>) {
 	return (

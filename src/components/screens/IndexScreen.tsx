@@ -7,19 +7,19 @@ import { useEffect, useRef, useState } from 'react';
 import { feedAtom } from '../../atoms/FeedAtom';
 import { useDebounce } from '../../hooks/useDebounce';
 import type { SearchResult } from '../../types/SearchResult';
+import type { Media } from '../../types/content/Media';
+import ContentList from '../layout/ContentList';
 import Controls from '../layout/Controls';
+import Feed from '../layout/Feed';
 import LeftMenu from '../layout/LeftMenu';
 import Navbar from '../layout/Navbar';
-import ContentList from '../layout/ContentList';
-import Feed from '../layout/Feed';
-import type { Media } from 'src/types/content/Media';
 
 export default function IndexScreen() {
 	const [feed] = useAtom(feedAtom);
 
 	const [searchInput, setSearchInput] = useState<string | null>(null);
 	const [searchResults, setSearchResults] = useState<SearchResult[] | null>(null);
-	const [searchResultsMedia, setSearchMediaResults] = useState<Media[] | null>(null);
+	const [searchMediaResults, setSearchMediaResults] = useState<Media[] | null>(null);
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
 
 	const searchCountRef = useRef(0);
@@ -77,9 +77,9 @@ export default function IndexScreen() {
 						<Spinner size='xl' thickness='4px' />
 					</Center>
 				) : content && content.length > 0 ? (
-					searchResults || searchResultsMedia ? (
+					searchResults || searchMediaResults ? (
 						<Flex w='100%'>
-							{searchResultsMedia && <Feed items={searchResultsMedia} />}
+							{searchMediaResults && <Feed items={searchMediaResults} />}
 							{searchResults && <ContentList items={content} />}
 						</Flex>
 					) : (

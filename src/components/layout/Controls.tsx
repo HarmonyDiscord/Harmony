@@ -280,7 +280,8 @@ export default memo(function Controls() {
 								onCanPlayThrough={() => {
 									setSongControls({
 										...(songControls ?? defaultSongControls),
-										isLoading: false
+										isLoading: false,
+										isPlaying: true
 									});
 								}}
 							/>

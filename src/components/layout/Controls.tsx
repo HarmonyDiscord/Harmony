@@ -114,7 +114,7 @@ export default memo(function Controls() {
 		if (!audio) return;
 
 		if (mediaControls?.isPlaying) audio.play().catch(() => null);
-		else audio.pause();
+		else if (!mediaControls?.isLoading && !mediaControls?.isWaiting) audio.pause();
 
 		if (mediaControls?.isMuted) audio.volume = 0;
 		else if (mediaControls?.volume) audio.volume = mediaControls.volume;
@@ -180,6 +180,7 @@ export default memo(function Controls() {
 											<Slider
 												as={motion.div}
 												key='slider'
+												isReadOnly={mediaControls?.isWaiting}
 												aria-label='track'
 												colorScheme='gray'
 												value={progress}
@@ -307,12 +308,19 @@ export default memo(function Controls() {
 										isPlaying: false
 									})
 								}
-								onCanPlayThrough={() => {
+								onWaiting={() =>
 									setMediaControls({
 										...(mediaControls ?? defaultMediaControls),
-										isLoading: false
-									});
-								}}
+										isWaiting: true
+									})
+								}
+								onCanPlayThrough={() =>
+									setMediaControls({
+										...(mediaControls ?? defaultMediaControls),
+										isLoading: false,
+										isWaiting: false
+									})
+								}
 							/>
 							<Hide below='sm'>
 								<Spacer />

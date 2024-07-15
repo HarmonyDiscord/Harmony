@@ -1,9 +1,9 @@
-import { useBreakpointValue, SimpleGrid, SlideFade } from '@chakra-ui/react';
+import { SimpleGrid, SlideFade, useBreakpointValue } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
-import MediaCard from '../general/content/MediaCard';
 import type { Media } from '../../types/content/Media';
+import MediaCard from '../general/content/MediaCard';
 
 export default function Feed({ items }: { items: Media[] }) {
 	const [mediaControls] = useAtom(mediaControlsAtom);

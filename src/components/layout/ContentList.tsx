@@ -1,10 +1,10 @@
-import { useBreakpointValue, Flex, Heading } from '@chakra-ui/react';
+import { Flex, Heading, useBreakpointValue } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
+import type { SearchResult } from '../../types/SearchResult';
 import { ContentType } from '../../types/content/ContentType';
 import SearchResultItem from '../general/content/SearchResultItem';
-import type { SearchResult } from 'src/types/SearchResult';
 
 export default function ContentList({ items }: { items: SearchResult[] }) {
 	const [mediaControls] = useAtom(mediaControlsAtom);

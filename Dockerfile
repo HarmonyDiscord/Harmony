@@ -12,6 +12,7 @@ WORKDIR /home/nonroot
 
 COPY --chown=nonroot --from=builder /home/bun/app/.next/standalone ./
 COPY --chown=nonroot --from=builder /home/bun/app/.next/static ./.next/static
+COPY --chown=nonroot --from=builder /home/bun/app/public ./public
 
 EXPOSE 3000/tcp
 

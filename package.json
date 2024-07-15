@@ -48,6 +48,9 @@
 		"typescript": "5.5.3"
 	},
 	"trustedDependencies": [
-		"@biomejs/biome"
+		"@biomejs/biome",
+		"bufferutil",
+		"sharp",
+		"utf-8-validate"
 	]
 }

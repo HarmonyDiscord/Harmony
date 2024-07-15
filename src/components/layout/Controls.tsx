@@ -32,6 +32,7 @@ import { BarLoader } from 'react-spinners';
 import { currentSongAtom } from '../../atoms/CurrentSongAtom';
 import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
 import formatDuration from '../../util/formatDuration';
+import { type CobaltResponse } from '../../types/Cobalt';
 
 export default memo(function Controls() {
 	const [currentSong, setCurrentSong] = useAtom(currentSongAtom);
@@ -42,6 +43,22 @@ export default memo(function Controls() {
 	const [currentTime, setCurrentTime] = useState('00:00');
 
 	useEffect(() => {
+		async function getSongUrl(songId: string) {
+			// use cobalt's api to get the song url
+			const { data } = await axios.post<CobaltResponse>('https://api.cobalt.tools/api/json', {
+				url: 'https://youtube.com/watch?v=' + songId,
+				aFormat: 'mp3',
+			},
+			{
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/json'
+				}
+			});
+
+			return data.audio || data.url || '';
+		}
+
 		async function setup() {
 			if (!currentSong) return null;
 
@@ -53,7 +70,7 @@ export default memo(function Controls() {
 				isLoading: true
 			});
 
-			const url = `/api/song/stream?id=${encodeURIComponent(currentSong.id)}`;
+			const url = await getSongUrl(currentSong.id);
 
 			setSongURL(url);
 

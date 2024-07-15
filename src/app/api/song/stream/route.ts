@@ -10,10 +10,9 @@ export async function GET(req: Request) {
 
 	const audioFormats = filterFormats(info.formats, 'audioonly');
 
-
 	const url = audioFormats[0]?.url;
 
 	if (!url) return new Response('Invalid', { status: 400 });
 
-	return new Response(await fetch(url).then(r => r.body))
+	return new Response(await fetch(url).then((r) => r.body));
 }

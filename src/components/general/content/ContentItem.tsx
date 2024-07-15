@@ -1,14 +1,19 @@
-import { Center, Flex, Heading, Text } from '@chakra-ui/react';
+import { Center, Flex, Heading, IconButton, Spacer, Text } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useState } from 'react';
-import { MdPlayCircle } from 'react-icons/md';
+import { MdPlayCircle, MdPlaylistAdd, MdPlaylistAddCheck } from 'react-icons/md';
 import type { SearchResult } from '../../../types/SearchResult';
 import { ContentType } from '../../../types/content/ContentType';
 import formatDuration from '../../../util/formatDuration';
+import { useAtom } from 'jotai';
+import { currentPlaylistAtom } from '../../../atoms/CurrentPlaylistAtom';
 
 export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) {
 	const [isHovering, setIsHovering] = useState(false);
+	const [currentPlaylist, setCurrentPlaylist] = useAtom(currentPlaylistAtom);
+
+	const isOnCurrentPlaylist = !!currentPlaylist[item.id];
 
 	let specificDetails = null;
 
@@ -112,10 +117,30 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 					)}
 				</AnimatePresence>
 			</Center>
-
-			<Flex direction='column'>
-				<Heading size='sm'>{item.name}</Heading>
-				{specificDetails}
+			<Flex direction='row' w='100%'>
+				<Flex direction='column'>
+					<Heading size='sm'>{item.name}</Heading>
+					{specificDetails}
+				</Flex>
+				<Spacer />
+				{isHovering && (item.type === ContentType.Song || item.type === ContentType.Video) && (
+					<IconButton
+						size='sm'
+						isDisabled={isOnCurrentPlaylist}
+						icon={
+							isOnCurrentPlaylist ? (
+								<MdPlaylistAddCheck fontSize='20px' />
+							) : (
+								<MdPlaylistAdd fontSize='20px' />
+							)
+						}
+						aria-label='Add to playlist'
+						onClick={(e) => {
+							e.stopPropagation();
+							setCurrentPlaylist({ ...currentPlaylist, [item.id]: item });
+						}}
+					/>
+				)}
 			</Flex>
 		</Flex>
 	);

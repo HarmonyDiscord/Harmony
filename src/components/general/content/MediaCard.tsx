@@ -22,7 +22,7 @@ export default function MediaCard(media: Readonly<Media>) {
 
 	const isCurrentMedia = currentMedia?.id === id;
 
-	const isOnCurrentPlaylist = currentPlaylist.some((p) => p.id === media.id);
+	const isOnCurrentPlaylist = !!currentPlaylist[media.id];
 
 	return (
 		<Card
@@ -46,7 +46,7 @@ export default function MediaCard(media: Readonly<Media>) {
 					});
 
 				setCurrentMedia(media);
-				setCurrentPlaylist([media]);
+				setCurrentPlaylist({ ...currentPlaylist, [media.id]: media });
 			}}
 		>
 			{thumbnail && (
@@ -107,7 +107,7 @@ export default function MediaCard(media: Readonly<Media>) {
 									aria-label='Add to playlist'
 									onClick={(e) => {
 										e.stopPropagation();
-										setCurrentPlaylist([...currentPlaylist, media]);
+										setCurrentPlaylist({ ...currentPlaylist, [media.id]: media });
 									}}
 								/>
 							</Flex>

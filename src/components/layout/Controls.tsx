@@ -29,13 +29,19 @@ import {
 	MdVolumeUp
 } from 'react-icons/md';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
+import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import VideoSlider from './VideoSlider';
 
 export default memo(function Controls() {
+	const [currentPlaylist] = useAtom(currentPlaylistAtom);
 	const [currentMedia, setCurrentSong] = useAtom(currentMediaAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 	const [songURL, setSongURL] = useState<string | undefined>(undefined);
+
+	const currentPlaylistIdArray = [...Object.keys(currentPlaylist)];
+
+	const currentMediaIndex = currentMedia && currentPlaylistIdArray.indexOf(currentMedia.id);
 
 	const handleVolumeChange = (value: number) => {
 		setMediaControls({ ...(mediaControls ?? defaultMediaControls), isMuted: false });
@@ -113,7 +119,11 @@ export default memo(function Controls() {
 								alignItems='center'
 							>
 								<Spacer />
-								<IconButton icon={<MdSkipPrevious fontSize='24px' />} aria-label='Previous' />
+								<IconButton
+									icon={<MdSkipPrevious fontSize='24px' />}
+									aria-label='Previous'
+									isDisabled={!currentPlaylistIdArray[currentMediaIndex! - 1]}
+								/>
 								<IconButton
 									icon={
 										mediaControls?.isPlaying || mediaControls?.isLoading ? (
@@ -132,7 +142,11 @@ export default memo(function Controls() {
 									}
 									aria-label='Play'
 								/>
-								<IconButton icon={<MdSkipNext fontSize='24px' />} aria-label='Next' />
+								<IconButton
+									icon={<MdSkipNext fontSize='24px' />}
+									aria-label='Next'
+									isDisabled={!currentPlaylistIdArray[currentMediaIndex! + 1]}
+								/>
 								<Spacer />
 							</Flex>
 							<Hide below='sm'>

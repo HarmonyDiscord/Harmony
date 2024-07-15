@@ -1,14 +1,14 @@
-import { Center, Text, Box, Flex, Slider, SliderTrack, SliderFilledTrack, SliderThumb } from '@chakra-ui/react';
+import { Box, Center, Flex, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text } from '@chakra-ui/react';
+import axios from 'axios';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
 import { BarLoader } from 'react-spinners';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
-import formatDuration from '../../util/formatDuration';
-import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
+import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import { type CobaltResponse } from '../../types/Cobalt';
-import axios from 'axios';
+import formatDuration from '../../util/formatDuration';
 
 export default function VideoSlider({ songURL, setSongURL }: { songURL?: string; setSongURL: any }) {
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);

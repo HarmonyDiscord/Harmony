@@ -17,10 +17,10 @@ import axios from 'axios';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { memo, useEffect, useState } from 'react';
-import ContentItem from '../general/content/ContentItem';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
+import ContentItem from '../general/content/ContentItem';
 
 const Playlist = memo(function Playlist() {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
@@ -38,7 +38,7 @@ const Playlist = memo(function Playlist() {
 			}}
 			py='10px'
 		>
-			{currentPlaylist.map((media, i) => (
+			{[...Object.values(currentPlaylist)].map((media, i) => (
 				<ContentItem item={media} key={media.id + i} />
 			))}
 		</Flex>

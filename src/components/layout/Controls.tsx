@@ -67,8 +67,6 @@ export default memo(function Controls() {
 						.replace('https://olly.imput.net/api/stream', '/olly/stream')
 				: data.url;
 
-			console.log('got url', url);
-
 			return url;
 		}
 
@@ -126,7 +124,7 @@ export default memo(function Controls() {
 		if (!audio) return;
 		if (mediaControls?.isLoading) return;
 
-		const value = (audio.currentTime / audio.duration) * 100;
+		const value = (audio.currentTime / (currentMedia?.duration ?? audio.duration)) * 100;
 
 		setCurrentTime(formatDuration(audio.currentTime));
 
@@ -136,7 +134,7 @@ export default memo(function Controls() {
 	const handleProgressChange = (value: number) => {
 		if (!audio) return;
 
-		const newTime = (value / 100) * audio.duration;
+		const newTime = (value / 100) * (currentMedia?.duration ?? audio.duration);
 
 		if (!isNaN(newTime)) {
 			audio.currentTime = newTime;
@@ -312,8 +310,7 @@ export default memo(function Controls() {
 								onCanPlayThrough={() => {
 									setMediaControls({
 										...(mediaControls ?? defaultMediaControls),
-										isLoading: false,
-										isPlaying: true
+										isLoading: false
 									});
 								}}
 							/>

@@ -58,6 +58,19 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 			onMouseEnter={() => setIsHovering(true)}
 			onMouseLeave={() => setIsHovering(false)}
 			cursor='pointer'
+			onClick={() => {
+				switch (item.type) {
+					case ContentType.Song:
+					case ContentType.Video:
+						break;
+					case ContentType.Album:
+						break;
+					case ContentType.Playlist:
+						break;
+					case ContentType.Artist:
+						break;
+				}
+			}}
 		>
 			<Center>
 				{item.thumbnail && (
@@ -70,7 +83,9 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 						objectFit='cover'
 						style={{
 							height: '60px',
+							minHeight: '60px',
 							width: '60px',
+							minWidth: '60px',
 							objectPosition: 'center center',
 							objectFit: 'cover',
 							borderRadius: item.type === ContentType.Artist ? '50%' : '5px'

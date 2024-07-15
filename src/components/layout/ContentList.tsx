@@ -16,20 +16,10 @@ export default function ContentList({ items }: { items: SearchResult[] }) {
 
 	return (
 		(!currentMedia || isMd || mediaControls?.isSidePanelClosed) && (
-			<Flex
-				direction='column'
-				w='100%'
-				h='fit-content'
-				maxH='100%'
-				overflowY='auto'
-				style={{
-					mask: 'linear-gradient(to top, transparent 0%, #000000 5%, #000000 95%, transparent 100%)',
-					maskMode: 'alpha'
-				}}
-			>
+			<Flex direction='column' w='100%' h='fit-content' maxH='100%' gap='0px'>
 				{entries.map(([type, results], i) => (
 					<SlideFade in delay={i * 0.05} key={'results-' + type + i}>
-						<Flex direction='column' w='100%' h='fit-content' p='20px' gap='10px'>
+						<Flex direction='column' w='100%' h='fit-content' gap='10px' py='20px'>
 							<Heading size='md'>
 								{(type as any as ContentType) == ContentType.Song
 									? 'Featured'

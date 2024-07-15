@@ -21,7 +21,9 @@ import { memo, useEffect, useState } from 'react';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
+import type { SearchResult } from '../../types/SearchResult';
 import ContentItem from '../general/content/ContentItem';
+import ContentList from './ContentList';
 
 const Playlist = memo(function Playlist() {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
@@ -49,25 +51,25 @@ const Playlist = memo(function Playlist() {
 	);
 });
 
-const Lyrics = memo(function Lyrics({ songId }: Readonly<{ songId?: string }>) {
-	const [lyrics, setLyrics] = useState<null | string[]>(null);
+const Lyrics = memo(function Lyrics({ mediaId }: Readonly<{ mediaId?: string }>) {
+	const [lyrics, setLyrics] = useState<string[] | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
 		async function setup() {
-			if (!songId) return;
+			if (!mediaId) return;
 
 			setIsLoading(true);
 			setLyrics(
 				await axios
-					.get(`/api/content/media/lyrics?id=${encodeURIComponent(songId)}`)
+					.get(`/api/content/media/lyrics?id=${encodeURIComponent(mediaId)}`)
 					.then((res) => res.data)
 					.catch(() => null)
 			);
 			setIsLoading(false);
 		}
 		setup();
-	}, [songId]);
+	}, [mediaId]);
 
 	return (
 		<Flex
@@ -93,6 +95,52 @@ const Lyrics = memo(function Lyrics({ songId }: Readonly<{ songId?: string }>) {
 				)
 			)}
 		</Flex>
+	);
+});
+
+const Related = memo(function Related({ query }: Readonly<{ query?: string }>) {
+	const [related, setRelated] = useState<SearchResult[] | null>(null);
+	const [isLoading, setIsLoading] = useState(false);
+
+	useEffect(() => {
+		async function setup() {
+			if (!query) return;
+
+			setIsLoading(true);
+			setRelated(
+				await axios
+
+					.get(`/api/content/search?q=${encodeURIComponent(query)}`)
+					.then((res) => res.data)
+					.catch(() => null)
+			);
+			setIsLoading(false);
+		}
+		setup();
+	}, [query]);
+
+	return (
+		<Box
+			w='100%'
+			h='100%'
+			py='0px'
+			pr='10px'
+			overflowY='auto'
+			style={{
+				mask: 'linear-gradient(to top, transparent 0%, #000000 5%, #000000 95%, transparent 100%)',
+				maskMode: 'alpha'
+			}}
+		>
+			{isLoading ? (
+				<Center w='100%' h='100%'>
+					<Spinner size='xl' />
+				</Center>
+			) : related ? (
+				<ContentList items={related} />
+			) : (
+				<Text>Please try again.</Text>
+			)}
+		</Box>
 	);
 });
 
@@ -148,10 +196,10 @@ export default memo(function LeftMenu() {
 								<Playlist />
 							</TabPanel>
 							<TabPanel h='100%' w='100%' pb='40px'>
-								<Lyrics songId={currentMedia.id} />
+								<Lyrics mediaId={currentMedia.id} />
 							</TabPanel>
 							<TabPanel h='100%' w='100%' pb='40px'>
-								Working on it!
+								<Related query={currentMedia.name} />
 							</TabPanel>
 						</TabPanels>
 					</Tabs>

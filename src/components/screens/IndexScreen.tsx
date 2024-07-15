@@ -1,6 +1,6 @@
 'use client';
 
-import { Center, Flex, Heading, Spacer, Spinner, useBreakpointValue } from '@chakra-ui/react';
+import { Box, Center, Flex, Heading, Spacer, Spinner, useBreakpointValue } from '@chakra-ui/react';
 import axios from 'axios';
 import { useAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
@@ -83,10 +83,32 @@ export default function IndexScreen() {
 						isLg ? (
 							<Flex w='100%'>
 								{searchMediaResults && <Feed items={searchMediaResults} />}
-								{searchResults && <ContentList items={content} />}
+								{searchResults && (
+									<Box
+										p='20px'
+										style={{
+											mask: 'linear-gradient(to top, transparent 0%, #000000 5%, #000000 95%, transparent 100%)',
+											maskMode: 'alpha'
+										}}
+										overflowY='auto'
+									>
+										<ContentList items={content} />
+									</Box>
+								)}
 							</Flex>
 						) : (
-							searchResults && <ContentList items={content} />
+							searchResults && (
+								<Box
+									p='20px'
+									style={{
+										mask: 'linear-gradient(to top, transparent 0%, #000000 5%, #000000 95%, transparent 100%)',
+										maskMode: 'alpha'
+									}}
+									overflowY='auto'
+								>
+									<ContentList items={content} />
+								</Box>
+							)
 						)
 					) : (
 						feed && <Feed items={feed} />

@@ -60,7 +60,8 @@ export default function MediaCard(media: Readonly<Media>) {
 					style={{
 						height: '200px',
 						width: '100%',
-						opacity: 0.8,
+						zIndex: 2,
+						opacity: 0.85,
 						objectPosition: 'center top',
 						position: 'absolute',
 						objectFit: 'cover',
@@ -72,7 +73,7 @@ export default function MediaCard(media: Readonly<Media>) {
 			<CardBody
 				as={motion.div}
 				p='20px'
-				zIndex={1}
+				zIndex={2}
 				cursor='pointer'
 				borderRadius='8px'
 				bg='linear-gradient(to top, #111111, transparent)'

@@ -3,6 +3,7 @@ import {
 	Center,
 	CloseButton,
 	Flex,
+	SlideFade,
 	Spacer,
 	Spinner,
 	Tab,
@@ -20,14 +21,29 @@ import { memo, useEffect, useState } from 'react';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
+import ContentItem from '../general/content/ContentItem';
 
 const Playlist = memo(function Playlist() {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
 
 	return (
-		<Flex w='100%' h='100%' direction='column' overflowY='auto' gap='10px'>
-			{currentPlaylist.map((media) => (
-				<Flex key={media.id}>{media.name}</Flex>
+		<Flex
+			w='100%'
+			h='100%'
+			pr='10px'
+			direction='column'
+			overflowY='auto'
+			gap='10px'
+			style={{
+				mask: 'linear-gradient(to top, transparent 0%, #000000 5%, #000000 95%, transparent 100%)',
+				maskMode: 'alpha'
+			}}
+			py='10px'
+		>
+			{[...Object.values(currentPlaylist)].map((media, i) => (
+				<SlideFade in delay={i * 0.02} key={media.id + i}>
+					<ContentItem item={media} />
+				</SlideFade>
 			))}
 		</Flex>
 	);
@@ -44,7 +60,7 @@ const Lyrics = memo(function Lyrics({ songId }: Readonly<{ songId?: string }>) {
 			setIsLoading(true);
 			setLyrics(
 				await axios
-					.get(`/api/media/lyrics?id=${encodeURIComponent(songId)}`)
+					.get(`/api/content/media/lyrics?id=${encodeURIComponent(songId)}`)
 					.then((res) => res.data)
 					.catch(() => null)
 			);
@@ -54,7 +70,19 @@ const Lyrics = memo(function Lyrics({ songId }: Readonly<{ songId?: string }>) {
 	}, [songId]);
 
 	return (
-		<Flex w='100%' h='100%' direction='column' overflowY='auto' userSelect='text'>
+		<Flex
+			w='100%'
+			h='100%'
+			pr='10px'
+			direction='column'
+			overflowY='auto'
+			userSelect='text'
+			style={{
+				mask: 'linear-gradient(to top, transparent 0%, #000000 5%, #000000 95%, transparent 100%)',
+				maskMode: 'alpha'
+			}}
+			py='10px'
+		>
 			{isLoading ? (
 				<Center w='100%' h='100%'>
 					<Spinner size='xl' />
@@ -116,13 +144,13 @@ export default memo(function LeftMenu() {
 						</TabList>
 						<TabIndicator mt='2px' px='2px' height='2px' bg='white' borderRadius='1px' />
 						<TabPanels h='100%' w='100%'>
-							<TabPanel h='100%' w='100%'>
+							<TabPanel h='100%' w='100%' pb='40px'>
 								<Playlist />
 							</TabPanel>
 							<TabPanel h='100%' w='100%' pb='40px'>
 								<Lyrics songId={currentMedia.id} />
 							</TabPanel>
-							<TabPanel h='100%' w='100%'>
+							<TabPanel h='100%' w='100%' pb='40px'>
 								Working on it!
 							</TabPanel>
 						</TabPanels>

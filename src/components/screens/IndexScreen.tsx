@@ -45,7 +45,7 @@ export default function IndexScreen() {
 					.then((res) => res.data)
 					.catch(() => null),
 				axios
-					.get(`/api/media/search?q=${encodeURIComponent(debouncedSearchInput)}`)
+					.get(`/api/content/media/search?q=${encodeURIComponent(debouncedSearchInput)}`)
 					.then((res) => res.data)
 					.catch(() => null)
 			]);

@@ -4,7 +4,7 @@ import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import type { SearchResult } from '../../types/SearchResult';
 import { ContentType } from '../../types/content/ContentType';
-import SearchResultItem from '../general/content/SearchResultItem';
+import ContentItem from '../general/content/ContentItem';
 
 export default function ContentList({ items }: { items: SearchResult[] }) {
 	const [mediaControls] = useAtom(mediaControlsAtom);
@@ -37,7 +37,7 @@ export default function ContentList({ items }: { items: SearchResult[] }) {
 							</Heading>
 							<Flex w='100%' h='fit-content' maxH='100%' gap='20px' zIndex={1} direction='column'>
 								{results?.map((result, i) => (
-									<SearchResultItem item={result} key={result.id + i} />
+									<ContentItem item={result} key={result.id + i} />
 								))}
 							</Flex>
 						</Flex>

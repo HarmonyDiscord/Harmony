@@ -19,6 +19,7 @@ import Image from 'next/image';
 import { memo, useEffect, useRef, useState } from 'react';
 import {
 	MdClose,
+	MdDownload,
 	MdPause,
 	MdPlayArrow,
 	MdRepeat,
@@ -44,17 +45,19 @@ export default memo(function Controls() {
 
 	useEffect(() => {
 		async function getSongUrl(songId: string) {
-			// use cobalt's api to get the song url
-			const { data } = await axios.post<CobaltResponse>('https://api.cobalt.tools/api/json', {
-				url: 'https://youtube.com/watch?v=' + songId,
-				aFormat: 'mp3',
-			},
-			{
-				headers: {
-					'Content-Type': 'application/json',
-					'Accept': 'application/json'
+			const { data } = await axios.post<CobaltResponse>(
+				'https://api.cobalt.tools/api/json',
+				{
+					url: 'https://youtube.com/watch?v=' + songId,
+					aFormat: 'mp3'
+				},
+				{
+					headers: {
+						'Content-Type': 'application/json',
+						Accept: 'application/json'
+					}
 				}
-			});
+			);
 
 			return data.audio || data.url || '';
 		}
@@ -69,6 +72,8 @@ export default memo(function Controls() {
 				isPlaying: false,
 				isLoading: true
 			});
+
+			setSongURL(undefined);
 
 			const url = await getSongUrl(currentSong.id);
 
@@ -345,6 +350,12 @@ export default memo(function Controls() {
 										}
 										aria-label='Toggle Loop'
 										onClick={() => toggleLoop()}
+									/>
+									<IconButton
+										icon={<MdDownload fontSize='24px' />}
+										aria-label='Download'
+										isDisabled={!songURL}
+										onClick={() => open(songURL)}
 									/>
 									<IconButton
 										icon={<MdClose fontSize='24px' />}

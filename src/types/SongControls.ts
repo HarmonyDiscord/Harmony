@@ -5,4 +5,5 @@ export type SongControls = {
 	isLooping: boolean;
 	isLoading: boolean;
 	isSidePanelClosed: boolean;
+	useVideo: boolean;
 };

@@ -9,5 +9,6 @@ export const defaultSongControls: SongControls = {
 	isPlaying: false,
 	isLooping: false,
 	isLoading: false,
-	isSidePanelClosed: false
+	isSidePanelClosed: false,
+	useVideo: false
 };

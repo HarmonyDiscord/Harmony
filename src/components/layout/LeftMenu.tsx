@@ -17,17 +17,17 @@ import axios from 'axios';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { memo, useEffect, useState } from 'react';
+import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
-import { currentSongAtom } from '../../atoms/CurrentSongAtom';
-import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
+import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControAtom';
 
 const Playlist = memo(function Playlist() {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
 
 	return (
 		<Flex w='100%' h='100%' direction='column' overflowY='auto' gap='10px'>
-			{currentPlaylist.map((song) => (
-				<Flex key={song.id}>{song.title}</Flex>
+			{currentPlaylist.map((media) => (
+				<Flex key={media.id}>{media.title}</Flex>
 			))}
 		</Flex>
 	);
@@ -44,7 +44,7 @@ const Lyrics = memo(function Lyrics({ songId }: Readonly<{ songId?: string }>) {
 			setIsLoading(true);
 			setLyrics(
 				await axios
-					.get(`/api/song/lyrics?id=${encodeURIComponent(songId)}`)
+					.get(`/api/media/lyrics?id=${encodeURIComponent(songId)}`)
 					.then((res) => res.data)
 					.catch(() => null)
 			);
@@ -69,12 +69,12 @@ const Lyrics = memo(function Lyrics({ songId }: Readonly<{ songId?: string }>) {
 });
 
 export default memo(function LeftMenu() {
-	const [currentSong] = useAtom(currentSongAtom);
-	const [songControls, setSongControls] = useAtom(songControlsAtom);
+	const [currentMedia] = useAtom(currentMediaAtom);
+	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 
 	return (
 		<AnimatePresence mode='popLayout'>
-			{currentSong && !songControls?.isSidePanelClosed && (
+			{currentMedia && !mediaControls?.isSidePanelClosed && (
 				<Box
 					as={motion.div}
 					p='20px'
@@ -107,8 +107,8 @@ export default memo(function LeftMenu() {
 							<Spacer />
 							<CloseButton
 								onClick={() =>
-									setSongControls({
-										...(songControls ?? defaultSongControls),
+									setMediaControls({
+										...(mediaControls ?? defaultMediaControls),
 										isSidePanelClosed: true
 									})
 								}
@@ -120,7 +120,7 @@ export default memo(function LeftMenu() {
 								<Playlist />
 							</TabPanel>
 							<TabPanel h='100%' w='100%' pb='40px'>
-								<Lyrics songId={currentSong.id} />
+								<Lyrics songId={currentMedia.id} />
 							</TabPanel>
 							<TabPanel h='100%' w='100%'>
 								Working on it!

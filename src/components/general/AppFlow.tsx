@@ -2,10 +2,10 @@ import { DiscordSDK } from '@discord/embedded-app-sdk';
 import axios from 'axios';
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
+import { defaultDiscordActivityStatus, discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { feedAtom } from '../../atoms/FeedAtom';
 import { loadingAtom } from '../../atoms/LoadingAtom';
 import { userAtom } from '../../atoms/UserAtom';
-import { defaultDiscordActivityStatus, discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 
 const clientId = process.env['NEXT_PUBLIC_DISCORD_CLIENT_ID'] ?? '';
 
@@ -27,7 +27,7 @@ export default function AppFlow({
 
 	async function setup() {
 		const results = await axios
-			.get(`/api/song/search?q=${encodeURIComponent(' ')}`)
+			.get(`/api/media/search?q=${encodeURIComponent(' ')}`)
 			.then((res) => res.data)
 			.catch(() => null);
 

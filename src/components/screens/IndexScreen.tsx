@@ -4,12 +4,13 @@ import { Center, Flex, Heading, SimpleGrid, SlideFade, Spacer, Spinner, useBreak
 import axios from 'axios';
 import { useAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
-import { currentSongAtom } from '../../atoms/CurrentSongAtom';
+import { ContentType } from 'src/types/content/ContentType';
+import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { feedAtom } from '../../atoms/FeedAtom';
-import { songControlsAtom } from '../../atoms/SongControlsAtom';
+import { mediaControlsAtom } from '../../atoms/MediaControAtom';
 import { useDebounce } from '../../hooks/useDebounce';
-import type { Song } from '../../types/Song';
-import SongCard from '../general/SongCard';
+import type { SearchResult } from '../../types/SearchResult';
+import MediaCard from '../general/SongCard';
 import Controls from '../layout/Controls';
 import LeftMenu from '../layout/LeftMenu';
 import Navbar from '../layout/Navbar';
@@ -18,10 +19,10 @@ export default function IndexScreen() {
 	const [feed] = useAtom(feedAtom);
 
 	const [searchInput, setSearchInput] = useState<string | null>(null);
-	const [searchResults, setSearchResults] = useState<Song[] | null>(null);
+	const [searchResults, setSearchResults] = useState<SearchResult[] | null>(null);
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
-	const [songControls] = useAtom(songControlsAtom);
-	const [currentSong] = useAtom(currentSongAtom);
+	const [mediaControls] = useAtom(mediaControlsAtom);
+	const [currentMedia] = useAtom(currentMediaAtom);
 	const searchCountRef = useRef(0);
 	const debouncedSearchInput = useDebounce(searchInput, 300);
 
@@ -39,7 +40,7 @@ export default function IndexScreen() {
 			setIsSearchLoading(true);
 
 			const results = await axios
-				.get(`/api/song/search?q=${encodeURIComponent(debouncedSearchInput)}`)
+				.get(`/api/media/search?q=${encodeURIComponent(debouncedSearchInput)}`)
 				.then((res) => res.data)
 				.catch(() => null);
 
@@ -70,7 +71,7 @@ export default function IndexScreen() {
 						<Spinner size='xl' thickness='4px' />
 					</Center>
 				) : gridItems && gridItems.length > 0 ? (
-					(!currentSong || isMd || songControls?.isSidePanelClosed) && (
+					(!currentMedia || isMd || mediaControls?.isSidePanelClosed) && (
 						<SimpleGrid
 							w='100%'
 							h='fit-content'
@@ -85,18 +86,25 @@ export default function IndexScreen() {
 							overflowY='auto'
 							zIndex={1}
 						>
-							{gridItems.map(({ id, title, album, artist, cover, duration }, i) => (
-								<SlideFade in delay={i * 0.02} key={id}>
-									<SongCard
-										id={id}
-										title={title}
-										album={album}
-										artist={artist}
-										cover={cover}
-										duration={duration}
-									/>
-								</SlideFade>
-							))}
+							{gridItems.map((result, i) => {
+								switch (result?.type) {
+									case ContentType.Video:
+									case ContentType.Song:
+										return (
+											<SlideFade in delay={i * 0.02} key={result.id}>
+												<MediaCard
+													id={result.id}
+													type={ContentType.Song}
+													title={result.title}
+													album={result.type == ContentType.Song ? result.album : undefined}
+													artist={result.artist}
+													cover={result.cover}
+													duration={result.duration}
+												/>
+											</SlideFade>
+										);
+								}
+							})}
 						</SimpleGrid>
 					)
 				) : (

@@ -1,4 +1,4 @@
 import { atom } from 'jotai';
-import type { Song } from '../types/Song';
+import type { Media } from '../types/content/Media';
 
-export const currentPlaylistAtom = atom<Song[]>([]);
+export const currentPlaylistAtom = atom<Media[]>([]);

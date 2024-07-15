@@ -4,23 +4,23 @@ import { useAtom } from 'jotai';
 import Image from 'next/image';
 import { useState } from 'react';
 import { MdPauseCircle, MdPlayCircle } from 'react-icons/md';
+import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
-import { currentSongAtom } from '../../atoms/CurrentSongAtom';
-import { defaultSongControls, songControlsAtom } from '../../atoms/SongControlsAtom';
+import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControAtom';
 import { useDebounce } from '../../hooks/useDebounce';
-import type { Song } from '../../types/Song';
+import type { Media } from '../../types/content/Media';
 import formatDuration from '../../util/formatDuration';
 
-export default function SongCard(song: Readonly<Song>) {
+export default function MediaCard(media: Readonly<Media>) {
 	const [isHovering, setIsHovering] = useState(false);
 	const debouncedIsHovering = useDebounce(isHovering, 100);
-	const [currentSong, setCurrentSong] = useAtom(currentSongAtom);
+	const [currentMedia, setCurrentMedia] = useAtom(currentMediaAtom);
 	const [_currentPlaylist, setCurrentPlaylist] = useAtom(currentPlaylistAtom);
-	const [songControls, setSongControls] = useAtom(songControlsAtom);
+	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 
-	const { id, title, album, artist, cover, duration } = song;
+	const { id, title, album, artist, cover, duration } = media;
 
-	const isCurrentSong = currentSong?.id === id;
+	const isCurrentMedia = currentMedia?.id === id;
 
 	return (
 		<Card
@@ -37,14 +37,14 @@ export default function SongCard(song: Readonly<Song>) {
 			onMouseEnter={() => setIsHovering(true)}
 			onMouseLeave={() => setIsHovering(false)}
 			onClick={() => {
-				if (isCurrentSong)
-					return setSongControls({
-						...(songControls ?? defaultSongControls),
-						isPlaying: !songControls?.isPlaying
+				if (isCurrentMedia)
+					return setMediaControls({
+						...(mediaControls ?? defaultMediaControls),
+						isPlaying: !mediaControls?.isPlaying
 					});
 
-				setCurrentSong(song);
-				setCurrentPlaylist([song]);
+				setCurrentMedia(media);
+				setCurrentPlaylist([media]);
 			}}
 		>
 			{cover && (
@@ -104,9 +104,9 @@ export default function SongCard(song: Readonly<Song>) {
 								animate={{ y: 0, opacity: 1 }}
 								exit={{ y: 10, opacity: 0 }}
 							>
-								{songControls?.isPlaying && isCurrentSong ? (
+								{mediaControls?.isPlaying && isCurrentMedia ? (
 									<MdPauseCircle fontSize='60px' />
-								) : songControls?.isLoading && isCurrentSong ? (
+								) : mediaControls?.isLoading && isCurrentMedia ? (
 									<Spinner size='xl' thickness='4px' />
 								) : (
 									<MdPlayCircle fontSize='60px' />
@@ -118,7 +118,7 @@ export default function SongCard(song: Readonly<Song>) {
 					<AnimatePresence mode='popLayout'>
 						{!debouncedIsHovering ? (
 							<Heading
-								key='song-title'
+								key='media-title'
 								size='md'
 								overflow='hidden'
 								whiteSpace='nowrap'
@@ -132,7 +132,7 @@ export default function SongCard(song: Readonly<Song>) {
 							</Heading>
 						) : (
 							<Heading
-								key='song-details'
+								key='media-details'
 								size='md'
 								overflow='hidden'
 								whiteSpace='nowrap'
@@ -142,7 +142,7 @@ export default function SongCard(song: Readonly<Song>) {
 								animate={{ y: 0, opacity: 1 }}
 								exit={{ y: 10, opacity: 0 }}
 							>
-								{isCurrentSong ? 'Now playing' : 'Play'} - {formatDuration(duration)}
+								{isCurrentMedia ? 'Now playing' : 'Play'} - {formatDuration(duration)}
 							</Heading>
 						)}
 					</AnimatePresence>

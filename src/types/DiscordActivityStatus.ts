@@ -1,4 +1,4 @@
 export type DiscordActivityStatus = {
-    isActivity: boolean;
-    isOverlay: boolean;
+	isActivity: boolean;
+	isOverlay: boolean;
 };

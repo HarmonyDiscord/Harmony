@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import type { SearchResult } from '../../../types/SearchResult';
 import { ContentType } from '../../../types/content/ContentType';
+import formatDuration from '../../../util/formatDuration';
 
 export default function SearchResultItem({ item }: Readonly<{ item: SearchResult }>) {
 	let specificDetails = null;
@@ -18,7 +19,7 @@ export default function SearchResultItem({ item }: Readonly<{ item: SearchResult
 		case ContentType.Video:
 			specificDetails = (
 				<Text fontSize='sm'>
-					{item.artist.name} - {item.duration}
+					{item.artist.name} - {formatDuration(item.duration)}
 				</Text>
 			);
 			break;

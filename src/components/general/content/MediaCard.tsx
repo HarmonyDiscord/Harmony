@@ -1,9 +1,9 @@
-import { Card, CardBody, Center, Flex, Heading, Spacer, Spinner, Text } from '@chakra-ui/react';
+import { Card, CardBody, Center, Flex, Heading, IconButton, Spacer, Spinner, Text } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
 import { useState } from 'react';
-import { MdPauseCircle, MdPlayCircle } from 'react-icons/md';
+import { MdPauseCircle, MdPlayCircle, MdPlaylistAdd, MdPlaylistAddCheck } from 'react-icons/md';
 import { currentMediaAtom } from '../../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../../atoms/CurrentPlaylistAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../../atoms/MediaControlAtom';
@@ -15,12 +15,14 @@ export default function MediaCard(media: Readonly<Media>) {
 	const [isHovering, setIsHovering] = useState(false);
 	const debouncedIsHovering = useDebounce(isHovering, 100);
 	const [currentMedia, setCurrentMedia] = useAtom(currentMediaAtom);
-	const [_currentPlaylist, setCurrentPlaylist] = useAtom(currentPlaylistAtom);
+	const [currentPlaylist, setCurrentPlaylist] = useAtom(currentPlaylistAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 
 	const { id, name, album, artist, thumbnail, duration } = media;
 
 	const isCurrentMedia = currentMedia?.id === id;
+
+	const isOnCurrentPlaylist = currentPlaylist.some((p) => p.id === media.id);
 
 	return (
 		<Card
@@ -82,18 +84,33 @@ export default function MediaCard(media: Readonly<Media>) {
 				<Flex direction='column' h='100%'>
 					<AnimatePresence mode='popLayout'>
 						{debouncedIsHovering && (
-							<Heading
-								size='md'
-								overflow='hidden'
-								whiteSpace='nowrap'
-								textOverflow='ellipsis'
+							<Flex
 								as={motion.div}
 								initial={{ y: -10, opacity: 0 }}
 								animate={{ y: 0, opacity: 1 }}
 								exit={{ y: -10, opacity: 0 }}
 							>
-								{name}
-							</Heading>
+								<Heading size='md' overflow='hidden' whiteSpace='nowrap' textOverflow='ellipsis'>
+									{name}
+								</Heading>
+								<Spacer />
+								<IconButton
+									size='sm'
+									isDisabled={isOnCurrentPlaylist}
+									icon={
+										isOnCurrentPlaylist ? (
+											<MdPlaylistAddCheck fontSize='20px' />
+										) : (
+											<MdPlaylistAdd fontSize='20px' />
+										)
+									}
+									aria-label='Add to playlist'
+									onClick={(e) => {
+										e.stopPropagation();
+										setCurrentPlaylist([...currentPlaylist, media]);
+									}}
+								/>
+							</Flex>
 						)}
 					</AnimatePresence>
 					<Spacer />

@@ -9,6 +9,7 @@ import {
 	InputGroup,
 	InputLeftElement,
 	InputRightElement,
+	Show,
 	SlideFade,
 	Spacer
 } from '@chakra-ui/react';
@@ -35,13 +36,15 @@ export default function Navbar({ searchInput, setSearchInput }: any) {
 				alignItems='center'
 				backdropFilter='blur(5px)'
 			>
-				<Flex gap='10px' cursor='pointer' onClick={() => location.reload()}>
+				<Flex gap='10px' cursor='pointer' onClick={() => location.reload()} alignItems='center'>
 					<Box minW='36px'>
 						<MdMusicNote fontSize='36px' color='#FFFFFF' />
 					</Box>
-					<Heading size='md' fontWeight='bold'>
-						Harmony
-					</Heading>
+					<Show above='sm'>
+						<Heading size='md' fontWeight='bold'>
+							Harmony
+						</Heading>
+					</Show>
 				</Flex>
 				<Spacer />
 				<InputGroup w='400px'>
@@ -52,6 +55,7 @@ export default function Navbar({ searchInput, setSearchInput }: any) {
 						variant='filled'
 						focusBorderColor='#FFFFFF30'
 						placeholder='Search for a song...'
+						pr='40px'
 						value={searchInput}
 						onChange={(e) => setSearchInput(e.target.value)}
 					/>

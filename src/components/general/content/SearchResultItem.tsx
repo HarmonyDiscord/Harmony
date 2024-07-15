@@ -5,6 +5,38 @@ import type { SearchResult } from '../../../types/SearchResult';
 import { ContentType } from '../../../types/content/ContentType';
 
 export default function SearchResultItem({ item }: Readonly<{ item: SearchResult }>) {
+	let specificDetails = null;
+
+	switch (item.type) {
+		case ContentType.Song:
+			specificDetails = (
+				<Text fontSize='sm'>
+					{item.artist.name} - {item.album?.name}
+				</Text>
+			);
+			break;
+		case ContentType.Video:
+			specificDetails = (
+				<Text fontSize='sm'>
+					{item.artist.name} - {item.duration}
+				</Text>
+			);
+			break;
+		case ContentType.Album:
+			specificDetails = (
+				<Text fontSize='sm'>
+					{item.artist.name} - {item.year}
+				</Text>
+			);
+			break;
+		case ContentType.Playlist:
+			specificDetails = <Text fontSize='sm'>{item.artist.name}</Text>;
+			break;
+		case ContentType.Artist:
+			specificDetails = <Text fontSize='sm'>@{item.name}</Text>;
+			break;
+	}
+
 	return (
 		<Flex
 			as={motion.div}
@@ -34,9 +66,9 @@ export default function SearchResultItem({ item }: Readonly<{ item: SearchResult
 					quality={100}
 				/>
 			)}
-			<Flex>
+			<Flex direction='column'>
 				<Heading size='sm'>{item.name}</Heading>
-				<Text></Text>
+				{specificDetails}
 			</Flex>
 		</Flex>
 	);

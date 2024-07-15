@@ -1,4 +1,4 @@
-import { Flex, Heading, useBreakpointValue } from '@chakra-ui/react';
+import { Flex, Heading, SlideFade, useBreakpointValue } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
@@ -28,18 +28,20 @@ export default function ContentList({ items }: { items: SearchResult[] }) {
 				}}
 			>
 				{entries.map(([type, results], i) => (
-					<Flex direction='column' key={'results-' + type + i} w='100%' h='fit-content' p='20px' gap='10px'>
-						<Heading size='md'>
-							{(type as any as ContentType) == ContentType.Song
-								? 'Featured'
-								: ContentType[type as any as ContentType] + 's'}
-						</Heading>
-						<Flex w='100%' h='fit-content' maxH='100%' gap='20px' zIndex={1} direction='column'>
-							{results?.map((result, i) => (
-								<SearchResultItem item={result} key={result.id + i} />
-							))}
+					<SlideFade in delay={i * 0.05} key={'results-' + type + i}>
+						<Flex direction='column' w='100%' h='fit-content' p='20px' gap='10px'>
+							<Heading size='md'>
+								{(type as any as ContentType) == ContentType.Song
+									? 'Featured'
+									: ContentType[type as any as ContentType] + 's'}
+							</Heading>
+							<Flex w='100%' h='fit-content' maxH='100%' gap='20px' zIndex={1} direction='column'>
+								{results?.map((result, i) => (
+									<SearchResultItem item={result} key={result.id + i} />
+								))}
+							</Flex>
 						</Flex>
-					</Flex>
+					</SlideFade>
 				))}
 			</Flex>
 		)

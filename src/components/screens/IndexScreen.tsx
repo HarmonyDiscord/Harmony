@@ -1,6 +1,6 @@
 'use client';
 
-import { Center, Flex, Heading, Spacer, Spinner } from '@chakra-ui/react';
+import { Center, Flex, Heading, Spacer, Spinner, useBreakpointValue } from '@chakra-ui/react';
 import axios from 'axios';
 import { useAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
@@ -68,6 +68,8 @@ export default function IndexScreen() {
 
 	const content = searchResults || feed;
 
+	const isLg = useBreakpointValue([false, false, false, true]);
+
 	return (
 		<Flex w='100%' h='100%' direction='column' overflow='hidden'>
 			<Navbar searchInput={searchInput} setSearchInput={setSearchInput} />
@@ -78,10 +80,14 @@ export default function IndexScreen() {
 					</Center>
 				) : content && content.length > 0 ? (
 					searchResults || searchMediaResults ? (
-						<Flex w='100%'>
-							{searchMediaResults && <Feed items={searchMediaResults} />}
-							{searchResults && <ContentList items={content} />}
-						</Flex>
+						isLg ? (
+							<Flex w='100%'>
+								{searchMediaResults && <Feed items={searchMediaResults} />}
+								{searchResults && <ContentList items={content} />}
+							</Flex>
+						) : (
+							searchResults && <ContentList items={content} />
+						)
 					) : (
 						feed && <Feed items={feed} />
 					)

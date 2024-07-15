@@ -14,6 +14,10 @@ COPY --chown=nonroot --from=builder /home/bun/app/.next/standalone ./
 COPY --chown=nonroot --from=builder /home/bun/app/.next/static ./.next/static
 COPY --chown=nonroot --from=builder /home/bun/app/public ./public
 
+RUN ls -la
+
+ENV NEXT_SHARP_PATH=/home/nonroot/node_modules/sharp
+
 EXPOSE 3000/tcp
 
 CMD ["server.js"]

@@ -27,7 +27,7 @@ export default function AppFlow({
 
 	async function setup() {
 		const results = await axios
-			.get(`/api/media/search?q=${encodeURIComponent(' ')}`)
+			.get(`/api/content/media/search?q=${encodeURIComponent(' ')}`)
 			.then((res) => res.data)
 			.catch(() => null);
 

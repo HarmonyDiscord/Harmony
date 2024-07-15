@@ -220,7 +220,8 @@ export default memo(function Controls() {
 							w='100%'
 							bg='#FFFFFF10'
 							borderRadius='10px'
-							p='20px'
+							p='10px'
+							pr='20px'
 							gap='20px'
 							zIndex={2}
 							alignItems='center'
@@ -238,10 +239,10 @@ export default memo(function Controls() {
 									exit={{ y: 10, opacity: 0 }}
 								>
 									<Image
-										width={48}
-										height={48}
+										width={60}
+										height={60}
 										src={currentMedia.thumbnail ?? ''}
-										alt='Media icon'
+										alt={currentMedia.name}
 										objectFit='cover'
 										style={{
 											borderRadius: '5px'
@@ -250,7 +251,7 @@ export default memo(function Controls() {
 									<Flex gap='4px' direction='column'>
 										<Heading size='md'>{currentMedia.name}</Heading>
 										<Text>
-											{currentMedia.album?.name} – {currentMedia.artist.name}
+											{currentMedia.album?.name} - {currentMedia.artist.name}
 										</Text>
 									</Flex>
 								</Flex>

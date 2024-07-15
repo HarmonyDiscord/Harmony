@@ -17,6 +17,7 @@ import axios from 'axios';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { memo, useEffect, useState } from 'react';
+import ContentItem from '../general/content/ContentItem';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
@@ -25,9 +26,20 @@ const Playlist = memo(function Playlist() {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
 
 	return (
-		<Flex w='100%' h='100%' direction='column' overflowY='auto' gap='10px'>
-			{currentPlaylist.map((media) => (
-				<Flex key={media.id}>{media.name}</Flex>
+		<Flex
+			w='100%'
+			h='100%'
+			direction='column'
+			overflowY='auto'
+			gap='10px'
+			style={{
+				mask: 'linear-gradient(to top, transparent 0%, #000000 5%, #000000 95%, transparent 100%)',
+				maskMode: 'alpha'
+			}}
+			py='10px'
+		>
+			{currentPlaylist.map((media, i) => (
+				<ContentItem item={media} key={media.id + i} />
 			))}
 		</Flex>
 	);
@@ -44,7 +56,7 @@ const Lyrics = memo(function Lyrics({ songId }: Readonly<{ songId?: string }>) {
 			setIsLoading(true);
 			setLyrics(
 				await axios
-					.get(`/api/media/lyrics?id=${encodeURIComponent(songId)}`)
+					.get(`/api/content/media/lyrics?id=${encodeURIComponent(songId)}`)
 					.then((res) => res.data)
 					.catch(() => null)
 			);
@@ -54,7 +66,18 @@ const Lyrics = memo(function Lyrics({ songId }: Readonly<{ songId?: string }>) {
 	}, [songId]);
 
 	return (
-		<Flex w='100%' h='100%' direction='column' overflowY='auto' userSelect='text'>
+		<Flex
+			w='100%'
+			h='100%'
+			direction='column'
+			overflowY='auto'
+			userSelect='text'
+			style={{
+				mask: 'linear-gradient(to top, transparent 0%, #000000 5%, #000000 95%, transparent 100%)',
+				maskMode: 'alpha'
+			}}
+			py='10px'
+		>
 			{isLoading ? (
 				<Center w='100%' h='100%'>
 					<Spinner size='xl' />

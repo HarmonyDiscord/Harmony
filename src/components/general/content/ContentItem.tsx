@@ -5,7 +5,7 @@ import type { SearchResult } from '../../../types/SearchResult';
 import { ContentType } from '../../../types/content/ContentType';
 import formatDuration from '../../../util/formatDuration';
 
-export default function SearchResultItem({ item }: Readonly<{ item: SearchResult }>) {
+export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) {
 	let specificDetails = null;
 
 	switch (item.type) {

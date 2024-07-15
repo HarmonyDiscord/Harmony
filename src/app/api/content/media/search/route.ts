@@ -1,6 +1,6 @@
 import YTMusic from 'ytmusic-api';
-import getYouTubeVideoId from '../../../../util/getYouTubeVideoId';
-import parseSearchResult from '../../../../util/parseSearchResult';
+import getYouTubeVideoId from '../../../../../util/getYouTubeVideoId';
+import parseSearchResult from '../../../../../util/parseSearchResult';
 
 export async function GET(req: Request) {
 	const { searchParams } = new URL(req.url);

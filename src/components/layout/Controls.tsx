@@ -53,10 +53,7 @@ export default memo(function Controls() {
 				isLoading: true
 			});
 
-			const url = await axios
-				.get(`/api/song/url?id=${encodeURIComponent(currentSong.id)}`)
-				.then((res) => res.data)
-				.catch(() => null);
+			const url = `/api/song/stream?id=${encodeURIComponent(currentSong.id)}`;
 
 			setSongURL(url);
 

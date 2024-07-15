@@ -35,12 +35,14 @@ export default function Navbar({ searchInput, setSearchInput }: any) {
 				alignItems='center'
 				backdropFilter='blur(5px)'
 			>
-				<Box minW='36px'>
-					<MdMusicNote fontSize='36px' color='#FFFFFF' />
-				</Box>
-				<Heading size='md' fontWeight='bold'>
-					Harmony
-				</Heading>
+				<Flex gap='10px' cursor='pointer' onClick={() => location.reload()}>
+					<Box minW='36px'>
+						<MdMusicNote fontSize='36px' color='#FFFFFF' />
+					</Box>
+					<Heading size='md' fontWeight='bold'>
+						Harmony
+					</Heading>
+				</Flex>
 				<Spacer />
 				<InputGroup w='400px'>
 					<InputLeftElement pointerEvents='none'>

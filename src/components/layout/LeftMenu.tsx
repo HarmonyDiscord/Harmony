@@ -3,6 +3,7 @@ import {
 	Center,
 	CloseButton,
 	Flex,
+	SlideFade,
 	Spacer,
 	Spinner,
 	Tab,
@@ -29,6 +30,7 @@ const Playlist = memo(function Playlist() {
 		<Flex
 			w='100%'
 			h='100%'
+			pr='10px'
 			direction='column'
 			overflowY='auto'
 			gap='10px'
@@ -39,7 +41,9 @@ const Playlist = memo(function Playlist() {
 			py='10px'
 		>
 			{[...Object.values(currentPlaylist)].map((media, i) => (
-				<ContentItem item={media} key={media.id + i} />
+				<SlideFade in delay={i * 0.02} key={media.id + i}>
+					<ContentItem item={media} />
+				</SlideFade>
 			))}
 		</Flex>
 	);
@@ -69,6 +73,7 @@ const Lyrics = memo(function Lyrics({ songId }: Readonly<{ songId?: string }>) {
 		<Flex
 			w='100%'
 			h='100%'
+			pr='10px'
 			direction='column'
 			overflowY='auto'
 			userSelect='text'
@@ -139,13 +144,13 @@ export default memo(function LeftMenu() {
 						</TabList>
 						<TabIndicator mt='2px' px='2px' height='2px' bg='white' borderRadius='1px' />
 						<TabPanels h='100%' w='100%'>
-							<TabPanel h='100%' w='100%'>
+							<TabPanel h='100%' w='100%' pb='40px'>
 								<Playlist />
 							</TabPanel>
 							<TabPanel h='100%' w='100%' pb='40px'>
 								<Lyrics songId={currentMedia.id} />
 							</TabPanel>
-							<TabPanel h='100%' w='100%'>
+							<TabPanel h='100%' w='100%' pb='40px'>
 								Working on it!
 							</TabPanel>
 						</TabPanels>

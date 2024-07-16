@@ -9,10 +9,5 @@
         "ytdl",
         "ytmusic",
         "ytubes"
-    ],
-    "folder-color.pathColors": [
-        {
-            "folderPath": "Harmony\\src\\app\\api\\content\\search\\route.ts\\"
-        }
     ]
 }

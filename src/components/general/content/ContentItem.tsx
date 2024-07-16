@@ -142,7 +142,10 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 			</Center>
 			<Flex direction='row' w='100%'>
 				<Flex direction='column'>
-					<Heading size='sm'>{item.name}</Heading>
+					<Heading size='sm'>
+						{item.name}
+						{isCurrentMedia && ' - Now playing'}
+					</Heading>
 					{specificDetails}
 				</Flex>
 				<Spacer />

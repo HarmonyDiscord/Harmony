@@ -37,7 +37,7 @@ const Playlist = memo(function Playlist() {
 			pr='10px'
 			direction='column'
 			overflowY='auto'
-			gap='10px'
+			gap='20px'
 			style={{
 				mask: 'linear-gradient(to top, transparent 0%, #000000 5%, #000000 95%, transparent 100%)',
 				maskMode: 'alpha'

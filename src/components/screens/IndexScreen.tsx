@@ -14,7 +14,7 @@ import Controls from '../layout/Controls';
 import Feed from '../layout/Feed';
 import LeftMenu from '../layout/LeftMenu';
 import Navbar from '../layout/Navbar';
-import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
+import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import MediaPlayer from '../general/MediaPlayer';
 import { motion } from 'framer-motion';
@@ -22,7 +22,7 @@ import { motion } from 'framer-motion';
 export default function IndexScreen() {
 	const [feed] = useAtom(feedAtom);
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
-	const [mediaControls] = useAtom(mediaControlsAtom);
+	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 	const [currentMedia] = useAtom(currentMediaAtom);
 
 	const [searchInput, setSearchInput] = useState<string | null>(null);
@@ -59,6 +59,11 @@ export default function IndexScreen() {
 			]);
 
 			if (currentSearchCount === searchCountRef.current) {
+				setMediaControls({
+					...(mediaControls ?? defaultMediaControls),
+					isVideoMode: false
+				});
+
 				if (!results) {
 					setSearchResults(null);
 					setSearchMediaResults(null);

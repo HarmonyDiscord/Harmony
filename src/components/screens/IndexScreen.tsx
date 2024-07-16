@@ -2,22 +2,22 @@
 
 import { Box, Center, Flex, Heading, Spacer, Spinner, useBreakpointValue } from '@chakra-ui/react';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
+import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { feedAtom } from '../../atoms/FeedAtom';
+import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import { useDebounce } from '../../hooks/useDebounce';
 import type { SearchResult } from '../../types/SearchResult';
 import type { Media } from '../../types/content/Media';
+import MediaPlayer from '../general/MediaPlayer';
 import ContentList from '../layout/ContentList';
 import Controls from '../layout/Controls';
 import Feed from '../layout/Feed';
 import LeftMenu from '../layout/LeftMenu';
 import Navbar from '../layout/Navbar';
-import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
-import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
-import MediaPlayer from '../general/MediaPlayer';
-import { motion } from 'framer-motion';
 
 export default function IndexScreen() {
 	const [feed] = useAtom(feedAtom);

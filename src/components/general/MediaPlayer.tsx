@@ -1,12 +1,12 @@
+import { Flex, Spacer } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
-import MediaSlider from '../layout/MediaSlider';
 import getSongURL from '../../util/getSongURL';
-import { Flex, Spacer } from '@chakra-ui/react';
+import MediaSlider from '../layout/MediaSlider';
 
 export default function MediaPlayer() {
 	const [songURL, setSongURL] = useState<string | undefined>(undefined);

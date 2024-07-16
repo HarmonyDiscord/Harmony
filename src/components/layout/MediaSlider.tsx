@@ -26,14 +26,6 @@ export default function MediaSlider({
 	const [currentMedia] = useAtom(currentMediaAtom);
 	const [mediaControls] = useAtom(mediaControlsAtom);
 
-	const [currentTime, setCurrentTime] = useState('00:00');
-
-	useEffect(() => {
-		if (!currentMedia) return;
-
-		setCurrentTime(formatDuration(currentMedia.duration * progress));
-	}, [progress]);
-
 	return (
 		currentMedia && (
 			<Center my='5px' h='16px'>
@@ -41,7 +33,7 @@ export default function MediaSlider({
 					<AnimatePresence mode='wait'>
 						{!mediaControls?.isLoading ? (
 							<Flex w='100%' gap='12px'>
-								<Text>{currentTime}</Text>
+								<Text>{formatDuration(currentMedia.duration * progress)}</Text>
 								<Slider
 									key='slider'
 									as={motion.div}
@@ -49,7 +41,9 @@ export default function MediaSlider({
 									aria-label='track'
 									colorScheme='gray'
 									value={(progress ?? 0) * 100}
-									onChange={(v) => playerRef.current?.seekTo(v / 100, 'fraction')}
+									onChange={(v) => {
+										playerRef.current?.seekTo(v / 100, 'fraction');
+									}}
 									focusThumbOnChange={false}
 									initial={{ opacity: 0 }}
 									animate={{ opacity: 1, transition: { duration: 0.1 } }}

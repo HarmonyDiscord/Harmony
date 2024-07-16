@@ -7,4 +7,11 @@ export type MediaControls = {
 	isWaiting: boolean;
 	isSidePanelClosed: boolean;
 	useVideo: boolean;
+	progress: {
+		played: number;
+		playedSeconds: number;
+		loaded: number;
+		loadedSeconds: number;
+	};
+	seekTo: (value: number) => void;
 };

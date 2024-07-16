@@ -1,12 +1,12 @@
 import { Box, Center, Flex, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
-import { useEffect, useState, type RefObject } from 'react';
+import { type RefObject, useEffect, useState } from 'react';
+import type ReactPlayer from 'react-player';
 import { BarLoader } from 'react-spinners';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import formatDuration from '../../util/formatDuration';
-import type ReactPlayer from 'react-player';
 
 export default function MediaSlider({ progress, playerRef }: { progress: number; playerRef: RefObject<ReactPlayer> }) {
 	const [currentMedia] = useAtom(currentMediaAtom);

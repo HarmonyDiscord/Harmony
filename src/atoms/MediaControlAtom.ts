@@ -11,12 +11,5 @@ export const defaultMediaControls: MediaControls = {
 	isLoading: false,
 	isWaiting: false,
 	isSidePanelClosed: false,
-	useVideo: false,
-	progress: {
-		played: 0,
-		playedSeconds: 0,
-		loaded: 0,
-		loadedSeconds: 0
-	},
-	seekTo: () => {}
+	useVideo: false
 };

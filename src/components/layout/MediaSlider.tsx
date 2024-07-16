@@ -1,31 +1,32 @@
 import { Box, Center, Flex, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text } from '@chakra-ui/react';
-import axios from 'axios';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
 import { BarLoader } from 'react-spinners';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
-import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
-import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
-import { type CobaltResponse } from '../../types/Cobalt';
 import formatDuration from '../../util/formatDuration';
+import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
+import MediaController from '../general/MediaController';
+import type ReactPlayer from 'react-player';
 
-export default function MediaSlider() {
+export default function MediaSlider({
+	songURL,
+	setSongURL
+}: {
+	songURL?: string;
+	setSongURL: any;
+}) {
+	const playerRef = useRef<ReactPlayer>(null);
 	const [currentMedia] = useAtom(currentMediaAtom);
+	const [mediaControls] = useAtom(mediaControlsAtom);
 	const [progress, setProgress] = useState(0);
 	const [currentTime, setCurrentTime] = useState('00:00');
-	const [mediaControls] = useAtom(mediaControlsAtom);
 
 	useEffect(() => {
 		if (!currentMedia) return;
 
-		setProgress((mediaControls?.progress.played ?? 0) * 100);
-		setCurrentTime(formatDuration(mediaControls?.progress.playedSeconds ?? 0));
-	}, [mediaControls?.progress]);
-
-	const handleProgressChange = (value: number) => {
-		mediaControls?.seekTo(value / 100);
-	};
+		setCurrentTime(formatDuration(currentMedia.duration * progress));
+	}, [progress]);
 
 	return (
 		currentMedia && (
@@ -36,13 +37,13 @@ export default function MediaSlider() {
 							<Flex w='100%' gap='12px'>
 								<Text>{currentTime}</Text>
 								<Slider
-									as={motion.div}
 									key='slider'
+									as={motion.div}
 									isReadOnly={mediaControls?.isWaiting}
 									aria-label='track'
 									colorScheme='gray'
-									value={progress}
-									onChange={handleProgressChange}
+									value={(progress ?? 0) * 100}
+									onChange={(v) => playerRef.current?.seekTo(v / 100, 'fraction')}
 									focusThumbOnChange={false}
 									initial={{ opacity: 0 }}
 									animate={{ opacity: 1, transition: { duration: 0.1 } }}
@@ -81,6 +82,12 @@ export default function MediaSlider() {
 						)}
 					</AnimatePresence>
 				</Box>
+				<MediaController
+					songURL={songURL}
+					setSongURL={setSongURL}
+					setProgress={setProgress}
+					playerRef={playerRef}
+				/>
 			</Center>
 		)
 	);

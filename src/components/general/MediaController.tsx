@@ -1,17 +1,21 @@
 import axios from 'axios';
 import { useAtom } from 'jotai';
-import { useEffect, useRef, useState } from 'react';
-import ReactPlayer from 'react-player/file';
+import { useEffect, type RefObject } from 'react';
+import ReactPlayer from 'react-player';
 import { currentMediaAtom } from 'src/atoms/CurrentMediaAtom';
 import { discordActivityStatusAtom } from 'src/atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from 'src/atoms/MediaControlAtom';
 import type { CobaltResponse } from 'src/types/Cobalt';
 
-const AudioController = ({ songURL, setSongURL }: { songURL?: string; setSongURL: any }) => {
-	const playerRef = useRef<ReactPlayer>(null);
+export default function MediaController({
+	songURL,
+	setSongURL,
+	setProgress,
+	playerRef
+}: Readonly<{ songURL?: string; setSongURL: any; setProgress: any; playerRef: RefObject<ReactPlayer> }>) {
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
-	const [currentMedia, setCurrentMedia] = useAtom(currentMediaAtom);
+	const [currentMedia] = useAtom(currentMediaAtom);
 
 	useEffect(() => {
 		async function getSongURL(songId: string) {
@@ -77,41 +81,10 @@ const AudioController = ({ songURL, setSongURL }: { songURL?: string; setSongURL
 	useEffect(() => {
 		if (!mediaControls) return;
 
-		const seekTo = (value: number) => {
-			playerRef.current?.seekTo(value);
-		};
-
 		setMediaControls({
-			...(mediaControls ?? defaultMediaControls),
-			seekTo
+			...(mediaControls ?? defaultMediaControls)
 		});
 	}, [setMediaControls]);
-
-	function handleProgress({
-		playedSeconds,
-		loadedSeconds,
-		loaded,
-		played
-	}: {
-		played: number;
-		playedSeconds: number;
-		loaded: number;
-		loadedSeconds: number;
-	}) {
-		setMediaControls({
-			...(mediaControls ?? defaultMediaControls),
-			progress: {
-				playedSeconds,
-				loadedSeconds,
-				loaded,
-				played
-			}
-		});
-	}
-
-	function handleError(error: any) {
-		console.error(error);
-	}
 
 	return (
 		<ReactPlayer
@@ -121,18 +94,16 @@ const AudioController = ({ songURL, setSongURL }: { songURL?: string; setSongURL
 			volume={mediaControls?.volume ?? 1}
 			muted={mediaControls?.isMuted ?? false}
 			loop={mediaControls?.isLooping ?? false}
-			onProgress={handleProgress}
 			width={0}
 			height={0}
-			config={{
-				forceAudio: true
-			}}
-			onReady={() =>
-				{setMediaControls({
+			onProgress={(p) => setProgress(p.played)}
+			progressInterval={1}
+			onReady={() => {
+				setMediaControls({
 					...(mediaControls ?? defaultMediaControls),
 					isLoading: false
-				});console.log("debug: ready");}
-			}
+				});
+			}}
 			onPlay={() =>
 				setMediaControls({
 					...(mediaControls ?? defaultMediaControls),
@@ -151,9 +122,7 @@ const AudioController = ({ songURL, setSongURL }: { songURL?: string; setSongURL
 					isPlaying: false
 				})
 			}
-			onError={handleError}
-		></ReactPlayer>
+			onError={(err) => console.error(err)}
+		/>
 	);
-};
-
-export default AudioController;
+}

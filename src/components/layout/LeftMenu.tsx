@@ -69,6 +69,7 @@ function Lyric({ l }: Readonly<{ l: string }>) {
 			w='fit-content'
 			maxW='100%'
 			gap='10px'
+			px='5px'
 			alignItems='center'
 			onMouseEnter={() => setIsHovering(true)}
 			onMouseLeave={() => setIsHovering(false)}

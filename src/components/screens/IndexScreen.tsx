@@ -14,10 +14,16 @@ import Controls from '../layout/Controls';
 import Feed from '../layout/Feed';
 import LeftMenu from '../layout/LeftMenu';
 import Navbar from '../layout/Navbar';
+import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
+import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
+import MediaPlayer from '../general/MediaPlayer';
+import { motion } from 'framer-motion';
 
 export default function IndexScreen() {
 	const [feed] = useAtom(feedAtom);
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
+	const [mediaControls] = useAtom(mediaControlsAtom);
+	const [currentMedia] = useAtom(currentMediaAtom);
 
 	const [searchInput, setSearchInput] = useState<string | null>(null);
 	const [searchResults, setSearchResults] = useState<SearchResult[] | null>(null);
@@ -77,7 +83,31 @@ export default function IndexScreen() {
 			<Navbar searchInput={searchInput} setSearchInput={setSearchInput} />
 			{!discordActivityStatus?.isActivity && (
 				<Flex w='100%' h='100%' maxH='100%' overflow='hidden'>
-					{isSearchLoading ? (
+					{!mediaControls?.isAudioOnly && currentMedia ? (
+						<Box
+							as={motion.div}
+							w='100%'
+							h='100%'
+							p='20px'
+							initial={{ y: 10, opacity: 0 }}
+							animate={{ y: 0, opacity: 1 }}
+							exit={{ y: 10, opacity: 0 }}
+						>
+							<Center
+								w='100%'
+								h='100%'
+								bg='#FFFFFF10'
+								p='20px'
+								pb='40px'
+								borderRadius='10px'
+								zIndex={2}
+								alignItems='center'
+								backdropFilter='blur(5px)'
+							>
+								<MediaPlayer />
+							</Center>
+						</Box>
+					) : isSearchLoading ? (
 						<Center w='100%' h='100%'>
 							<Spinner size='xl' thickness='4px' />
 						</Center>

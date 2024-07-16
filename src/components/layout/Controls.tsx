@@ -36,7 +36,7 @@ import getSongURL from '../../util/getSongURL';
 
 export default memo(function Controls() {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
-	const [currentMedia, setCurrentSong] = useAtom(currentMediaAtom);
+	const [currentMedia, setCurrentMedia] = useAtom(currentMediaAtom);
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 
@@ -77,7 +77,6 @@ export default memo(function Controls() {
 					exit={{ y: 10, opacity: 0 }}
 				>
 					<Flex w='100%' h='100%' direction='column' gap='10px'>
-						<MediaPlayer />
 						<Flex
 							w='100%'
 							bg='#FFFFFF10'
@@ -220,7 +219,7 @@ export default memo(function Controls() {
 									<IconButton
 										icon={<MdClose fontSize='24px' />}
 										aria-label='Close'
-										onClick={() => setCurrentSong(null)}
+										onClick={() => setCurrentMedia(null)}
 									/>
 								</Flex>
 							</Hide>

@@ -6,6 +6,7 @@ import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import MediaSlider from '../layout/MediaSlider';
 import getSongURL from '../../util/getSongURL';
+import { Flex } from '@chakra-ui/react';
 
 export default function MediaPlayer() {
 	const [songURL, setSongURL] = useState<string | undefined>(undefined);
@@ -63,10 +64,16 @@ export default function MediaPlayer() {
 	}, [setMediaControls]);
 
 	return (
-		<>
+		<Flex direction='column' w='100%' h='100%' gap='10px' maxH='100%'>
 			<ReactPlayer
 				ref={playerRef}
 				url={songURL}
+				width='100%'
+				height='100%'
+				style={{
+					maxHeight: '100%',
+					borderRadius: '10px'
+				}}
 				playing={mediaControls?.isPlaying ?? false}
 				volume={mediaControls?.volume ?? 1}
 				muted={mediaControls?.isMuted ?? false}
@@ -100,6 +107,6 @@ export default function MediaPlayer() {
 				onError={(err) => console.error(err)}
 			/>
 			<MediaSlider playerRef={playerRef} progress={progress} />
-		</>
+		</Flex>
 	);
 }

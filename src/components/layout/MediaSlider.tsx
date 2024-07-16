@@ -1,25 +1,17 @@
 import { Box, Center, Flex, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
-import { useEffect, useRef, useState } from 'react';
-import type ReactPlayer from 'react-player';
+import { useEffect, useState, type RefObject } from 'react';
 import { BarLoader } from 'react-spinners';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import formatDuration from '../../util/formatDuration';
-import MediaController from '../general/MediaController';
+import type ReactPlayer from 'react-player';
 
-export default function MediaSlider({
-	songURL,
-	setSongURL
-}: {
-	songURL?: string;
-	setSongURL: any;
-}) {
-	const playerRef = useRef<ReactPlayer>(null);
+export default function MediaSlider({ progress, playerRef }: { progress: number; playerRef: RefObject<ReactPlayer> }) {
 	const [currentMedia] = useAtom(currentMediaAtom);
 	const [mediaControls] = useAtom(mediaControlsAtom);
-	const [progress, setProgress] = useState(0);
+
 	const [currentTime, setCurrentTime] = useState('00:00');
 
 	useEffect(() => {
@@ -82,12 +74,6 @@ export default function MediaSlider({
 						)}
 					</AnimatePresence>
 				</Box>
-				<MediaController
-					songURL={songURL}
-					setSongURL={setSongURL}
-					setProgress={setProgress}
-					playerRef={playerRef}
-				/>
 			</Center>
 		)
 	);

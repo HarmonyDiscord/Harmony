@@ -127,15 +127,14 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 							bg={item.type !== ContentType.Artist ? '#00000050' : '#FFFFFF20'}
 							position='absolute'
 						>
-							{item.type !== ContentType.Artist &&
-							(item.type === ContentType.Song || item.type === ContentType.Video) &&
+							{(item.type === ContentType.Song || item.type === ContentType.Video) &&
 							mediaControls?.isPlaying &&
 							isCurrentMedia ? (
 								<MdPauseCircle fontSize='30px' />
 							) : mediaControls?.isLoading && isCurrentMedia ? (
 								<Spinner size='md' />
 							) : (
-								<MdPlayCircle fontSize='30px' />
+								item.type !== ContentType.Artist && <MdPlayCircle fontSize='30px' />
 							)}
 						</Center>
 					)}

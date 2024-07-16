@@ -36,15 +36,6 @@ export default function AppFlow({
 		setFeed(results);
 
 		if (discordSDK) {
-			console.log('sdk suscribe');
-			discordSDK.subscribe('ACTIVITY_LAYOUT_MODE_UPDATE', ({ layout_mode }) => {
-				console.log('sdk update', layout_mode);
-				setDiscordActivityStatus({
-					...(discordActivityStatus ?? defaultDiscordActivityStatus),
-					isOverlay: layout_mode === 0
-				});
-			});
-
 			setDiscordActivityStatus({
 				...(discordActivityStatus ?? defaultDiscordActivityStatus),
 				isActivity: true
@@ -81,9 +72,19 @@ export default function AppFlow({
 					? `https://cdn.discordapp.com/avatars/${auth.user.id}/${auth.user.avatar}.png`
 					: undefined
 			});
-		}
 
-		setIsLoading(false);
+			setIsLoading(false);
+
+			await discordSDK.subscribe('ACTIVITY_LAYOUT_MODE_UPDATE', ({ layout_mode }) => {
+				console.log('sdk update', layout_mode);
+				setDiscordActivityStatus({
+					...(discordActivityStatus ?? defaultDiscordActivityStatus),
+					isOverlay: layout_mode === 1
+				});
+			});
+		} else {
+			setIsLoading(false);
+		}
 	}
 
 	useEffect(() => {

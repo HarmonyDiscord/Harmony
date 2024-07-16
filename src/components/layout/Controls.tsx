@@ -105,6 +105,7 @@ export default memo(function Controls() {
 										style={{
 											borderRadius: '5px'
 										}}
+										referrerPolicy='no-referrer'
 									/>
 									<Flex gap='4px' direction='column'>
 										<Heading size='md'>{currentMedia.name}</Heading>

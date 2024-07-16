@@ -96,6 +96,7 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 							borderRadius: item.type === ContentType.Artist ? '50%' : '5px'
 						}}
 						quality={100}
+						referrerPolicy='no-referrer'
 					/>
 				)}
 				<AnimatePresence>

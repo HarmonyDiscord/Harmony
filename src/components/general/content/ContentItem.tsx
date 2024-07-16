@@ -1,4 +1,4 @@
-import { Center, Flex, Heading, IconButton, Spacer, Text } from '@chakra-ui/react';
+import { Center, Fade, Flex, Heading, IconButton, Spacer, Text } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
@@ -124,7 +124,7 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 					{specificDetails}
 				</Flex>
 				<Spacer />
-				{isHovering && (item.type === ContentType.Song || item.type === ContentType.Video) && (
+				<Fade in={isHovering && (item.type === ContentType.Song || item.type === ContentType.Video)}>
 					<IconButton
 						size='sm'
 						isDisabled={isOnCurrentPlaylist}
@@ -137,11 +137,13 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 						}
 						aria-label='Add to playlist'
 						onClick={(e) => {
-							e.stopPropagation();
-							setCurrentPlaylist({ ...currentPlaylist, [item.id]: item });
+							if (item.type === ContentType.Song || item.type === ContentType.Video) {
+								e.stopPropagation();
+								setCurrentPlaylist({ ...currentPlaylist, [item.id]: item });
+							}
 						}}
 					/>
-				)}
+				</Fade>
 			</Flex>
 		</Flex>
 	);

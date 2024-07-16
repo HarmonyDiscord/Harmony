@@ -30,12 +30,14 @@ import {
 } from 'react-icons/md';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
+import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import MediaSlider from './VideoSlider';
 
 export default memo(function Controls() {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
 	const [currentMedia, setCurrentSong] = useAtom(currentMediaAtom);
+	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 	const [songURL, setSongURL] = useState<string | undefined>(undefined);
 
@@ -112,43 +114,45 @@ export default memo(function Controls() {
 									</Flex>
 								</Flex>
 							</AnimatePresence>
-							<Flex
-								gap='10px'
-								w='100%'
-								position={['relative', 'relative', 'absolute']}
-								alignItems='center'
-							>
-								<Spacer />
-								<IconButton
-									icon={<MdSkipPrevious fontSize='24px' />}
-									aria-label='Previous'
-									isDisabled={!currentPlaylistIdArray[currentMediaIndex! - 1]}
-								/>
-								<IconButton
-									icon={
-										mediaControls?.isPlaying || mediaControls?.isLoading ? (
-											<MdPause fontSize='26px' />
-										) : (
-											<MdPlayArrow fontSize='26px' />
-										)
-									}
-									size='lg'
-									isDisabled={mediaControls?.isLoading}
-									onClick={() =>
-										setMediaControls({
-											...(mediaControls ?? defaultMediaControls),
-											isPlaying: !mediaControls?.isPlaying
-										})
-									}
-									aria-label='Play'
-								/>
-								<IconButton
-									icon={<MdSkipNext fontSize='24px' />}
-									aria-label='Next'
-									isDisabled={!currentPlaylistIdArray[currentMediaIndex! + 1]}
-								/>
-								<Spacer />
-							</Flex>
+							{!discordActivityStatus?.isOverlay && (
+								<Flex
+									gap='10px'
+									w='100%'
+									position={['relative', 'relative', 'absolute']}
+									alignItems='center'
+								>
+									<Spacer />
+									<IconButton
+										icon={<MdSkipPrevious fontSize='24px' />}
+										aria-label='Previous'
+										isDisabled={!currentPlaylistIdArray[currentMediaIndex! - 1]}
+									/>
+									<IconButton
+										icon={
+											mediaControls?.isPlaying || mediaControls?.isLoading ? (
+												<MdPause fontSize='26px' />
+											) : (
+												<MdPlayArrow fontSize='26px' />
+											)
+										}
+										size='lg'
+										isDisabled={mediaControls?.isLoading}
+										onClick={() =>
+											setMediaControls({
+												...(mediaControls ?? defaultMediaControls),
+												isPlaying: !mediaControls?.isPlaying
+											})
+										}
+										aria-label='Play'
+									/>
+									<IconButton
+										icon={<MdSkipNext fontSize='24px' />}
+										aria-label='Next'
+										isDisabled={!currentPlaylistIdArray[currentMediaIndex! + 1]}
+									/>
+									<Spacer />
+								</Flex>
+							)}
 							<Hide below='sm'>
 								<Spacer />
 								<Flex gap='10px' alignItems='center'>

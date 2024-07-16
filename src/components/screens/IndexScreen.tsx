@@ -13,9 +13,11 @@ import Controls from '../layout/Controls';
 import Feed from '../layout/Feed';
 import LeftMenu from '../layout/LeftMenu';
 import Navbar from '../layout/Navbar';
+import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 
 export default function IndexScreen() {
 	const [feed] = useAtom(feedAtom);
+	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 
 	const [searchInput, setSearchInput] = useState<string | null>(null);
 	const [searchResults, setSearchResults] = useState<SearchResult[] | null>(null);
@@ -73,7 +75,7 @@ export default function IndexScreen() {
 	return (
 		<Flex w='100%' h='100%' direction='column' overflow='hidden'>
 			<Navbar searchInput={searchInput} setSearchInput={setSearchInput} />
-			<Flex w='100%' h='100%' maxH='100%' overflow='hidden'>
+			{!discordActivityStatus?.isActivity && <Flex w='100%' h='100%' maxH='100%' overflow='hidden'>
 				{isSearchLoading ? (
 					<Center w='100%' h='100%'>
 						<Spinner size='xl' thickness='4px' />
@@ -119,7 +121,7 @@ export default function IndexScreen() {
 					</Center>
 				)}
 				<LeftMenu />
-			</Flex>
+			</Flex>}
 			<Spacer />
 			<Controls />
 		</Flex>

@@ -16,16 +16,15 @@ import {
 import { useAtom } from 'jotai';
 import { MdMenu, MdMusicNote, MdSearch } from 'react-icons/md';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
-import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import { userAtom } from '../../atoms/UserAtom';
+import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 
 export default function Navbar({ searchInput, setSearchInput }: any) {
 	const [user] = useAtom(userAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [currentMedia] = useAtom(currentMediaAtom);
-
 	return (
 		!discordActivityStatus?.isOverlay && (
 			<Box w='100%' p='20px' pb='0px'>

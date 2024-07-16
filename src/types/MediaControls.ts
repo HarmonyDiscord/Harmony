@@ -5,6 +5,6 @@ export type MediaControls = {
 	isLooping: boolean;
 	isLoading: boolean;
 	isWaiting: boolean;
+	isAudioOnly: boolean;
 	isSidePanelClosed: boolean;
-	useVideo: boolean;
 };

@@ -1,21 +1,21 @@
 import axios from 'axios';
 import { useAtom } from 'jotai';
-import { type RefObject, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 import { currentMediaAtom } from 'src/atoms/CurrentMediaAtom';
 import { discordActivityStatusAtom } from 'src/atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from 'src/atoms/MediaControlAtom';
 import type { CobaltResponse } from 'src/types/Cobalt';
+import MediaSlider from '../layout/MediaSlider';
 
-export default function MediaController({
-	songURL,
-	setSongURL,
-	setProgress,
-	playerRef
-}: Readonly<{ songURL?: string; setSongURL: any; setProgress: any; playerRef: RefObject<ReactPlayer> }>) {
+export default function MediaController({ songURL, setSongURL }: Readonly<{ songURL?: string; setSongURL: any }>) {
+	const playerRef = useRef<ReactPlayer>(null);
+
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 	const [currentMedia] = useAtom(currentMediaAtom);
+
+	const [progress, setProgress] = useState(0);
 
 	useEffect(() => {
 		async function getSongURL(songId: string) {
@@ -87,42 +87,43 @@ export default function MediaController({
 	}, [setMediaControls]);
 
 	return (
-		<ReactPlayer
-			ref={playerRef}
-			url={songURL}
-			playing={mediaControls?.isPlaying ?? false}
-			volume={mediaControls?.volume ?? 1}
-			muted={mediaControls?.isMuted ?? false}
-			loop={mediaControls?.isLooping ?? false}
-			width={0}
-			height={0}
-			onProgress={(p) => setProgress(p.played)}
-			progressInterval={1}
-			onReady={() => {
-				setMediaControls({
-					...(mediaControls ?? defaultMediaControls),
-					isLoading: false
-				});
-			}}
-			onPlay={() =>
-				setMediaControls({
-					...(mediaControls ?? defaultMediaControls),
-					isPlaying: true
-				})
-			}
-			onPause={() =>
-				setMediaControls({
-					...(mediaControls ?? defaultMediaControls),
-					isPlaying: false
-				})
-			}
-			onEnded={() =>
-				setMediaControls({
-					...(mediaControls ?? defaultMediaControls),
-					isPlaying: false
-				})
-			}
-			onError={(err) => console.error(err)}
-		/>
+		<>
+			<ReactPlayer
+				ref={playerRef}
+				url={songURL}
+				playing={mediaControls?.isPlaying ?? false}
+				volume={mediaControls?.volume ?? 1}
+				muted={mediaControls?.isMuted ?? false}
+				loop={mediaControls?.isLooping ?? false}
+				onProgress={(p) => setProgress(p.played)}
+				progressInterval={1}
+				onReady={() => {
+					setMediaControls({
+						...(mediaControls ?? defaultMediaControls),
+						isLoading: false
+					});
+				}}
+				onPlay={() =>
+					setMediaControls({
+						...(mediaControls ?? defaultMediaControls),
+						isPlaying: true
+					})
+				}
+				onPause={() =>
+					setMediaControls({
+						...(mediaControls ?? defaultMediaControls),
+						isPlaying: false
+					})
+				}
+				onEnded={() =>
+					setMediaControls({
+						...(mediaControls ?? defaultMediaControls),
+						isPlaying: false
+					})
+				}
+				onError={(err) => console.error(err)}
+			/>
+			<MediaSlider playerRef={playerRef} progress={progress} />
+		</>
 	);
 }

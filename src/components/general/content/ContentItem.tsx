@@ -1,18 +1,23 @@
-import { Center, Fade, Flex, Heading, IconButton, Spacer, Text } from '@chakra-ui/react';
+import { Center, Fade, Flex, Heading, IconButton, Spacer, Spinner, Text } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
 import { useState } from 'react';
-import { MdPlayCircle, MdPlaylistAdd, MdPlaylistAddCheck } from 'react-icons/md';
+import { MdPauseCircle, MdPlayCircle, MdPlaylistAdd, MdPlaylistAddCheck } from 'react-icons/md';
 import { currentPlaylistAtom } from '../../../atoms/CurrentPlaylistAtom';
 import type { SearchResult } from '../../../types/SearchResult';
 import { ContentType } from '../../../types/content/ContentType';
 import formatDuration from '../../../util/formatDuration';
+import { defaultMediaControls, mediaControlsAtom } from '../../../atoms/MediaControlAtom';
+import { currentMediaAtom } from '../../../atoms/CurrentMediaAtom';
 
 export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) {
 	const [isHovering, setIsHovering] = useState(false);
 	const [currentPlaylist, setCurrentPlaylist] = useAtom(currentPlaylistAtom);
+	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
+	const [currentMedia, setCurrentMedia] = useAtom(currentMediaAtom);
 
+	const isCurrentMedia = currentMedia?.id === item.id;
 	const isOnCurrentPlaylist = !!currentPlaylist[item.id];
 
 	let specificDetails = null;
@@ -67,6 +72,15 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 				switch (item.type) {
 					case ContentType.Song:
 					case ContentType.Video:
+						if (isCurrentMedia)
+							return setMediaControls({
+								...(mediaControls ?? defaultMediaControls),
+								isPlaying: !mediaControls?.isPlaying
+							});
+
+						setCurrentMedia(item);
+						setCurrentPlaylist({ ...currentPlaylist, [item.id]: item });
+
 						break;
 					case ContentType.Album:
 						break;
@@ -113,7 +127,16 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 							bg={item.type !== ContentType.Artist ? '#00000050' : '#FFFFFF20'}
 							position='absolute'
 						>
-							{item.type !== ContentType.Artist && <MdPlayCircle fontSize='30px' />}
+							{item.type !== ContentType.Artist &&
+							(item.type === ContentType.Song || item.type === ContentType.Video) &&
+							mediaControls?.isPlaying &&
+							isCurrentMedia ? (
+								<MdPauseCircle fontSize='30px' />
+							) : mediaControls?.isLoading && isCurrentMedia ? (
+								<Spinner size='md' />
+							) : (
+								<MdPlayCircle fontSize='30px' />
+							)}
 						</Center>
 					)}
 				</AnimatePresence>

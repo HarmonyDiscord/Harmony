@@ -2,6 +2,7 @@ import {
 	Box,
 	Center,
 	CloseButton,
+	Fade,
 	Flex,
 	SlideFade,
 	Spacer,
@@ -52,6 +53,34 @@ const Playlist = memo(function Playlist() {
 	);
 });
 
+function Lyric({ l }: Readonly<{ l: string }>) {
+	const [isHovering, setIsHovering] = useState(false);
+
+	return (
+		<Flex
+			as={motion.div}
+			initial={{
+				backgroundColor: '#FFFFFF00'
+			}}
+			whileHover={{
+				backgroundColor: '#FFFFFF10'
+			}}
+			borderRadius='2px'
+			w='fit-content'
+			maxW='100%'
+			gap='10px'
+			alignItems='center'
+			onMouseEnter={() => setIsHovering(true)}
+			onMouseLeave={() => setIsHovering(false)}
+		>
+			<Text>{l}</Text>
+			<Fade in={isHovering} delay={0.08}>
+				<MdContentCopy />
+			</Fade>
+		</Flex>
+	);
+}
+
 const Lyrics = memo(function Lyrics({ mediaId }: Readonly<{ mediaId?: string }>) {
 	const [lyrics, setLyrics] = useState<string[] | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
@@ -91,26 +120,7 @@ const Lyrics = memo(function Lyrics({ mediaId }: Readonly<{ mediaId?: string }>)
 					<Spinner size='xl' />
 				</Center>
 			) : (
-				lyrics?.map((l, i) => (
-					<Flex
-						as={motion.div}
-						initial={{
-							backgroundColor: '#FFFFFF00'
-						}}
-						whileHover={{
-							backgroundColor: '#FFFFFF10'
-						}}
-						borderRadius='2px'
-						key={i + '-' + l}
-						w='fit-content'
-						maxW='100%'
-						gap='10px'
-						alignItems='center'
-					>
-						<Text>{l}</Text>
-						<MdContentCopy />
-					</Flex>
-				)) ?? <Text>This song does not have lyrics.</Text>
+				lyrics?.map((l, i) => <Lyric key={i + '-' + l} l={l} />) ?? <Text>This song does not have lyrics.</Text>
 			)}
 		</Flex>
 	);

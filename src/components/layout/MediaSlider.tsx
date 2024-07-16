@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
-import { type RefObject, useEffect, useState } from 'react';
+import { type RefObject } from 'react';
 import type ReactPlayer from 'react-player';
 import { BarLoader } from 'react-spinners';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
@@ -19,10 +19,10 @@ import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import formatDuration from '../../util/formatDuration';
 
 export default function MediaSlider({
-	progress,
-	loadProgress,
+	seconds,
+	loadSeconds,
 	playerRef
-}: { progress: number; loadProgress: number; playerRef: RefObject<ReactPlayer> }) {
+}: { seconds: number; loadSeconds: number; playerRef: RefObject<ReactPlayer> }) {
 	const [currentMedia] = useAtom(currentMediaAtom);
 	const [mediaControls] = useAtom(mediaControlsAtom);
 
@@ -33,14 +33,14 @@ export default function MediaSlider({
 					<AnimatePresence mode='wait'>
 						{!mediaControls?.isLoading ? (
 							<Flex w='100%' gap='12px'>
-								<Text>{formatDuration(currentMedia.duration * progress)}</Text>
+								<Text>{formatDuration(seconds)}</Text>
 								<Slider
 									key='slider'
 									as={motion.div}
 									isReadOnly={mediaControls?.isWaiting}
 									aria-label='track'
 									colorScheme='gray'
-									value={(progress ?? 0) * 100}
+									value={((seconds ?? 0) / currentMedia.duration) * 100}
 									onChange={(v) => {
 										playerRef.current?.seekTo(v / 100, 'fraction');
 									}}
@@ -52,7 +52,7 @@ export default function MediaSlider({
 									<SliderTrack bg='transparent'>
 										<SliderFilledTrack />
 										<Progress
-											value={(loadProgress ?? 0) * 100}
+											value={((loadSeconds ?? 0) / currentMedia.duration) * 100}
 											w='100%'
 											size='xs'
 											colorScheme='whiteAlpha'

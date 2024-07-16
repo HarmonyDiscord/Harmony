@@ -84,8 +84,8 @@ export default function MediaPlayer() {
 				muted={mediaControls?.isMuted ?? false}
 				loop={mediaControls?.isLooping ?? false}
 				onProgress={(p) => {
-					setProgress(p.played);
-					setLoadProgress(p.loaded);
+					setProgress(p.playedSeconds);
+					setLoadProgress(p.loadedSeconds);
 				}}
 				progressInterval={1}
 				onBuffer={() =>
@@ -135,7 +135,7 @@ export default function MediaPlayer() {
 				}}
 			/>
 			<Spacer />
-			<MediaSlider playerRef={playerRef} progress={progress} loadProgress={loadProgress} />
+			<MediaSlider playerRef={playerRef} seconds={progress} loadSeconds={loadProgress} />
 		</Flex>
 	);
 }

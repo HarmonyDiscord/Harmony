@@ -71,6 +71,7 @@ export default function MediaPlayer() {
 	return (
 		<Flex direction='column' w='100%' h='100%' gap='10px' maxH='100%'>
 			<ReactPlayer
+				key='player'
 				ref={playerRef}
 				url={songURL}
 				width={mediaControls?.isVideoMode ? '100%' : '0px'}
@@ -102,7 +103,8 @@ export default function MediaPlayer() {
 				onReady={() => {
 					setMediaControls({
 						...(mediaControls ?? defaultMediaControls),
-						isLoading: false
+						isLoading: false,
+						isPlaying: true
 					});
 				}}
 				onPlay={() =>

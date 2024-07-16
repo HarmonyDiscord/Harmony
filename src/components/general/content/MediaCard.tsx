@@ -67,6 +67,7 @@ export default function MediaCard(media: Readonly<Media>) {
 						objectFit: 'cover',
 						borderRadius: '10px'
 					}}
+					referrerPolicy='no-referrer'
 					quality={100}
 				/>
 			)}

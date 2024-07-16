@@ -1,6 +1,5 @@
 import {
 	Box,
-	Center,
 	Flex,
 	Heading,
 	Hide,
@@ -19,6 +18,8 @@ import { memo, useState } from 'react';
 import {
 	MdClose,
 	MdDownload,
+	MdFullscreen,
+	MdMusicVideo,
 	MdPause,
 	MdPlayArrow,
 	MdRepeat,
@@ -32,31 +33,29 @@ import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
-import MediaSlider from './VideoSlider';
+import MediaPlayer from '../general/MediaPlayer';
+import getSongURL from '../../util/getSongURL';
 
 export default memo(function Controls() {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
-	const [currentMedia, setCurrentSong] = useAtom(currentMediaAtom);
+	const [currentMedia, setCurrentMedia] = useAtom(currentMediaAtom);
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
-	const [songURL, setSongURL] = useState<string | undefined>(undefined);
+
+	const [downloadIsLoading, setDownloadIsLoading] = useState(false);
 
 	const currentPlaylistIdArray = [...Object.keys(currentPlaylist)];
 
 	const currentMediaIndex = currentMedia && currentPlaylistIdArray.indexOf(currentMedia.id);
 
 	const handleVolumeChange = (value: number) => {
-		setMediaControls({ ...(mediaControls ?? defaultMediaControls), isMuted: false });
+		setMediaControls({
+			...(mediaControls ?? defaultMediaControls),
+			isMuted: false
+		});
 		setMediaControls({
 			...(mediaControls ?? defaultMediaControls),
 			volume: value / 100
-		});
-	};
-
-	const toggleLoop = () => {
-		setMediaControls({
-			...(mediaControls ?? defaultMediaControls),
-			isLooping: !mediaControls?.isLooping
 		});
 	};
 
@@ -73,7 +72,7 @@ export default memo(function Controls() {
 					exit={{ y: 10, opacity: 0 }}
 				>
 					<Flex w='100%' h='100%' direction='column' gap='10px'>
-						<MediaSlider songURL={songURL} setSongURL={setSongURL} />
+						{!mediaControls?.isVideoMode && <MediaPlayer />}
 						<Flex
 							w='100%'
 							bg='#FFFFFF10'
@@ -196,18 +195,49 @@ export default memo(function Controls() {
 											)
 										}
 										aria-label='Toggle Loop'
-										onClick={() => toggleLoop()}
+										onClick={() =>
+											setMediaControls({
+												...(mediaControls ?? defaultMediaControls),
+												isLooping: !mediaControls?.isLooping
+											})
+										}
+									/>
+									<IconButton
+										icon={
+											mediaControls?.isVideoMode ? (
+												<MdMusicVideo fontSize='24px' />
+											) : (
+												<MdFullscreen fontSize='24px' />
+											)
+										}
+										aria-label='Toggle Video mode'
+										onClick={() =>
+											setMediaControls({
+												...(mediaControls ?? defaultMediaControls),
+												isVideoMode: !mediaControls?.isVideoMode
+											})
+										}
 									/>
 									<IconButton
 										icon={<MdDownload fontSize='24px' />}
 										aria-label='Download'
-										isDisabled={!songURL}
-										onClick={() => open(songURL)}
+										isLoading={downloadIsLoading}
+										onClick={async () => {
+											setDownloadIsLoading(true);
+											open(
+												await getSongURL(
+													currentMedia.id,
+													discordActivityStatus?.isActivity ?? false,
+													true
+												)
+											);
+											setDownloadIsLoading(false);
+										}}
 									/>
 									<IconButton
 										icon={<MdClose fontSize='24px' />}
 										aria-label='Close'
-										onClick={() => setCurrentSong(null)}
+										onClick={() => setCurrentMedia(null)}
 									/>
 								</Flex>
 							</Hide>

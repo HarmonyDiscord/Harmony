@@ -1,6 +1,5 @@
 import {
 	Box,
-	Center,
 	Flex,
 	Heading,
 	Hide,
@@ -32,7 +31,7 @@ import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
-import MediaSlider from './VideoSlider';
+import MediaSlider from './MediaSlider';
 
 export default memo(function Controls() {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
@@ -46,7 +45,10 @@ export default memo(function Controls() {
 	const currentMediaIndex = currentMedia && currentPlaylistIdArray.indexOf(currentMedia.id);
 
 	const handleVolumeChange = (value: number) => {
-		setMediaControls({ ...(mediaControls ?? defaultMediaControls), isMuted: false });
+		setMediaControls({
+			...(mediaControls ?? defaultMediaControls),
+			isMuted: false
+		});
 		setMediaControls({
 			...(mediaControls ?? defaultMediaControls),
 			volume: value / 100
@@ -73,7 +75,7 @@ export default memo(function Controls() {
 					exit={{ y: 10, opacity: 0 }}
 				>
 					<Flex w='100%' h='100%' direction='column' gap='10px'>
-						<MediaSlider songURL={songURL} setSongURL={setSongURL} />
+						<MediaSlider setSongURL={setSongURL} songURL={songURL} />
 						<Flex
 							w='100%'
 							bg='#FFFFFF10'

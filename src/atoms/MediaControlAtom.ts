@@ -12,5 +12,4 @@ export const defaultMediaControls: MediaControls = {
 	isWaiting: false,
 	isVideoMode: false,
 	isSidePanelClosed: false
-
 };

@@ -7,56 +7,36 @@ import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaContro
 import MediaSlider from '../layout/MediaSlider';
 import getSongURL from '../../util/getSongURL';
 import { Flex, Spacer } from '@chakra-ui/react';
-import { currentMediaSourcesAtom, defaultCurrentMediaSources } from '../../atoms/CurrentMediaSourcesAtom';
 
 export default function MediaPlayer() {
+	const [songURL, setSongURL] = useState<string | undefined>(undefined);
 	const playerRef = useRef<ReactPlayer>(null);
 
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
-	const [currentMediaSources, setCurrentMediaSources] = useAtom(currentMediaSourcesAtom);
 	const [currentMedia] = useAtom(currentMediaAtom);
 
 	const [progress, setProgress] = useState(0);
-
-	const isAudio = !mediaControls?.isVideoMode;
 
 	useEffect(() => {
 		async function setup() {
 			if (!currentMedia) return null;
 
-			if (
-				currentMediaSources?.currentId !== currentMedia.id ||
-				(isAudio && currentMediaSources.songURL) ||
-				(!isAudio && currentMediaSources.videoURL)
-			) {
-				setMediaControls({
-					...(mediaControls ?? defaultMediaControls),
-					isPlaying: false,
-					isLoading: true
-				});
-
-				setCurrentMediaSources({
-					...(currentMediaSources ?? defaultCurrentMediaSources),
-					currentId: currentMedia.id,
-					songURL: isAudio ? undefined : currentMediaSources?.songURL,
-					videoURL: isAudio ? currentMediaSources?.videoURL : undefined
-				});
-
-				const url = await getSongURL(currentMedia.id, discordActivityStatus?.isActivity ?? false, isAudio);
-
-				setCurrentMediaSources({
-					...(currentMediaSources ?? defaultCurrentMediaSources),
-					songURL: isAudio ? url : currentMediaSources?.songURL,
-					videoURL: isAudio ? currentMediaSources?.videoURL : url
-				});
-			}
-
 			setMediaControls({
 				...(mediaControls ?? defaultMediaControls),
-				isPlaying: true,
-				isLoading: false
+				isPlaying: false,
+				isLoading: true
 			});
+
+			setSongURL(undefined);
+
+			const url = await getSongURL(
+				currentMedia.id,
+				discordActivityStatus?.isActivity ?? false,
+				!mediaControls?.isVideoMode
+			);
+
+			setSongURL(url);
 
 			if ('mediaSession' in navigator) {
 				navigator.mediaSession.metadata = new MediaMetadata({
@@ -88,15 +68,14 @@ export default function MediaPlayer() {
 	}, [setMediaControls]);
 
 	return (
-		<Flex direction='column' w='100%' h='100%' gap='10px' maxH='100%' overflow='hidden'>
+		<Flex direction='column' w='100%' h='100%' gap='10px' maxH='100%'>
 			<ReactPlayer
 				ref={playerRef}
-				url={isAudio ? currentMediaSources?.songURL : currentMediaSources?.videoURL}
+				url={songURL}
 				width={mediaControls?.isVideoMode ? '100%' : '0px'}
 				height={mediaControls?.isVideoMode ? '100%' : '0px'}
 				style={{
 					maxHeight: '100%',
-					maxWidth: '100%',
 					borderRadius: '10px'
 				}}
 				playing={mediaControls?.isPlaying ?? false}

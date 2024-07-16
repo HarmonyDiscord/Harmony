@@ -1,24 +1,30 @@
-import { Box, Center, Flex, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text } from '@chakra-ui/react';
+import {
+	Box,
+	Center,
+	Flex,
+	Progress,
+	Slider,
+	SliderFilledTrack,
+	SliderThumb,
+	SliderTrack,
+	Text
+} from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
-import { type RefObject, useEffect, useState } from 'react';
+import { type RefObject } from 'react';
 import type ReactPlayer from 'react-player';
 import { BarLoader } from 'react-spinners';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import formatDuration from '../../util/formatDuration';
 
-export default function MediaSlider({ progress, playerRef }: { progress: number; playerRef: RefObject<ReactPlayer> }) {
+export default function MediaSlider({
+	seconds,
+	loadSeconds,
+	playerRef
+}: { seconds: number; loadSeconds: number; playerRef: RefObject<ReactPlayer> }) {
 	const [currentMedia] = useAtom(currentMediaAtom);
 	const [mediaControls] = useAtom(mediaControlsAtom);
-
-	const [currentTime, setCurrentTime] = useState('00:00');
-
-	useEffect(() => {
-		if (!currentMedia) return;
-
-		setCurrentTime(formatDuration(currentMedia.duration * progress));
-	}, [progress]);
 
 	return (
 		currentMedia && (
@@ -27,22 +33,30 @@ export default function MediaSlider({ progress, playerRef }: { progress: number;
 					<AnimatePresence mode='wait'>
 						{!mediaControls?.isLoading ? (
 							<Flex w='100%' gap='12px'>
-								<Text>{currentTime}</Text>
+								<Text>{formatDuration(seconds)}</Text>
 								<Slider
 									key='slider'
 									as={motion.div}
 									isReadOnly={mediaControls?.isWaiting}
 									aria-label='track'
 									colorScheme='gray'
-									value={(progress ?? 0) * 100}
-									onChange={(v) => playerRef.current?.seekTo(v / 100, 'fraction')}
+									value={((seconds ?? 0) / currentMedia.duration) * 100}
+									onChange={(v) => {
+										playerRef.current?.seekTo(v / 100, 'fraction');
+									}}
 									focusThumbOnChange={false}
 									initial={{ opacity: 0 }}
 									animate={{ opacity: 1, transition: { duration: 0.1 } }}
 									exit={{ opacity: 0, transition: { duration: 0.1 } }}
 								>
-									<SliderTrack>
+									<SliderTrack bg='transparent'>
 										<SliderFilledTrack />
+										<Progress
+											value={((loadSeconds ?? 0) / currentMedia.duration) * 100}
+											w='100%'
+											size='xs'
+											colorScheme='whiteAlpha'
+										/>
 									</SliderTrack>
 									<SliderThumb />
 								</Slider>

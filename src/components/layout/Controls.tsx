@@ -33,8 +33,8 @@ import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
-import MediaPlayer from '../general/MediaPlayer';
 import getSongURL from '../../util/getSongURL';
+import MediaPlayer from '../general/MediaPlayer';
 
 export default memo(function Controls() {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
@@ -228,7 +228,7 @@ export default memo(function Controls() {
 												await getSongURL(
 													currentMedia.id,
 													discordActivityStatus?.isActivity ?? false,
-													true
+													false
 												)
 											);
 											setDownloadIsLoading(false);

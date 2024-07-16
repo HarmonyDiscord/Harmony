@@ -1,12 +1,12 @@
+import { Flex, Spacer } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
-import MediaSlider from '../layout/MediaSlider';
 import getSongURL from '../../util/getSongURL';
-import { Flex, Spacer } from '@chakra-ui/react';
+import MediaSlider from '../layout/MediaSlider';
 
 export default function MediaPlayer() {
 	const [songURL, setSongURL] = useState<string | undefined>(undefined);
@@ -17,6 +17,7 @@ export default function MediaPlayer() {
 	const [currentMedia] = useAtom(currentMediaAtom);
 
 	const [progress, setProgress] = useState(0);
+	const [loadProgress, setLoadProgress] = useState(0);
 
 	useEffect(() => {
 		async function setup() {
@@ -70,24 +71,40 @@ export default function MediaPlayer() {
 	return (
 		<Flex direction='column' w='100%' h='100%' gap='10px' maxH='100%'>
 			<ReactPlayer
+				key='player'
 				ref={playerRef}
 				url={songURL}
 				width={mediaControls?.isVideoMode ? '100%' : '0px'}
 				height={mediaControls?.isVideoMode ? '100%' : '0px'}
 				style={{
-					maxHeight: '100%',
-					borderRadius: '10px'
+					overflow: 'hidden'
 				}}
 				playing={mediaControls?.isPlaying ?? false}
 				volume={mediaControls?.volume ?? 1}
 				muted={mediaControls?.isMuted ?? false}
 				loop={mediaControls?.isLooping ?? false}
-				onProgress={(p) => setProgress(p.played)}
+				onProgress={(p) => {
+					setProgress(p.playedSeconds);
+					setLoadProgress(p.loadedSeconds);
+				}}
 				progressInterval={1}
-				onReady={() => {
+				onBuffer={() =>
+					setMediaControls({
+						...(mediaControls ?? defaultMediaControls),
+						isLoading: true
+					})
+				}
+				onBufferEnd={() =>
 					setMediaControls({
 						...(mediaControls ?? defaultMediaControls),
 						isLoading: false
+					})
+				}
+				onReady={() => {
+					setMediaControls({
+						...(mediaControls ?? defaultMediaControls),
+						isLoading: false,
+						isPlaying: true
 					});
 				}}
 				onPlay={() =>
@@ -108,10 +125,17 @@ export default function MediaPlayer() {
 						isPlaying: false
 					})
 				}
-				onError={(err) => console.error(err)}
+				onError={(err) => {
+					setMediaControls({
+						...(mediaControls ?? defaultMediaControls),
+						isPlaying: false
+					});
+
+					console.error(err);
+				}}
 			/>
 			<Spacer />
-			<MediaSlider playerRef={playerRef} progress={progress} />
+			<MediaSlider playerRef={playerRef} seconds={progress} loadSeconds={loadProgress} />
 		</Flex>
 	);
 }

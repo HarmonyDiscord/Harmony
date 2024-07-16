@@ -1,14 +1,14 @@
-import axios from 'axios';
 import { useAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
-import { currentMediaAtom } from 'src/atoms/CurrentMediaAtom';
-import { discordActivityStatusAtom } from 'src/atoms/DiscordActivityStatus';
-import { defaultMediaControls, mediaControlsAtom } from 'src/atoms/MediaControlAtom';
-import type { CobaltResponse } from 'src/types/Cobalt';
+import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
+import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
+import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import MediaSlider from '../layout/MediaSlider';
+import getSongURL from '../../util/getSongURL';
 
-export default function MediaPlayer({ songURL, setSongURL }: Readonly<{ songURL?: string; setSongURL: any }>) {
+export default function MediaPlayer() {
+	const [songURL, setSongURL] = useState<string | undefined>(undefined);
 	const playerRef = useRef<ReactPlayer>(null);
 
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
@@ -18,30 +18,6 @@ export default function MediaPlayer({ songURL, setSongURL }: Readonly<{ songURL?
 	const [progress, setProgress] = useState(0);
 
 	useEffect(() => {
-		async function getSongURL(songId: string) {
-			const { data } = await axios.post<CobaltResponse>(
-				discordActivityStatus?.isActivity ? '/api/json' : 'https://api.cobalt.tools/api/json',
-				{
-					url: 'https://youtube.com/watch?v=' + songId,
-					aFormat: 'mp3'
-				},
-				{
-					headers: {
-						'Content-Type': 'application/json',
-						Accept: 'application/json'
-					}
-				}
-			);
-
-			const url = discordActivityStatus?.isActivity
-				? data.url
-						?.replace('https://kityune.imput.net/api/stream', '/kityune/stream')
-						.replace('https://olly.imput.net/api/stream', '/olly/stream')
-				: data.url;
-
-			return url;
-		}
-
 		async function setup() {
 			if (!currentMedia) return null;
 
@@ -53,7 +29,7 @@ export default function MediaPlayer({ songURL, setSongURL }: Readonly<{ songURL?
 
 			setSongURL(undefined);
 
-			const url = await getSongURL(currentMedia.id);
+			const url = await getSongURL(currentMedia.id, discordActivityStatus?.isActivity ?? false);
 
 			setSongURL(url);
 

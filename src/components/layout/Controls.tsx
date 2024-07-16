@@ -31,7 +31,7 @@ import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
-import MediaController from '../general/MediaController';
+import MediaPlayer from '../general/MediaPlayer';
 
 export default memo(function Controls() {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
@@ -75,7 +75,7 @@ export default memo(function Controls() {
 					exit={{ y: 10, opacity: 0 }}
 				>
 					<Flex w='100%' h='100%' direction='column' gap='10px'>
-						<MediaController setSongURL={setSongURL} songURL={songURL} />
+						<MediaPlayer setSongURL={setSongURL} songURL={songURL} />
 						<Flex
 							w='100%'
 							bg='#FFFFFF10'

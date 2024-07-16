@@ -8,7 +8,7 @@ import { defaultMediaControls, mediaControlsAtom } from 'src/atoms/MediaControlA
 import type { CobaltResponse } from 'src/types/Cobalt';
 import MediaSlider from '../layout/MediaSlider';
 
-export default function MediaController({ songURL, setSongURL }: Readonly<{ songURL?: string; setSongURL: any }>) {
+export default function MediaPlayer({ songURL, setSongURL }: Readonly<{ songURL?: string; setSongURL: any }>) {
 	const playerRef = useRef<ReactPlayer>(null);
 
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);

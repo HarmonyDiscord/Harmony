@@ -1,4 +1,14 @@
-import { Box, Center, Flex, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text } from '@chakra-ui/react';
+import {
+	Box,
+	Center,
+	Flex,
+	Progress,
+	Slider,
+	SliderFilledTrack,
+	SliderThumb,
+	SliderTrack,
+	Text
+} from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { type RefObject, useEffect, useState } from 'react';
@@ -8,7 +18,11 @@ import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import formatDuration from '../../util/formatDuration';
 
-export default function MediaSlider({ progress, playerRef }: { progress: number; playerRef: RefObject<ReactPlayer> }) {
+export default function MediaSlider({
+	progress,
+	loadProgress,
+	playerRef
+}: { progress: number; loadProgress: number; playerRef: RefObject<ReactPlayer> }) {
 	const [currentMedia] = useAtom(currentMediaAtom);
 	const [mediaControls] = useAtom(mediaControlsAtom);
 
@@ -41,8 +55,14 @@ export default function MediaSlider({ progress, playerRef }: { progress: number;
 									animate={{ opacity: 1, transition: { duration: 0.1 } }}
 									exit={{ opacity: 0, transition: { duration: 0.1 } }}
 								>
-									<SliderTrack>
+									<SliderTrack bg='transparent'>
 										<SliderFilledTrack />
+										<Progress
+											value={(loadProgress ?? 0) * 100}
+											w='100%'
+											size='xs'
+											colorScheme='whiteAlpha'
+										/>
 									</SliderTrack>
 									<SliderThumb />
 								</Slider>

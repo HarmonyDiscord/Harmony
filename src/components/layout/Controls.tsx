@@ -228,7 +228,7 @@ export default memo(function Controls() {
 												await getSongURL(
 													currentMedia.id,
 													discordActivityStatus?.isActivity ?? false,
-													true
+													false
 												)
 											);
 											setDownloadIsLoading(false);

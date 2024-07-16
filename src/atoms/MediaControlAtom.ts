@@ -10,6 +10,6 @@ export const defaultMediaControls: MediaControls = {
 	isLooping: false,
 	isLoading: false,
 	isWaiting: false,
-	isAudioOnly: false,
+	isVideoMode: false,
 	isSidePanelClosed: false
 };

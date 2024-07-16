@@ -83,7 +83,7 @@ export default function IndexScreen() {
 			<Navbar searchInput={searchInput} setSearchInput={setSearchInput} />
 			{!discordActivityStatus?.isActivity && (
 				<Flex w='100%' h='100%' maxH='100%' overflow='hidden'>
-					{!mediaControls?.isAudioOnly && currentMedia ? (
+					{mediaControls?.isVideoMode && currentMedia ? (
 						<Box
 							as={motion.div}
 							w='100%'

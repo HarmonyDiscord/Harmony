@@ -18,6 +18,8 @@ import { memo, useState } from 'react';
 import {
 	MdClose,
 	MdDownload,
+	MdFullscreen,
+	MdMusicVideo,
 	MdPause,
 	MdPlayArrow,
 	MdRepeat,
@@ -57,13 +59,6 @@ export default memo(function Controls() {
 		});
 	};
 
-	const toggleLoop = () => {
-		setMediaControls({
-			...(mediaControls ?? defaultMediaControls),
-			isLooping: !mediaControls?.isLooping
-		});
-	};
-
 	return (
 		<AnimatePresence mode='popLayout'>
 			{currentMedia && (
@@ -77,6 +72,7 @@ export default memo(function Controls() {
 					exit={{ y: 10, opacity: 0 }}
 				>
 					<Flex w='100%' h='100%' direction='column' gap='10px'>
+						{!mediaControls?.isVideoMode && <MediaPlayer />}
 						<Flex
 							w='100%'
 							bg='#FFFFFF10'
@@ -199,7 +195,28 @@ export default memo(function Controls() {
 											)
 										}
 										aria-label='Toggle Loop'
-										onClick={() => toggleLoop()}
+										onClick={() =>
+											setMediaControls({
+												...(mediaControls ?? defaultMediaControls),
+												isLooping: !mediaControls?.isLooping
+											})
+										}
+									/>
+									<IconButton
+										icon={
+											mediaControls?.isVideoMode ? (
+												<MdMusicVideo fontSize='24px' />
+											) : (
+												<MdFullscreen fontSize='24px' />
+											)
+										}
+										aria-label='Toggle Video mode'
+										onClick={() =>
+											setMediaControls({
+												...(mediaControls ?? defaultMediaControls),
+												isVideoMode: !mediaControls?.isVideoMode
+											})
+										}
 									/>
 									<IconButton
 										icon={<MdDownload fontSize='24px' />}
@@ -210,7 +227,8 @@ export default memo(function Controls() {
 											open(
 												await getSongURL(
 													currentMedia.id,
-													discordActivityStatus?.isActivity ?? false
+													discordActivityStatus?.isActivity ?? false,
+													true
 												)
 											);
 											setDownloadIsLoading(false);

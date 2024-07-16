@@ -1,12 +1,13 @@
 import axios from "axios";
 import type { CobaltResponse } from "../types/Cobalt";
 
-export default async function getSongURL(songId: string, isActivity: boolean) {
+export default async function getSongURL(songId: string, isActivity: boolean, audioOnly: boolean) {
     const { data } = await axios.post<CobaltResponse>(
         isActivity ? '/api/json' : 'https://api.cobalt.tools/api/json',
         {
             url: 'https://youtube.com/watch?v=' + songId,
-            aFormat: 'mp3'
+            aFormat: 'mp3',
+            isAudioOnly: audioOnly
         },
         {
             headers: {

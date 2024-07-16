@@ -2,12 +2,12 @@ import { Box, Center, Flex, Slider, SliderFilledTrack, SliderThumb, SliderTrack,
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
+import type ReactPlayer from 'react-player';
 import { BarLoader } from 'react-spinners';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
-import formatDuration from '../../util/formatDuration';
 import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
+import formatDuration from '../../util/formatDuration';
 import MediaController from '../general/MediaController';
-import type ReactPlayer from 'react-player';
 
 export default function MediaSlider({
 	songURL,

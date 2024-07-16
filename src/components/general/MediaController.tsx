@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useAtom } from 'jotai';
-import { useEffect, type RefObject } from 'react';
+import { type RefObject, useEffect } from 'react';
 import ReactPlayer from 'react-player';
 import { currentMediaAtom } from 'src/atoms/CurrentMediaAtom';
 import { discordActivityStatusAtom } from 'src/atoms/DiscordActivityStatus';

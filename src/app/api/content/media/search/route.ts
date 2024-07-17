@@ -20,7 +20,7 @@ export async function GET(req: Request) {
 			const video = await ytmusic.getVideo(videoId);
 
 			if (!video) return Response.json([]);
-			
+
 			return Response.json([parseSearchResult(video)]);
 		}
 

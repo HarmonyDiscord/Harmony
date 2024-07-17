@@ -15,12 +15,12 @@ export default function parseSearchResult(result: YtSearchResult): SearchResult 
 				},
 				album: result.album
 					? {
-							id: result.album?.albumId,
-							name: result.album?.name
-						}
+						id: result.album?.albumId,
+						name: result.album?.name
+					}
 					: null,
 				thumbnail: result.thumbnails.at(0)?.url.replace('w60', 'w250').replace('h60', 'h250') ?? null,
-				duration: result.duration ?? 0
+				duration: (result.duration ?? 1) - 1
 			};
 
 		case 'VIDEO':

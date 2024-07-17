@@ -18,6 +18,7 @@ import { memo, useState } from 'react';
 import {
 	MdClose,
 	MdDownload,
+	MdFavoriteBorder,
 	MdFullscreen,
 	MdMusicVideo,
 	MdPause,
@@ -112,6 +113,7 @@ export default memo(function Controls() {
 											{currentMedia.album?.name} - {currentMedia.artist.name}
 										</Text>
 									</Flex>
+									<IconButton icon={<MdFavoriteBorder fontSize='24px' />} aria-label='Favorite' />
 								</Flex>
 							</AnimatePresence>
 							{!discordActivityStatus?.isOverlay && (
@@ -228,7 +230,7 @@ export default memo(function Controls() {
 												await getSongURL(
 													currentMedia.id,
 													discordActivityStatus?.isActivity ?? false,
-													false
+													true
 												)
 											);
 											setDownloadIsLoading(false);

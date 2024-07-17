@@ -68,6 +68,15 @@ export default function MediaPlayer() {
 		});
 	}, [setMediaControls]);
 
+	function seekTo(to: number) {
+		if (!playerRef.current) return;
+
+		playerRef.current.seekTo(
+			to * (currentMedia?.duration ?? 0),
+			'seconds'
+		);
+	}
+
 	return (
 		<Flex direction='column' w='100%' h='100%' gap='10px' maxH='100%'>
 			<ReactPlayer
@@ -135,7 +144,7 @@ export default function MediaPlayer() {
 				}}
 			/>
 			<Spacer />
-			<MediaSlider playerRef={playerRef} seconds={progress} loadSeconds={loadProgress} />
+			<MediaSlider seekTo={seekTo} seconds={progress} loadSeconds={loadProgress} />
 		</Flex>
 	);
 }

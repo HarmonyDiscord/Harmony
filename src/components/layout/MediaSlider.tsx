@@ -21,8 +21,8 @@ import formatDuration from '../../util/formatDuration';
 export default function MediaSlider({
 	seconds,
 	loadSeconds,
-	playerRef
-}: { seconds: number; loadSeconds: number; playerRef: RefObject<ReactPlayer> }) {
+	seekTo
+}: { seconds: number; loadSeconds: number; seekTo: any }) {
 	const [currentMedia] = useAtom(currentMediaAtom);
 	const [mediaControls] = useAtom(mediaControlsAtom);
 
@@ -42,7 +42,7 @@ export default function MediaSlider({
 									colorScheme='gray'
 									value={((seconds ?? 0) / currentMedia.duration) * 100}
 									onChange={(v) => {
-										playerRef.current?.seekTo(v / 100, 'fraction');
+										seekTo(v / 100);
 									}}
 									focusThumbOnChange={false}
 									initial={{ opacity: 0 }}

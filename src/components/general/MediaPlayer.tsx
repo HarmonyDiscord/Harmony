@@ -1,6 +1,6 @@
 import { Flex, Spacer } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
@@ -19,44 +19,44 @@ export default function MediaPlayer() {
 	const [progress, setProgress] = useState(0);
 	const [loadProgress, setLoadProgress] = useState(0);
 
-	useEffect(() => {
-		async function setup() {
-			if (!currentMedia) return null;
+	const setup = useCallback(async () => {
+		if (!currentMedia) return null;
 
-			setMediaControls({
-				...(mediaControls ?? defaultMediaControls),
-				isPlaying: false,
-				isLoading: true
+		setMediaControls({
+			...(mediaControls ?? defaultMediaControls),
+			isPlaying: false,
+			isLoading: true
+		});
+
+		setSongURL(undefined);
+
+		const url = await getSongURL(
+			currentMedia.id,
+			discordActivityStatus?.isActivity ?? false,
+			!mediaControls?.isVideoMode
+		);
+
+		setSongURL(url);
+
+		if ('mediaSession' in navigator) {
+			navigator.mediaSession.metadata = new MediaMetadata({
+				title: currentMedia.name,
+				artist: currentMedia.artist.name,
+				album: currentMedia.album?.name,
+				artwork: currentMedia.thumbnail
+					? [
+							{
+								src: currentMedia.thumbnail,
+								sizes: '250x250',
+								type: 'image/png'
+							}
+						]
+					: []
 			});
-
-			setSongURL(undefined);
-
-			const url = await getSongURL(
-				currentMedia.id,
-				discordActivityStatus?.isActivity ?? false,
-				!mediaControls?.isVideoMode
-			);
-
-			setSongURL(url);
-
-			if ('mediaSession' in navigator) {
-				navigator.mediaSession.metadata = new MediaMetadata({
-					title: currentMedia.name,
-					artist: currentMedia.artist.name,
-					album: currentMedia.album?.name,
-					artwork: currentMedia.thumbnail
-						? [
-								{
-									src: currentMedia.thumbnail,
-									sizes: '250x250',
-									type: 'image/png'
-								}
-							]
-						: []
-				});
-			}
 		}
+	}, [currentMedia]);
 
+	useEffect(() => {
 		setup();
 	}, [currentMedia]);
 
@@ -68,14 +68,14 @@ export default function MediaPlayer() {
 		});
 	}, [setMediaControls]);
 
-	function seekTo(to: number) {
-		if (!playerRef.current) return;
+	const seekTo = useCallback(
+		(to: number) => {
+			if (!playerRef.current) return;
 
-		playerRef.current.seekTo(
-			to * (currentMedia?.duration ?? 0),
-			'seconds'
-		);
-	}
+			playerRef.current.seekTo(to * (currentMedia?.duration ?? 0), 'seconds');
+		},
+		[playerRef, currentMedia?.duration]
+	);
 
 	return (
 		<Flex direction='column' w='100%' h='100%' gap='10px' maxH='100%'>
@@ -135,10 +135,7 @@ export default function MediaPlayer() {
 					})
 				}
 				onError={(err) => {
-					setMediaControls({
-						...(mediaControls ?? defaultMediaControls),
-						isPlaying: false
-					});
+					setup();
 
 					console.error(err);
 				}}

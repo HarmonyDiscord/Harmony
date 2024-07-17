@@ -40,12 +40,6 @@ export default function MediaPlayer() {
 
 		setSongURL(url);
 
-		setMediaControls({
-			...(mediaControls ?? defaultMediaControls),
-			isPlaying: true,
-			//isLoading: true
-		})
-
 		if ('mediaSession' in navigator) {
 			navigator.mediaSession.metadata = new MediaMetadata({
 				title: currentMedia.name,
@@ -120,6 +114,12 @@ export default function MediaPlayer() {
 				onReady={() => {
 					console.log('Ready');
 					setIsBuffering(false);
+
+					setMediaControls({
+						...(mediaControls ?? defaultMediaControls),
+						isLoading: false,
+						isPlaying: true
+					});
 				}}
 				onPlay={() =>
 					setMediaControls({

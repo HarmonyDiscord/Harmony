@@ -102,14 +102,14 @@ export default function MediaSlider({
 									}}
 									style={{
 										display: 'flex',
-										alignItems: 'center',
+										alignItems: 'center'
 									}}
 								>
 									<BarLoader
 										color='#FFFFFF'
 										width='100%'
 										loading={true}
-										cssOverride={{ borderRadius: '10px', display: 'block'}}
+										cssOverride={{ borderRadius: '10px', display: 'block' }}
 										aria-label='Loading'
 									/>
 								</motion.div>

@@ -31,9 +31,9 @@ export default function MediaSlider({
 			<Center my='5px' h='16px'>
 				<Box w='100%'>
 					<AnimatePresence mode='wait'>
-						{!mediaControls?.isLoading ? (
-							<Flex w='100%' gap='12px'>
-								<Text>{formatDuration(seconds)}</Text>
+						<Flex w='100%' gap='12px'>
+							<Text>{formatDuration(seconds) ?? '00:00'}</Text>
+							{!mediaControls?.isLoading ? (
 								<Slider
 									key='slider'
 									as={motion.div}
@@ -60,32 +60,32 @@ export default function MediaSlider({
 									</SliderTrack>
 									<SliderThumb />
 								</Slider>
-								<Text>{formatDuration(currentMedia.duration)}</Text>
-							</Flex>
-						) : (
-							<motion.div
-								key='loader'
-								initial={{ width: '0%', opacity: 0 }}
-								animate={{
-									width: '100%',
-									opacity: 1,
-									transition: { duration: 0.1 }
-								}}
-								exit={{
-									width: '0%',
-									opacity: 0,
-									transition: { duration: 0.1 }
-								}}
-							>
-								<BarLoader
-									color='#FFFFFF'
-									width='100%'
-									loading={true}
-									cssOverride={{ borderRadius: '10px', display: 'block' }}
-									aria-label='Loading'
-								/>
-							</motion.div>
-						)}
+							) : (
+								<motion.div
+									key='loader'
+									initial={{ width: '0%', opacity: 0 }}
+									animate={{
+										width: '100%',
+										opacity: 1,
+										transition: { duration: 0.1 }
+									}}
+									exit={{
+										width: '0%',
+										opacity: 0,
+										transition: { duration: 0.1 }
+									}}
+								>
+									<BarLoader
+										color='#FFFFFF'
+										width='100%'
+										loading={true}
+										cssOverride={{ borderRadius: '10px', display: 'block', marginTop: '6px' }}
+										aria-label='Loading'
+									/>
+								</motion.div>
+							)}
+							<Text>{formatDuration(currentMedia.duration) ?? '--:--'}</Text>
+						</Flex>
 					</AnimatePresence>
 				</Box>
 			</Center>

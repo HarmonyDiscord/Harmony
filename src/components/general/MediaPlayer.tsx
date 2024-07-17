@@ -1,6 +1,6 @@
 import { Flex, Spacer } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
@@ -68,14 +68,14 @@ export default function MediaPlayer() {
 		});
 	}, [setMediaControls]);
 
-	function seekTo(to: number) {
-		if (!playerRef.current) return;
+	const seekTo = useCallback(
+		(to: number) => {
+			if (!playerRef.current) return;
 
-		playerRef.current.seekTo(
-			to * (currentMedia?.duration ?? 0),
-			'seconds'
-		);
-	}
+			playerRef.current.seekTo(to * (currentMedia?.duration ?? 0), 'seconds');
+		},
+		[playerRef, currentMedia?.duration]
+	);
 
 	return (
 		<Flex direction='column' w='100%' h='100%' gap='10px' maxH='100%'>

@@ -11,20 +11,46 @@ import {
 } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
-import { type RefObject } from 'react';
+import { type RefObject, useEffect, useRef, useState } from 'react';
 import type ReactPlayer from 'react-player';
 import { BarLoader } from 'react-spinners';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
-import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
+import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import formatDuration from '../../util/formatDuration';
 
 export default function MediaSlider({
 	seconds,
 	loadSeconds,
-	seekTo
-}: { seconds: number; loadSeconds: number; seekTo: any }) {
+	seekTo,
+	isBuffering
+}: { seconds: number; loadSeconds: number; seekTo: any; isBuffering: boolean }) {
 	const [currentMedia] = useAtom(currentMediaAtom);
-	const [mediaControls] = useAtom(mediaControlsAtom);
+	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
+
+	const loadingTimeout = useRef<Timer | null>(null);
+	const bufferingTooLong = useRef(false);
+
+	const [showLoadingBar, setShowLoadingBar] = useState(mediaControls?.isLoading || bufferingTooLong);
+
+	useEffect(() => {
+		console.log('MediaSlider', mediaControls?.isLoading, bufferingTooLong);
+		setShowLoadingBar(mediaControls?.isLoading || bufferingTooLong);
+	}, [mediaControls?.isLoading, isBuffering]);
+
+	useEffect(() => {
+		if (isBuffering) {
+			loadingTimeout.current = setTimeout(() => {
+				bufferingTooLong.current = true;
+				setMediaControls({
+					...(mediaControls ?? defaultMediaControls),
+					isLoading: true
+				});
+			}, 1000);
+		} else {
+			if (loadingTimeout.current) clearTimeout(loadingTimeout.current);
+			bufferingTooLong.current = false;
+		}
+	}, [isBuffering]);
 
 	return (
 		currentMedia && (
@@ -33,11 +59,11 @@ export default function MediaSlider({
 					<AnimatePresence mode='wait'>
 						<Flex w='100%' gap='12px'>
 							<Text>{formatDuration(seconds) ?? '00:00'}</Text>
-							{!mediaControls?.isLoading ? (
+							{!showLoadingBar ? (
 								<Slider
 									key='slider'
 									as={motion.div}
-									isReadOnly={mediaControls?.isWaiting}
+									isReadOnly={mediaControls?.isLoading}
 									aria-label='track'
 									colorScheme='gray'
 									value={((seconds ?? 0) / currentMedia.duration) * 100}

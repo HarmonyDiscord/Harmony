@@ -19,8 +19,6 @@ export default function MediaPlayer() {
 	const [progress, setProgress] = useState(0);
 	const [loadProgress, setLoadProgress] = useState(0);
 
-	const [isBuffering, setIsBuffering] = useState(false);
-
 	const setup = useCallback(async () => {
 		if (!currentMedia) return null;
 
@@ -38,7 +36,13 @@ export default function MediaPlayer() {
 			!mediaControls?.isVideoMode
 		);
 
-		setSongURL(url);
+		if (!url) return;
+
+		const res = await fetch(url);
+
+		const blob = await res.blob();
+
+		setSongURL(URL.createObjectURL(blob));
 
 		if ('mediaSession' in navigator) {
 			navigator.mediaSession.metadata = new MediaMetadata({
@@ -96,24 +100,10 @@ export default function MediaPlayer() {
 				loop={mediaControls?.isLooping ?? false}
 				onProgress={(p) => {
 					setProgress(p.playedSeconds);
-					setLoadProgress(p.loadedSeconds);
 				}}
 				progressInterval={1}
-				onBuffer={() => {
-					console.log('Buffering');
-					setIsBuffering(true);
-				}}
-				onBufferEnd={() => {
-					console.log('Buffering end');
-					setMediaControls({
-						...(mediaControls ?? defaultMediaControls),
-						isLoading: false
-					});
-					setIsBuffering(false);
-				}}
 				onReady={() => {
 					console.log('Ready');
-					setIsBuffering(false);
 
 					setMediaControls({
 						...(mediaControls ?? defaultMediaControls),
@@ -146,7 +136,7 @@ export default function MediaPlayer() {
 				}}
 			/>
 			<Spacer />
-			<MediaSlider seekTo={seekTo} seconds={progress} loadSeconds={loadProgress} isBuffering={isBuffering} />
+			<MediaSlider seekTo={seekTo} seconds={progress} loadSeconds={loadProgress} />
 		</Flex>
 	);
 }

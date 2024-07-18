@@ -10,6 +10,7 @@ import { defaultMediaControls, mediaControlsAtom } from '../../../atoms/MediaCon
 import { useDebounce } from '../../../hooks/useDebounce';
 import type { Media } from '../../../types/content/Media';
 import formatDuration from '../../../util/formatDuration';
+import { discordActivityStatusAtom } from '../../../atoms/DiscordActivityStatus';
 
 export default function MediaCard(media: Readonly<Media>) {
 	const [isHovering, setIsHovering] = useState(false);
@@ -17,7 +18,8 @@ export default function MediaCard(media: Readonly<Media>) {
 	const [currentMedia, setCurrentMedia] = useAtom(currentMediaAtom);
 	const [currentPlaylist, setCurrentPlaylist] = useAtom(currentPlaylistAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
-
+	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
+	
 	const { id, name, album, artist, thumbnail, duration } = media;
 
 	const isCurrentMedia = currentMedia?.id === id;
@@ -66,6 +68,7 @@ export default function MediaCard(media: Readonly<Media>) {
 						objectFit: 'cover',
 						borderRadius: '10px'
 					}}
+					unoptimized={!discordActivityStatus?.isActivity}
 					referrerPolicy='no-referrer'
 					quality={100}
 				/>

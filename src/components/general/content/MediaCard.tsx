@@ -56,7 +56,6 @@ export default function MediaCard(media: Readonly<Media>) {
 					width={250}
 					height={200}
 					priority
-					objectFit='cover'
 					style={{
 						height: '200px',
 						width: '100%',

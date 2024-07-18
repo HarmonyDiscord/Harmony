@@ -99,7 +99,6 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 						width={60}
 						height={60}
 						priority
-						objectFit='cover'
 						style={{
 							height: '60px',
 							minHeight: '60px',

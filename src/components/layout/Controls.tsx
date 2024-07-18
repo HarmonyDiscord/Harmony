@@ -225,7 +225,6 @@ export default memo(function Controls() {
 										aria-label='Download'
 										isLoading={downloadIsLoading}
 										onClick={async () => {
-											setDownloadIsLoading(true);
 											open(
 												await getSongURL(
 													currentMedia.id,
@@ -233,7 +232,6 @@ export default memo(function Controls() {
 													true
 												)
 											);
-											setDownloadIsLoading(false);
 										}}
 									/>
 									<IconButton

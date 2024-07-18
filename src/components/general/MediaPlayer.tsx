@@ -36,7 +36,13 @@ export default function MediaPlayer() {
 			!mediaControls?.isVideoMode
 		);
 
-		setSongURL(url);
+		if (!url) return;
+
+		const res = await fetch(url);
+
+		const blob = await res.blob();
+
+		setSongURL(URL.createObjectURL(blob));
 
 		if ('mediaSession' in navigator) {
 			navigator.mediaSession.metadata = new MediaMetadata({
@@ -94,22 +100,11 @@ export default function MediaPlayer() {
 				loop={mediaControls?.isLooping ?? false}
 				onProgress={(p) => {
 					setProgress(p.playedSeconds);
-					setLoadProgress(p.loadedSeconds);
 				}}
 				progressInterval={1}
-				onBuffer={() =>
-					setMediaControls({
-						...(mediaControls ?? defaultMediaControls),
-						isLoading: true
-					})
-				}
-				onBufferEnd={() =>
-					setMediaControls({
-						...(mediaControls ?? defaultMediaControls),
-						isLoading: false
-					})
-				}
 				onReady={() => {
+					console.log('Ready');
+
 					setMediaControls({
 						...(mediaControls ?? defaultMediaControls),
 						isLoading: false,

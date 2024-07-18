@@ -17,9 +17,12 @@ export default function MediaPlayer() {
 	const [currentMedia] = useAtom(currentMediaAtom);
 
 	const [progress, setProgress] = useState(0);
+	const setupCountRef = useRef(0);
 
 	const setup = useCallback(async () => {
 		if (!currentMedia) return null;
+
+		const currentSetup = ++setupCountRef.current;
 
 		setMediaControls({
 			...(mediaControls ?? defaultMediaControls),
@@ -37,9 +40,15 @@ export default function MediaPlayer() {
 
 		if (!url) return;
 
+		if (currentSetup !== setupCountRef.current) return;
+
 		const res = await fetch(url);
 
+		if (currentSetup !== setupCountRef.current) return;
+
 		const blob = await res.blob();
+
+		if (currentSetup !== setupCountRef.current) return;
 
 		setSongURL(URL.createObjectURL(blob));
 

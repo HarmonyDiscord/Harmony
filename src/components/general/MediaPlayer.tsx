@@ -111,6 +111,8 @@ export default function MediaPlayer() {
 					setProgress(p.playedSeconds);
 				}}
 				onReady={() => {
+					console.log('Ready');
+
 					setMediaControls({
 						...(mediaControls ?? defaultMediaControls),
 						isLoading: false,

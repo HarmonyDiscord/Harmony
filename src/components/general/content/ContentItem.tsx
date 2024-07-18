@@ -10,9 +10,11 @@ import { defaultMediaControls, mediaControlsAtom } from '../../../atoms/MediaCon
 import type { SearchResult } from '../../../types/SearchResult';
 import { ContentType } from '../../../types/content/ContentType';
 import formatDuration from '../../../util/formatDuration';
+import { discordActivityStatusAtom } from '../../../atoms/DiscordActivityStatus';
 
 export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) {
 	const [isHovering, setIsHovering] = useState(false);
+	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [currentPlaylist, setCurrentPlaylist] = useAtom(currentPlaylistAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 	const [currentMedia, setCurrentMedia] = useAtom(currentMediaAtom);
@@ -108,6 +110,7 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 							objectFit: 'cover',
 							borderRadius: item.type === ContentType.Artist ? '50%' : '5px'
 						}}
+						unoptimized={!discordActivityStatus?.isActivity}
 						quality={100}
 						referrerPolicy='no-referrer'
 					/>

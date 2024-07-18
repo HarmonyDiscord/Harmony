@@ -104,6 +104,7 @@ export default memo(function Controls() {
 											borderRadius: '5px'
 										}}
 										referrerPolicy='no-referrer'
+										unoptimized={!discordActivityStatus?.isActivity}
 									/>
 									<Flex gap='4px' direction='column'>
 										<Heading size='md'>{currentMedia.name}</Heading>

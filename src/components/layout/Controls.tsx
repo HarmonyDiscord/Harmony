@@ -43,8 +43,6 @@ export default memo(function Controls() {
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 
-	const [downloadIsLoading, setDownloadIsLoading] = useState(false);
-
 	const currentPlaylistIdArray = [...Object.keys(currentPlaylist)];
 
 	const currentMediaIndex = currentMedia && currentPlaylistIdArray.indexOf(currentMedia.id);
@@ -223,7 +221,6 @@ export default memo(function Controls() {
 									<IconButton
 										icon={<MdDownload fontSize='24px' />}
 										aria-label='Download'
-										isLoading={downloadIsLoading}
 										onClick={async () => {
 											open(
 												await getSongURL(

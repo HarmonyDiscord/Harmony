@@ -35,6 +35,8 @@ export default function MediaPlayer() {
 
 		setSongURL(undefined);
 
+		setCurrentSeconds(0);
+
 		const url = await getSongURL(
 			currentMedia.id,
 			discordActivityStatus?.isActivity ?? false,

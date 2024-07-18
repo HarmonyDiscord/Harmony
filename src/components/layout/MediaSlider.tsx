@@ -3,9 +3,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { BarLoader } from 'react-spinners';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
+import { currentSecondsAtom } from '../../atoms/CurrentSecondsAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import formatDuration from '../../util/formatDuration';
-import { currentSecondsAtom } from '../../atoms/CurrentSecondsAtom';
 
 export default function MediaSlider({ seekTo }: { seekTo: any }) {
 	const [currentMedia] = useAtom(currentMediaAtom);

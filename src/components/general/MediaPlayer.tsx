@@ -1,8 +1,9 @@
-import { Flex, Spacer } from '@chakra-ui/react';
+import { Flex, Spacer, useToast } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
+import { currentSecondsAtom } from '../../atoms/CurrentSecondsAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import getSongURL from '../../util/getSongURL';
@@ -12,11 +13,13 @@ export default function MediaPlayer() {
 	const [songURL, setSongURL] = useState<string | undefined>(undefined);
 	const playerRef = useRef<ReactPlayer>(null);
 
+	const toast = useToast();
+
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
-	const [currentMedia] = useAtom(currentMediaAtom);
+	const [currentMedia, setCurrentMedia] = useAtom(currentMediaAtom);
+	const [, setCurrentSeconds] = useAtom(currentSecondsAtom);
 
-	const [progress, setProgress] = useState(0);
 	const setupCountRef = useRef(0);
 
 	const setup = useCallback(async () => {
@@ -36,21 +39,91 @@ export default function MediaPlayer() {
 			currentMedia.id,
 			discordActivityStatus?.isActivity ?? false,
 			!mediaControls?.isVideoMode
-		);
+		).catch(() => null);
 
-		if (!url) return;
+		if (!url) {
+			setMediaControls({
+				...(mediaControls ?? defaultMediaControls),
+				isLoading: false,
+				isPlaying: false
+			});
+
+			setCurrentMedia(null);
+
+			toast({
+				status: 'error',
+				variant: 'subtle',
+				position: 'top',
+				title: 'Unable to get media information. Please try again later.',
+				containerStyle: {
+					backdropFilter: 'blur(5px)'
+				}
+			});
+
+			return;
+		}
 
 		if (currentSetup !== setupCountRef.current) return;
 
-		const res = await fetch(url);
+		const res = await fetch(url).catch(() => null);
+
+		if (!res) {
+			setMediaControls({
+				...(mediaControls ?? defaultMediaControls),
+				isLoading: false,
+				isPlaying: false
+			});
+
+			setCurrentMedia(null);
+
+			toast({
+				status: 'error',
+				variant: 'subtle',
+				position: 'top',
+				title: 'Unable to download the media. Please try again later.',
+				containerStyle: {
+					backdropFilter: 'blur(5px)'
+				}
+			});
+
+			return;
+		}
 
 		if (currentSetup !== setupCountRef.current) return;
 
-		const blob = await res.blob();
+		const blob = await res.blob().catch(() => null);
+
+		if (!blob) {
+			setMediaControls({
+				...(mediaControls ?? defaultMediaControls),
+				isLoading: false,
+				isPlaying: false
+			});
+
+			setCurrentMedia(null);
+
+			toast({
+				status: 'error',
+				variant: 'subtle',
+				position: 'top',
+				title: 'Unable to convert the media. Please try again later.',
+				containerStyle: {
+					backdropFilter: 'blur(5px)'
+				}
+			});
+
+			return;
+		}
 
 		if (currentSetup !== setupCountRef.current) return;
 
 		setSongURL(URL.createObjectURL(blob));
+
+		setMediaControls({
+			...(mediaControls ?? defaultMediaControls),
+			isLoading: false,
+			isPlaying: true
+		});
 
 		if ('mediaSession' in navigator) {
 			navigator.mediaSession.metadata = new MediaMetadata({
@@ -108,14 +181,7 @@ export default function MediaPlayer() {
 				loop={mediaControls?.isLooping ?? false}
 				progressInterval={1}
 				onProgress={(p) => {
-					setProgress(p.playedSeconds);
-				}}
-				onReady={() => {
-					setMediaControls({
-						...(mediaControls ?? defaultMediaControls),
-						isLoading: false,
-						isPlaying: true
-					});
+					setCurrentSeconds(p.playedSeconds);
 				}}
 				onPlay={() =>
 					setMediaControls({
@@ -135,14 +201,9 @@ export default function MediaPlayer() {
 						isPlaying: false
 					})
 				}
-				onError={(err) => {
-					setup();
-
-					console.error(err);
-				}}
 			/>
 			<Spacer />
-			<MediaSlider seekTo={seekTo} seconds={progress} />
+			<MediaSlider seekTo={seekTo} />
 		</Flex>
 	);
 }

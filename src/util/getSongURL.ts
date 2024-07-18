@@ -19,8 +19,8 @@ export default async function getSongURL(songId: string, isActivity: boolean, au
 
 	const url = isActivity
 		? data.url
-				?.replace('https://kityune.imput.net/api/stream', '/kityune/stream')
-				.replace('https://olly.imput.net/api/stream', '/olly/stream')
+			?.replace('https://kityune.imput.net/api/stream', '/kityune/stream')
+			.replace('https://olly.imput.net/api/stream', '/olly/stream')
 		: data.url;
 
 	return url;

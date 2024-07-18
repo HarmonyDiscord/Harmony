@@ -3,12 +3,14 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { BarLoader } from 'react-spinners';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
-import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
+import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import formatDuration from '../../util/formatDuration';
+import { currentSecondsAtom } from '../../atoms/CurrentSecondsAtom';
 
-export default function MediaSlider({ seconds, seekTo }: { seconds: number; seekTo: any }) {
+export default function MediaSlider({ seekTo }: { seekTo: any }) {
 	const [currentMedia] = useAtom(currentMediaAtom);
-	const [mediaControls] = useAtom(mediaControlsAtom);
+	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
+	const [currentSeconds, setCurrentSeconds] = useAtom(currentSecondsAtom);
 
 	return (
 		currentMedia && (
@@ -16,17 +18,29 @@ export default function MediaSlider({ seconds, seekTo }: { seconds: number; seek
 				<Box w='100%'>
 					<AnimatePresence mode='wait'>
 						<Flex w='100%' gap='12px'>
-							<Text>{formatDuration(seconds) ?? '00:00'}</Text>
+							<Text>{formatDuration(currentSeconds) ?? '00:00'}</Text>
 							{!mediaControls?.isLoading ? (
 								<Slider
 									key='slider'
 									as={motion.div}
 									isReadOnly={mediaControls?.isLoading}
+									value={((currentSeconds ?? 0) / currentMedia.duration) * 100}
 									aria-label='track'
 									colorScheme='gray'
-									value={((seconds ?? 0) / currentMedia.duration) * 100}
 									onChange={(v) => {
+										setMediaControls({
+											...(mediaControls ?? defaultMediaControls),
+											isPlaying: false
+										});
+
+										setCurrentSeconds((v / 100) * currentMedia.duration);
 										seekTo(v / 100);
+									}}
+									onChangeEnd={(v) => {
+										setMediaControls({
+											...(mediaControls ?? defaultMediaControls),
+											isPlaying: true
+										});
 									}}
 									focusThumbOnChange={false}
 									initial={{ opacity: 0 }}

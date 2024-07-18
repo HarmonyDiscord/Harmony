@@ -17,10 +17,12 @@ export default function MediaPlayer() {
 	const [currentMedia] = useAtom(currentMediaAtom);
 
 	const [progress, setProgress] = useState(0);
-	const [loadProgress, setLoadProgress] = useState(0);
+	const setupCountRef = useRef(0);
 
 	const setup = useCallback(async () => {
 		if (!currentMedia) return null;
+
+		const currentSetup = ++setupCountRef.current;
 
 		setMediaControls({
 			...(mediaControls ?? defaultMediaControls),
@@ -38,9 +40,15 @@ export default function MediaPlayer() {
 
 		if (!url) return;
 
+		if (currentSetup !== setupCountRef.current) return;
+
 		const res = await fetch(url);
 
+		if (currentSetup !== setupCountRef.current) return;
+
 		const blob = await res.blob();
+
+		if (currentSetup !== setupCountRef.current) return;
 
 		setSongURL(URL.createObjectURL(blob));
 
@@ -98,10 +106,10 @@ export default function MediaPlayer() {
 				volume={mediaControls?.volume ?? 1}
 				muted={mediaControls?.isMuted ?? false}
 				loop={mediaControls?.isLooping ?? false}
+				progressInterval={1}
 				onProgress={(p) => {
 					setProgress(p.playedSeconds);
 				}}
-				progressInterval={1}
 				onReady={() => {
 					console.log('Ready');
 
@@ -136,7 +144,7 @@ export default function MediaPlayer() {
 				}}
 			/>
 			<Spacer />
-			<MediaSlider seekTo={seekTo} seconds={progress} loadSeconds={loadProgress} />
+			<MediaSlider seekTo={seekTo} seconds={progress} />
 		</Flex>
 	);
 }

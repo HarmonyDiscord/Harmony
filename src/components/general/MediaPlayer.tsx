@@ -17,7 +17,6 @@ export default function MediaPlayer() {
 	const [currentMedia] = useAtom(currentMediaAtom);
 
 	const [progress, setProgress] = useState(0);
-	const [loadProgress, setLoadProgress] = useState(0);
 
 	const setup = useCallback(async () => {
 		if (!currentMedia) return null;
@@ -136,7 +135,7 @@ export default function MediaPlayer() {
 				}}
 			/>
 			<Spacer />
-			<MediaSlider seekTo={seekTo} seconds={progress} loadSeconds={loadProgress} />
+			<MediaSlider seekTo={seekTo} seconds={progress}  />
 		</Flex>
 	);
 }

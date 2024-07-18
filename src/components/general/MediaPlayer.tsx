@@ -97,13 +97,11 @@ export default function MediaPlayer() {
 				volume={mediaControls?.volume ?? 1}
 				muted={mediaControls?.isMuted ?? false}
 				loop={mediaControls?.isLooping ?? false}
+				progressInterval={1}
 				onProgress={(p) => {
 					setProgress(p.playedSeconds);
 				}}
-				progressInterval={1}
 				onReady={() => {
-					console.log('Ready');
-
 					setMediaControls({
 						...(mediaControls ?? defaultMediaControls),
 						isLoading: false,
@@ -135,7 +133,7 @@ export default function MediaPlayer() {
 				}}
 			/>
 			<Spacer />
-			<MediaSlider seekTo={seekTo} seconds={progress}  />
+			<MediaSlider seekTo={seekTo} seconds={progress} />
 		</Flex>
 	);
 }

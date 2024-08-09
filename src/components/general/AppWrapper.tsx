@@ -27,6 +27,7 @@ export default function AppWrapper({ children }: Readonly<{ children: any }>) {
 							objectFit: 'cover',
 							pointerEvents: 'none'
 						}}
+						priority
 						onLoad={() => setIsBackgroundLoaded(true)}
 					/>
 					<Box

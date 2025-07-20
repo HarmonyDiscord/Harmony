@@ -1,18 +1,14 @@
 'use client';
 
 import { Box, Center, Flex, Heading, Spacer, Spinner, useBreakpointValue } from '@chakra-ui/react';
-import { motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
-import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { feedAtom } from '../../atoms/FeedAtom';
-import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import { useDebounce } from '../../hooks/useDebounce';
 import type { SearchResult } from '../../types/SearchResult';
 import type { Media } from '../../types/content/Media';
 import { api } from '../../util/api';
-import MediaPlayer from '../general/MediaPlayer';
 import ContentList from '../layout/ContentList';
 import Controls from '../layout/Controls';
 import Feed from '../layout/Feed';
@@ -22,9 +18,6 @@ import Navbar from '../layout/Navbar';
 export default function IndexScreen() {
 	const [feed] = useAtom(feedAtom);
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
-	const [mediaControls] = useAtom(mediaControlsAtom);
-	const [currentMedia] = useAtom(currentMediaAtom);
-
 	const [searchInput, setSearchInput] = useState<string | null>(null);
 	const [searchResults, setSearchResults] = useState<SearchResult[] | null>(null);
 	const [searchMediaResults, setSearchMediaResults] = useState<Media[] | null>(null);

@@ -43,7 +43,8 @@ export default function RootLayout({
 				height: '100%',
 				scrollBehavior: 'smooth',
 				userSelect: 'none',
-				WebkitTapHighlightColor: 'transparent'
+				WebkitTapHighlightColor: 'transparent',
+				overflowX: 'hidden'
 			}}
 		>
 			<head>
@@ -52,7 +53,7 @@ export default function RootLayout({
 					{`::-webkit-scrollbar{width:6px;z-index:100000}::-webkit-scrollbar-track{border-radius:10px}::-webkit-scrollbar-track:hover{background-color:#FFFFFF05}::-webkit-scrollbar-thumb{border-radius:10px;background-color:#FFFFFF10}::-webkit-scrollbar-thumb:hover{background-color:#FFFFFF20}`}
 				</style>
 			</head>
-			<body style={{ width: '100%', height: '100%' }}>
+			<body style={{ width: '100%', height: '100%', overflowX: 'hidden' }}>
 				<ChakraProvider theme={theme}>
 					<CacheProvider>
 						<AppWrapper>{children}</AppWrapper>

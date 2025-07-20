@@ -34,7 +34,7 @@ import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
-import getSongURL from '../../util/getSongURL';
+import { api } from '../../util/api';
 import MediaPlayer from '../general/MediaPlayer';
 
 export default memo(function Controls() {
@@ -71,7 +71,7 @@ export default memo(function Controls() {
 					exit={{ y: 10, opacity: 0 }}
 				>
 					<Flex w='100%' h='100%' direction='column' gap='10px'>
-						{!mediaControls?.isVideoMode && <MediaPlayer />}
+						<MediaPlayer />
 						<Flex
 							w='100%'
 							bg='#FFFFFF10'
@@ -204,31 +204,11 @@ export default memo(function Controls() {
 										}
 									/>
 									<IconButton
-										icon={
-											mediaControls?.isVideoMode ? (
-												<MdMusicVideo fontSize='24px' />
-											) : (
-												<MdFullscreen fontSize='24px' />
-											)
-										}
-										aria-label='Toggle Video mode'
-										onClick={() =>
-											setMediaControls({
-												...(mediaControls ?? defaultMediaControls),
-												isVideoMode: !mediaControls?.isVideoMode
-											})
-										}
-									/>
-									<IconButton
 										icon={<MdDownload fontSize='24px' />}
 										aria-label='Download'
 										onClick={async () => {
 											open(
-												await getSongURL(
-													currentMedia.id,
-													discordActivityStatus?.isActivity ?? false,
-													true
-												)
+												`https://harmony-streaming.tnfangel.com/stream?videoURL=https://www.youtube.com/watch?v=${encodeURIComponent(currentMedia.id)}`
 											);
 										}}
 									/>

@@ -6,11 +6,11 @@ import { useState } from 'react';
 import { MdPauseCircle, MdPlayCircle, MdPlaylistAdd, MdPlaylistAddCheck } from 'react-icons/md';
 import { currentMediaAtom } from '../../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../../atoms/CurrentPlaylistAtom';
+import { discordActivityStatusAtom } from '../../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../../atoms/MediaControlAtom';
 import type { SearchResult } from '../../../types/SearchResult';
 import { ContentType } from '../../../types/content/ContentType';
 import formatDuration from '../../../util/formatDuration';
-import { discordActivityStatusAtom } from '../../../atoms/DiscordActivityStatus';
 
 export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) {
 	const [isHovering, setIsHovering] = useState(false);

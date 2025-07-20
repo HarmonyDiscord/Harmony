@@ -6,11 +6,11 @@ import { useState } from 'react';
 import { MdPauseCircle, MdPlayCircle, MdPlaylistAdd, MdPlaylistAddCheck } from 'react-icons/md';
 import { currentMediaAtom } from '../../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../../atoms/CurrentPlaylistAtom';
+import { discordActivityStatusAtom } from '../../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../../atoms/MediaControlAtom';
 import { useDebounce } from '../../../hooks/useDebounce';
 import type { Media } from '../../../types/content/Media';
 import formatDuration from '../../../util/formatDuration';
-import { discordActivityStatusAtom } from '../../../atoms/DiscordActivityStatus';
 
 export default function MediaCard(media: Readonly<Media>) {
 	const [isHovering, setIsHovering] = useState(false);
@@ -19,7 +19,7 @@ export default function MediaCard(media: Readonly<Media>) {
 	const [currentPlaylist, setCurrentPlaylist] = useAtom(currentPlaylistAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
-	
+
 	const { id, name, album, artist, thumbnail, duration } = media;
 
 	const isCurrentMedia = currentMedia?.id === id;

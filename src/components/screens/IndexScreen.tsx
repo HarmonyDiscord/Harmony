@@ -1,7 +1,6 @@
 'use client';
 
 import { Box, Center, Flex, Heading, Spacer, Spinner, useBreakpointValue } from '@chakra-ui/react';
-import axios from 'axios';
 import { motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
@@ -12,6 +11,7 @@ import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import { useDebounce } from '../../hooks/useDebounce';
 import type { SearchResult } from '../../types/SearchResult';
 import type { Media } from '../../types/content/Media';
+import { api } from '../../util/api';
 import MediaPlayer from '../general/MediaPlayer';
 import ContentList from '../layout/ContentList';
 import Controls from '../layout/Controls';
@@ -48,14 +48,8 @@ export default function IndexScreen() {
 			setIsSearchLoading(true);
 
 			const [results, songs] = await Promise.all([
-				axios
-					.get(`/api/content/search?q=${encodeURIComponent(debouncedSearchInput)}`)
-					.then((res) => res.data)
-					.catch(() => null),
-				axios
-					.get(`/api/content/media/search?q=${encodeURIComponent(debouncedSearchInput)}`)
-					.then((res) => res.data)
-					.catch(() => null)
+				api.content.search(debouncedSearchInput),
+				api.content.mediaSearch(debouncedSearchInput)
 			]);
 
 			if (currentSearchCount === searchCountRef.current) {
@@ -83,31 +77,7 @@ export default function IndexScreen() {
 			<Navbar searchInput={searchInput} setSearchInput={setSearchInput} />
 			{!discordActivityStatus?.isActivity && (
 				<Flex w='100%' h='100%' maxH='100%' overflow='hidden'>
-					{mediaControls?.isVideoMode && currentMedia ? (
-						<Box
-							as={motion.div}
-							w='100%'
-							h='100%'
-							p='20px'
-							initial={{ y: 10, opacity: 0 }}
-							animate={{ y: 0, opacity: 1 }}
-							exit={{ y: 10, opacity: 0 }}
-						>
-							<Center
-								w='100%'
-								h='100%'
-								bg='#FFFFFF10'
-								p='20px'
-								pb='40px'
-								borderRadius='10px'
-								zIndex={2}
-								alignItems='center'
-								backdropFilter='blur(5px)'
-							>
-								<MediaPlayer />
-							</Center>
-						</Box>
-					) : isSearchLoading ? (
+					{isSearchLoading ? (
 						<Center w='100%' h='100%'>
 							<Spinner size='xl' thickness='4px' />
 						</Center>

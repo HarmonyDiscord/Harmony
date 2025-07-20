@@ -15,7 +15,6 @@ import {
 	Tabs,
 	Text
 } from '@chakra-ui/react';
-import axios from 'axios';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { memo, useEffect, useState } from 'react';
@@ -24,6 +23,7 @@ import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import type { SearchResult } from '../../types/SearchResult';
+import { api } from '../../util/api';
 import ContentItem from '../general/content/ContentItem';
 import ContentList from './ContentList';
 
@@ -89,14 +89,8 @@ const Lyrics = memo(function Lyrics({ mediaId }: Readonly<{ mediaId?: string }>)
 	useEffect(() => {
 		async function setup() {
 			if (!mediaId) return;
-
 			setIsLoading(true);
-			setLyrics(
-				await axios
-					.get(`/api/content/media/lyrics?id=${encodeURIComponent(mediaId)}`)
-					.then((res) => res.data)
-					.catch(() => null)
-			);
+			setLyrics(await api.content.lyrics(mediaId));
 			setIsLoading(false);
 		}
 		setup();
@@ -134,15 +128,8 @@ const Related = memo(function Related({ query }: Readonly<{ query?: string }>) {
 	useEffect(() => {
 		async function setup() {
 			if (!query) return;
-
 			setIsLoading(true);
-			setRelated(
-				await axios
-
-					.get(`/api/content/search?q=${encodeURIComponent(query)}`)
-					.then((res) => res.data)
-					.catch(() => null)
-			);
+			setRelated(await api.content.search(query));
 			setIsLoading(false);
 		}
 		setup();

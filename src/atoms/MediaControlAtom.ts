@@ -8,7 +8,5 @@ export const defaultMediaControls: MediaControls = {
 	isMuted: false,
 	isPlaying: false,
 	isLooping: false,
-	isLoading: false,
-	isVideoMode: false,
-	isSidePanelClosed: false
+	isLoading: false
 };

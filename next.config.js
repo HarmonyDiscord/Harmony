@@ -4,6 +4,7 @@ import million from 'million/compiler';
 const nextConfig = {
 	output: process.env.NEXT_OUTPUT,
 	reactStrictMode: true,
+	devIndicators: false,
 	images: {
 		remotePatterns: [
 			{
@@ -25,7 +26,7 @@ const nextConfig = {
 				pathname: '/**',
 			}
 		]
-		
+
 	},
 	async headers() {
 		return [

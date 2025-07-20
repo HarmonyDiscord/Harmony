@@ -2,7 +2,7 @@ import { Center, Fade, Flex, Heading, IconButton, Spacer, Spinner, Text } from '
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { MdPauseCircle, MdPlayCircle, MdPlaylistAdd, MdPlaylistAddCheck } from 'react-icons/md';
 import { currentMediaAtom } from '../../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../../atoms/CurrentPlaylistAtom';
@@ -18,6 +18,7 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 	const [currentPlaylist, setCurrentPlaylist] = useAtom(currentPlaylistAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 	const [currentMedia, setCurrentMedia] = useAtom(currentMediaAtom);
+	const [isProcessing, setIsProcessing] = useState(false);
 
 	const isCurrentMedia = currentMedia?.id === item.id;
 	const isOnCurrentPlaylist = !!currentPlaylist[item.id];
@@ -54,6 +55,33 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 			break;
 	}
 
+	const handleClick = async () => {
+		if (isProcessing) return;
+		setIsProcessing(true);
+		switch (item.type) {
+			case ContentType.Song:
+			case ContentType.Video:
+				if (isCurrentMedia) {
+					setMediaControls({
+						...(mediaControls ?? defaultMediaControls),
+						isPlaying: !mediaControls?.isPlaying
+					});
+					setIsProcessing(false);
+					return;
+				}
+				setCurrentMedia(item);
+				setCurrentPlaylist({ ...currentPlaylist, [item.id]: item });
+				setTimeout(() => setIsProcessing(false), 500);
+				break;
+			case ContentType.Album:
+				break;
+			case ContentType.Playlist:
+				break;
+			case ContentType.Artist:
+				break;
+		}
+	};
+
 	return (
 		<Flex
 			as={motion.div}
@@ -70,28 +98,7 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 			onMouseEnter={() => setIsHovering(true)}
 			onMouseLeave={() => setIsHovering(false)}
 			cursor='pointer'
-			onClick={() => {
-				switch (item.type) {
-					case ContentType.Song:
-					case ContentType.Video:
-						if (isCurrentMedia)
-							return setMediaControls({
-								...(mediaControls ?? defaultMediaControls),
-								isPlaying: !mediaControls?.isPlaying
-							});
-
-						setCurrentMedia(item);
-						setCurrentPlaylist({ ...currentPlaylist, [item.id]: item });
-
-						break;
-					case ContentType.Album:
-						break;
-					case ContentType.Playlist:
-						break;
-					case ContentType.Artist:
-						break;
-				}
-			}}
+			onClick={handleClick}
 		>
 			<Center>
 				{item.thumbnail && (

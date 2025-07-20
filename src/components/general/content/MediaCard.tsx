@@ -2,7 +2,7 @@ import { Card, CardBody, Center, Flex, Heading, IconButton, Spacer, Spinner, Tex
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { MdPauseCircle, MdPlayCircle, MdPlaylistAdd, MdPlaylistAddCheck } from 'react-icons/md';
 import { currentMediaAtom } from '../../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../../atoms/CurrentPlaylistAtom';
@@ -19,12 +19,29 @@ export default function MediaCard(media: Readonly<Media>) {
 	const [currentPlaylist, setCurrentPlaylist] = useAtom(currentPlaylistAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
+	const [isProcessing, setIsProcessing] = useState(false);
 
 	const { id, name, album, artist, thumbnail, duration } = media;
 
 	const isCurrentMedia = currentMedia?.id === id;
 
 	const isOnCurrentPlaylist = !!currentPlaylist[media.id];
+
+	const handleClick = async () => {
+		if (isProcessing) return;
+		setIsProcessing(true);
+		if (isCurrentMedia) {
+			setMediaControls({
+				...(mediaControls ?? defaultMediaControls),
+				isPlaying: !mediaControls?.isPlaying
+			});
+			setIsProcessing(false);
+			return;
+		}
+		setCurrentMedia(media);
+		setCurrentPlaylist({ ...currentPlaylist, [media.id]: media });
+		setTimeout(() => setIsProcessing(false), 500);
+	};
 
 	return (
 		<Card
@@ -40,16 +57,7 @@ export default function MediaCard(media: Readonly<Media>) {
 			p='0px'
 			onMouseEnter={() => setIsHovering(true)}
 			onMouseLeave={() => setIsHovering(false)}
-			onClick={() => {
-				if (isCurrentMedia)
-					return setMediaControls({
-						...(mediaControls ?? defaultMediaControls),
-						isPlaying: !mediaControls?.isPlaying
-					});
-
-				setCurrentMedia(media);
-				setCurrentPlaylist({ ...currentPlaylist, [media.id]: media });
-			}}
+			onClick={handleClick}
 		>
 			{thumbnail && (
 				<Image

@@ -1,7 +1,7 @@
 'use client';
 
 import '@fontsource/hanken-grotesk';
-import { CacheProvider } from '@chakra-ui/next-js';
+import { Provider as JotaiProvider } from 'jotai';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import AppWrapper from '../components/general/AppWrapper';
 
@@ -54,11 +54,11 @@ export default function RootLayout({
 				</style>
 			</head>
 			<body style={{ width: '100%', height: '100%', overflowX: 'hidden' }}>
-				<ChakraProvider theme={theme}>
-					<CacheProvider>
+				<JotaiProvider>
+					<ChakraProvider theme={theme}>
 						<AppWrapper>{children}</AppWrapper>
-					</CacheProvider>
-				</ChakraProvider>
+					</ChakraProvider>
+				</JotaiProvider>
 			</body>
 		</html>
 	);

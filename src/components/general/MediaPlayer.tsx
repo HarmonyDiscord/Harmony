@@ -80,7 +80,7 @@ export default function MediaPlayer() {
 				status: 'error',
 				variant: 'subtle',
 				position: 'top',
-				title: 'Unable to convert the media. Please try again later.',
+				title: 'Media not available. Please try again later.',
 				containerStyle: {
 					backdropFilter: 'blur(5px)'
 				}

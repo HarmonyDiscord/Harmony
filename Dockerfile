@@ -7,14 +7,12 @@ RUN bun install --production --frozen-lockfile && \
     NEXT_OUTPUT=standalone bun run build
 
 # Runner
-FROM cgr.dev/chainguard/bun:latest
+FROM docker.io/oven/bun:1-distroless AS runner
 WORKDIR /home/nonroot
 
 COPY --chown=nonroot --from=builder /home/bun/app/.next/standalone ./
 COPY --chown=nonroot --from=builder /home/bun/app/.next/static ./.next/static
 COPY --chown=nonroot --from=builder /home/bun/app/public ./public
-
-ENV NEXT_SHARP_PATH=/home/nonroot/node_modules/sharp
 
 EXPOSE 3000/tcp
 

@@ -6,7 +6,7 @@ import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentSecondsAtom } from '../../atoms/CurrentSecondsAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
-import getSongURL from '../../util/getSongURL';
+import { api } from '../../util/api';
 import MediaSlider from '../layout/MediaSlider';
 
 export default function MediaPlayer() {
@@ -37,37 +37,9 @@ export default function MediaPlayer() {
 
 		setCurrentSeconds(0);
 
-		const url = await getSongURL(
-			currentMedia.id,
-			discordActivityStatus?.isActivity ?? false,
-			!mediaControls?.isVideoMode
-		).catch(() => null);
-
-		if (!url) {
-			setMediaControls({
-				...(mediaControls ?? defaultMediaControls),
-				isLoading: false,
-				isPlaying: false
-			});
-
-			setCurrentMedia(null);
-
-			toast({
-				status: 'error',
-				variant: 'subtle',
-				position: 'top',
-				title: 'Unable to get media information. Please try again later.',
-				containerStyle: {
-					backdropFilter: 'blur(5px)'
-				}
-			});
-
-			return;
-		}
-
-		if (currentSetup !== setupCountRef.current) return;
-
-		const res = await fetch(url).catch(() => null);
+		const res = await api
+			.getMediaStream(currentMedia.id, discordActivityStatus?.isActivity ?? false)
+			.catch(() => null);
 
 		if (!res) {
 			setMediaControls({
@@ -82,7 +54,7 @@ export default function MediaPlayer() {
 				status: 'error',
 				variant: 'subtle',
 				position: 'top',
-				title: 'Unable to download the media. Please try again later.',
+				title: 'Unable to get media information. Please try again later.',
 				containerStyle: {
 					backdropFilter: 'blur(5px)'
 				}
@@ -172,8 +144,8 @@ export default function MediaPlayer() {
 				key='player'
 				ref={playerRef}
 				url={songURL}
-				width={mediaControls?.isVideoMode ? '100%' : '0px'}
-				height={mediaControls?.isVideoMode ? '100%' : '0px'}
+				width='0px'
+				height='0px'
 				style={{
 					overflow: 'hidden'
 				}}

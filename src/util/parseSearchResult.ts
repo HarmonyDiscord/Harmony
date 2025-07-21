@@ -8,6 +8,7 @@ export default function parseSearchResult(result: YtSearchResult): SearchResult 
 			return {
 				type: ContentType.Song,
 				id: result.videoId,
+				videoId: result.videoId,
 				name: result.name,
 				artist: {
 					id: result.artist.artistId,
@@ -48,7 +49,8 @@ export default function parseSearchResult(result: YtSearchResult): SearchResult 
 				},
 				thumbnail: result.thumbnails.at(0)?.url ?? null,
 				playlistId: result.playlistId,
-				year: result.year
+				year: result.year,
+				songs: []
 			};
 
 		case 'ARTIST':
@@ -68,7 +70,8 @@ export default function parseSearchResult(result: YtSearchResult): SearchResult 
 					id: result.artist.artistId,
 					name: result.artist.name
 				},
-				thumbnail: result.thumbnails.at(0)?.url ?? null
+				thumbnail: result.thumbnails.at(0)?.url ?? undefined,
+				songs: []
 			};
 	}
 }

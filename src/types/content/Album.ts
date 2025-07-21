@@ -1,3 +1,4 @@
+import type { SearchResult } from '../SearchResult';
 import type { ContentType } from './ContentType';
 
 export type Album = {
@@ -11,4 +12,5 @@ export type Album = {
 	thumbnail: string | null;
 	playlistId: string;
 	year: number | null;
+	songs: SearchResult[];
 };

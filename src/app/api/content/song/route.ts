@@ -7,7 +7,7 @@ export async function GET(req: Request) {
 	if (!id) return new Response('Invalid', { status: 400 });
 
 	const ytmusic = await getYTMusic();
-	const [playlist, videos] = await Promise.all([ytmusic.getPlaylist(id), ytmusic.getPlaylistVideos(id)]);
+	const song = await ytmusic.getSong(id);
 
-	return Response.json({ ...playlist, videos: videos ?? [] });
+	return Response.json(song);
 }

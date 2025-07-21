@@ -115,7 +115,9 @@ const Lyrics = memo(function Lyrics({ mediaId }: Readonly<{ mediaId?: string }>)
 					<Spinner size='xl' />
 				</Center>
 			) : (
-				lyrics?.map((l, i) => <Lyric key={i + '-' + l} l={l} />) ?? <Text>This song does not have lyrics.</Text>
+				(lyrics?.map((l, i) => <Lyric key={i + '-' + l} l={l} />) ?? (
+					<Text>This song does not have lyrics.</Text>
+				))
 			)}
 		</Flex>
 	);

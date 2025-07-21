@@ -2,7 +2,7 @@ import { Center, Fade, Flex, Heading, IconButton, Spacer, Spinner, Text } from '
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
-import { useState, useRef } from 'react';
+import { useRef, useState } from 'react';
 import { MdPauseCircle, MdPlayCircle, MdPlaylistAdd, MdPlaylistAddCheck } from 'react-icons/md';
 import { currentMediaAtom } from '../../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../../atoms/CurrentPlaylistAtom';
@@ -69,9 +69,13 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 					setIsProcessing(false);
 					return;
 				}
-				setCurrentMedia(item);
+				setMediaControls({
+					...(mediaControls ?? defaultMediaControls),
+					isLoading: true,
+					isPlaying: false
+				});
 				setCurrentPlaylist({ ...currentPlaylist, [item.id]: item });
-				setTimeout(() => setIsProcessing(false), 500);
+				setCurrentMedia(item);
 				break;
 			case ContentType.Album:
 				break;
@@ -80,6 +84,7 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 			case ContentType.Artist:
 				break;
 		}
+		setIsProcessing(false);
 	};
 
 	return (

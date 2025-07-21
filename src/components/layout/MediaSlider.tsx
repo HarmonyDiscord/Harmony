@@ -1,4 +1,4 @@
-import { discordActivityStatusAtom } from '@/atoms/DiscordActivityStatus';
+import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { Box, Center, Flex, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';

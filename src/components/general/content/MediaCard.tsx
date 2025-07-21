@@ -2,7 +2,7 @@ import { Card, CardBody, Center, Flex, Heading, IconButton, Spacer, Spinner, Tex
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
-import { useState, useRef } from 'react';
+import { useRef, useState } from 'react';
 import { MdPauseCircle, MdPlayCircle, MdPlaylistAdd, MdPlaylistAddCheck } from 'react-icons/md';
 import { currentMediaAtom } from '../../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../../atoms/CurrentPlaylistAtom';

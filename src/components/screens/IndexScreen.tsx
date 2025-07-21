@@ -3,6 +3,7 @@
 import { Box, Center, Flex, Heading, Spacer, Spinner, useBreakpointValue } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
+import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { feedAtom } from '../../atoms/FeedAtom';
 import { useDebounce } from '../../hooks/useDebounce';
@@ -14,12 +15,11 @@ import Controls from '../layout/Controls';
 import Feed from '../layout/Feed';
 import LeftMenu from '../layout/LeftMenu';
 import Navbar from '../layout/Navbar';
-import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 
 export default function IndexScreen() {
 	const [feed] = useAtom(feedAtom);
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
-	const [searchInput, setSearchInput] = useState<string>();
+	const [searchInput, setSearchInput] = useState<string>('');
 	const [searchResults, setSearchResults] = useState<SearchResult[] | null>(null);
 	const [searchMediaResults, setSearchMediaResults] = useState<Media[] | null>(null);
 	const [isSearchLoading, setIsSearchLoading] = useState(false);

@@ -1,6 +1,6 @@
-import YTMusic from 'ytmusic-api';
 import getYouTubeVideoId from '../../../../../util/getYouTubeVideoId';
 import parseSearchResult from '../../../../../util/parseSearchResult';
+import { getYTMusic } from '../../../../../util/ytmusic';
 
 export async function GET(req: Request) {
 	const { searchParams } = new URL(req.url);
@@ -8,8 +8,7 @@ export async function GET(req: Request) {
 
 	if (!query) return new Response('Invalid', { status: 400 });
 
-	const ytmusic = new YTMusic();
-	await ytmusic.initialize();
+	const ytmusic = await getYTMusic();
 
 	try {
 		if (!query) return Response.json([]);

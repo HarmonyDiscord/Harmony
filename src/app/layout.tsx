@@ -1,8 +1,8 @@
 'use client';
 
 import '@fontsource/hanken-grotesk';
-import { Provider as JotaiProvider } from 'jotai';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
+import { Provider as JotaiProvider } from 'jotai';
 import AppWrapper from '../components/general/AppWrapper';
 
 const config = {

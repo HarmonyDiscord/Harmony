@@ -27,13 +27,10 @@ export default function MediaPlayer() {
 
 		const currentSetup = ++setupCountRef.current;
 
-		setMediaControls({
-			...(mediaControls ?? defaultMediaControls),
-			isPlaying: false,
-			isLoading: true
-		});
-
-		setSongURL(undefined);
+		if (songURL) {
+			URL.revokeObjectURL(songURL);
+			setSongURL(undefined);
+		}
 
 		setCurrentSeconds(0);
 
@@ -41,12 +38,19 @@ export default function MediaPlayer() {
 			.getMediaStream(currentMedia.id, discordActivityStatus?.isActivity ?? false)
 			.catch(() => null);
 
+		if (currentSetup !== setupCountRef.current) {
+			if (res) {
+				res.body?.cancel();
+			}
+			return;
+		}
+
 		if (!res) {
-			setMediaControls({
-				...(mediaControls ?? defaultMediaControls),
+			setMediaControls((prev) => ({
+				...(prev ?? defaultMediaControls),
 				isLoading: false,
 				isPlaying: false
-			});
+			}));
 
 			setCurrentMedia(null);
 
@@ -63,16 +67,18 @@ export default function MediaPlayer() {
 			return;
 		}
 
-		if (currentSetup !== setupCountRef.current) return;
-
 		const blob = await res.blob().catch(() => null);
 
+		if (currentSetup !== setupCountRef.current) {
+			return;
+		}
+
 		if (!blob) {
-			setMediaControls({
-				...(mediaControls ?? defaultMediaControls),
+			setMediaControls((prev) => ({
+				...(prev ?? defaultMediaControls),
 				isLoading: false,
 				isPlaying: false
-			});
+			}));
 
 			setCurrentMedia(null);
 
@@ -89,15 +95,14 @@ export default function MediaPlayer() {
 			return;
 		}
 
-		if (currentSetup !== setupCountRef.current) return;
+		const newURL = URL.createObjectURL(blob);
+		setSongURL(newURL);
 
-		setSongURL(URL.createObjectURL(blob));
-
-		setMediaControls({
-			...(mediaControls ?? defaultMediaControls),
+		setMediaControls((prev) => ({
+			...(prev ?? defaultMediaControls),
 			isLoading: false,
 			isPlaying: true
-		});
+		}));
 
 		if ('mediaSession' in navigator) {
 			navigator.mediaSession.metadata = new MediaMetadata({
@@ -115,19 +120,32 @@ export default function MediaPlayer() {
 					: []
 			});
 		}
-	}, [currentMedia]);
+	}, [currentMedia, setCurrentMedia, toast, discordActivityStatus?.isActivity]);
 
 	useEffect(() => {
-		setup();
-	}, [currentMedia]);
+		if (currentMedia) {
+			setMediaControls((prev) => ({
+				...(prev ?? defaultMediaControls),
+				isLoading: true,
+				isPlaying: false
+			}));
+			setup();
+		}
+		return () => {
+			if (songURL) {
+				URL.revokeObjectURL(songURL);
+			}
+		};
+	}, [currentMedia, setup]);
 
 	useEffect(() => {
-		if (!mediaControls) return;
-
-		setMediaControls({
-			...(mediaControls ?? defaultMediaControls)
-		});
-	}, [setMediaControls]);
+		if (!mediaControls) {
+			setMediaControls({
+				...defaultMediaControls,
+				isLoading: !!currentMedia
+			});
+		}
+	}, []);
 
 	const seekTo = useCallback(
 		(to: number) => {

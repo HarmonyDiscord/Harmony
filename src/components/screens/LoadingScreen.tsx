@@ -1,14 +1,16 @@
 'use client';
 
-import { Center, Stack } from '@chakra-ui/react';
-import { MdMusicNote } from 'react-icons/md';
+import { Box, Center, Stack } from '@chakra-ui/react';
 import { BarLoader } from 'react-spinners';
+import LogoIcon from '../icons/LogoIcon';
 
 export default function LoadingScreen() {
 	return (
 		<Center h='100%' w='100%'>
 			<Stack alignItems='center'>
-				<MdMusicNote fontSize='200px' color='#FFFFFF' />
+				<Box py='20px'>
+					<LogoIcon width='auto' height='180px' color='#FFFFFF' />
+				</Box>
 				<BarLoader
 					color='#FFFFFF'
 					loading={true}

@@ -1,4 +1,5 @@
 import type { ContentType } from './ContentType';
+import type { Song } from './Song';
 
 export type Playlist = {
 	type: ContentType.Playlist;
@@ -8,5 +9,6 @@ export type Playlist = {
 		id: string | null;
 		name: string;
 	};
-	thumbnail: string | null;
+	songs: Song[];
+	thumbnail?: string;
 };

@@ -2,15 +2,18 @@ import { Center, Fade, Flex, Heading, IconButton, Spacer, Spinner, Text } from '
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { MdPauseCircle, MdPlayCircle, MdPlaylistAdd, MdPlaylistAddCheck } from 'react-icons/md';
+import { currentContentAtom } from '../../../atoms/CurrentContentAtom';
 import { currentMediaAtom } from '../../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../../atoms/CurrentPlaylistAtom';
 import { discordActivityStatusAtom } from '../../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../../atoms/MediaControlAtom';
 import type { SearchResult } from '../../../types/SearchResult';
 import { ContentType } from '../../../types/content/ContentType';
+import { api } from '../../../util/api';
 import formatDuration from '../../../util/formatDuration';
+import { normalizeAlbum, normalizeArtist, normalizePlaylist } from '../../../util/normalizeContent';
 
 export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) {
 	const [isHovering, setIsHovering] = useState(false);
@@ -18,6 +21,7 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 	const [currentPlaylist, setCurrentPlaylist] = useAtom(currentPlaylistAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 	const [currentMedia, setCurrentMedia] = useAtom(currentMediaAtom);
+	const [currentContent, setCurrentContent] = useAtom(currentContentAtom);
 	const [isProcessing, setIsProcessing] = useState(false);
 
 	const isCurrentMedia = currentMedia?.id === item.id;
@@ -29,14 +33,14 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 		case ContentType.Song:
 			specificDetails = (
 				<Text fontSize='sm'>
-					{item.artist.name} - {item.album?.name}
+					{item.artist.name} {item.album?.name && `- ${item.album.name}`}
 				</Text>
 			);
 			break;
 		case ContentType.Video:
 			specificDetails = (
 				<Text fontSize='sm'>
-					{item.artist.name} - {formatDuration(item.duration)}
+					{item.artist.name} {item.duration > 0 && `- ${formatDuration(item.duration)}`}
 				</Text>
 			);
 			break;
@@ -58,33 +62,63 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 	const handleClick = async () => {
 		if (isProcessing) return;
 		setIsProcessing(true);
-		switch (item.type) {
-			case ContentType.Song:
-			case ContentType.Video:
-				if (isCurrentMedia) {
+		try {
+			switch (item.type) {
+				case ContentType.Song:
+				case ContentType.Video: {
+					let playItem = item;
+					if (!playItem.duration || playItem.duration === 0) {
+						if (item.type === ContentType.Song) {
+							const details = await api.content.song(item.videoId);
+							if (details && typeof details.duration === 'number') {
+								playItem = { ...playItem, duration: details.duration };
+							}
+						} else if (item.type === ContentType.Video) {
+							const details = await api.content.video(item.id);
+							if (details && typeof details.duration === 'number') {
+								playItem = { ...playItem, duration: details.duration };
+							}
+						}
+					}
+					if (isCurrentMedia) {
+						setMediaControls({
+							...(mediaControls ?? defaultMediaControls),
+							isPlaying: !mediaControls?.isPlaying
+						});
+						break;
+					}
 					setMediaControls({
 						...(mediaControls ?? defaultMediaControls),
-						isPlaying: !mediaControls?.isPlaying
+						isLoading: true,
+						isPlaying: false
 					});
-					setIsProcessing(false);
-					return;
+					setCurrentPlaylist({ ...currentPlaylist, [playItem.id]: playItem });
+					setCurrentMedia(playItem);
+					break;
 				}
-				setMediaControls({
-					...(mediaControls ?? defaultMediaControls),
-					isLoading: true,
-					isPlaying: false
-				});
-				setCurrentPlaylist({ ...currentPlaylist, [item.id]: item });
-				setCurrentMedia(item);
-				break;
-			case ContentType.Album:
-				break;
-			case ContentType.Playlist:
-				break;
-			case ContentType.Artist:
-				break;
+				case ContentType.Album:
+					const albumData = await api.content.album(item.id);
+					if (albumData) {
+						setCurrentContent(normalizeAlbum(albumData));
+					}
+					break;
+				case ContentType.Playlist:
+					const playlistData = await api.content.playlist(item.id);
+					if (playlistData) {
+						const normalized = normalizePlaylist({ ...playlistData, songs: playlistData.videos ?? [] });
+						setCurrentContent(normalized);
+					}
+					break;
+				case ContentType.Artist:
+					const artistData = await api.content.artist(item.id);
+					if (artistData) {
+						setCurrentContent(normalizeArtist(artistData));
+					}
+					break;
+			}
+		} finally {
+			setIsProcessing(false);
 		}
-		setIsProcessing(false);
 	};
 
 	return (

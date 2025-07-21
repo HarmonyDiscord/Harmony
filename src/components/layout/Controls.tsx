@@ -34,7 +34,6 @@ import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
-import { api } from '../../util/api';
 import MediaPlayer from '../general/MediaPlayer';
 
 export default memo(function Controls() {
@@ -109,7 +108,8 @@ export default memo(function Controls() {
 									<Flex gap='4px' direction='column'>
 										<Heading size='md'>{currentMedia.name}</Heading>
 										<Text>
-											{currentMedia.album?.name} - {currentMedia.artist.name}
+											{currentMedia.album && `${currentMedia.album.name} - `}
+											{currentMedia.artist.name}
 										</Text>
 									</Flex>
 									<IconButton icon={<MdFavoriteBorder fontSize='24px' />} aria-label='Favorite' />

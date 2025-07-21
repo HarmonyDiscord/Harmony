@@ -4,6 +4,7 @@ import {
 	CloseButton,
 	Flex,
 	Heading,
+	Hide,
 	IconButton,
 	Input,
 	InputGroup,
@@ -14,11 +15,13 @@ import {
 	Spacer
 } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
-import { MdMenu, MdMusicNote, MdSearch } from 'react-icons/md';
+import { MdMenu, MdSearch } from 'react-icons/md';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import { userAtom } from '../../atoms/UserAtom';
+import FullLogoIcon from '../icons/FullLogoIcon';
+import LogoIcon from '../icons/LogoIcon';
 
 export default function Navbar({ searchInput, setSearchInput }: any) {
 	const [user] = useAtom(userAtom);
@@ -32,21 +35,22 @@ export default function Navbar({ searchInput, setSearchInput }: any) {
 					w='100%'
 					bg='#FFFFFF10'
 					borderRadius='10px'
-					p='20px'
+					px='15px'
+					py='10px'
 					gap='10px'
 					zIndex={2}
 					alignItems='center'
 					backdropFilter='blur(5px)'
 				>
 					<Flex gap='10px' cursor='pointer' onClick={() => location.reload()} alignItems='center'>
-						<Box minW='36px'>
-							<MdMusicNote fontSize='36px' color='#FFFFFF' />
+						<Box pl='5px' minW='max-content'>
+							<Hide above='sm'>
+								<LogoIcon width='auto' height='28' color='#FFFFFF' />
+							</Hide>
+							<Show above='sm'>
+								<FullLogoIcon width='auto' height='25' color='#FFFFFF' />
+							</Show>
 						</Box>
-						<Show above='sm'>
-							<Heading size='md' fontWeight='bold'>
-								Harmony
-							</Heading>
-						</Show>
 					</Flex>
 					<Spacer />
 					<InputGroup w='400px'>

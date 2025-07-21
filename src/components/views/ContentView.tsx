@@ -7,6 +7,7 @@ import { ContentType } from '../../types/content/ContentType';
 import type { Song } from '../../types/content/Song';
 import formatDuration from '../../util/formatDuration';
 import ContentList from '../layout/ContentList';
+import { MdArrowBack } from 'react-icons/md';
 
 export default function ContentView() {
 	const [currentContent, setCurrentContent] = useAtom(currentContentAtom);
@@ -42,9 +43,11 @@ export default function ContentView() {
 				maskMode: 'alpha'
 			}}
 		>
-			<Button onClick={() => setCurrentContent(null)} w='fit-content'>
-				Back
-			</Button>
+			<Box>
+				<Button onClick={() => setCurrentContent(null)} size='md' leftIcon={<MdArrowBack />}>
+					Back
+				</Button>
+			</Box>
 			<Flex gap='20px' direction={{ base: 'column', md: 'row' }}>
 				{thumbnail && (
 					<Box position='relative' minW='300px' minH='300px' borderRadius='10px' overflow='hidden'>

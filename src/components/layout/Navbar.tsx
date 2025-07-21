@@ -20,6 +20,8 @@ import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import { userAtom } from '../../atoms/UserAtom';
+import { currentContentAtom } from '../../atoms/CurrentContentAtom';
+import { feedAtom } from '../../atoms/FeedAtom';
 import FullLogoIcon from '../icons/FullLogoIcon';
 import LogoIcon from '../icons/LogoIcon';
 
@@ -28,6 +30,13 @@ export default function Navbar({ searchInput, setSearchInput }: any) {
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [currentMedia] = useAtom(currentMediaAtom);
+	const [, setCurrentContent] = useAtom(currentContentAtom);
+
+	const handleLogoClick = () => {
+		setSearchInput('');
+		setCurrentContent(null);
+	};
+
 	return (
 		!discordActivityStatus?.isOverlay && (
 			<Box w='100%' p='20px' pb='0px'>
@@ -42,7 +51,7 @@ export default function Navbar({ searchInput, setSearchInput }: any) {
 					alignItems='center'
 					backdropFilter='blur(5px)'
 				>
-					<Flex gap='10px' cursor='pointer' onClick={() => location.reload()} alignItems='center'>
+					<Flex gap='10px' cursor='pointer' onClick={handleLogoClick} alignItems='center'>
 						<Box pl='5px' minW='max-content'>
 							<Hide above='sm'>
 								<LogoIcon width='auto' height='28' color='#FFFFFF' />

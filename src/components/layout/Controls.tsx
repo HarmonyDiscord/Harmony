@@ -35,6 +35,7 @@ import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import MediaPlayer from '../general/MediaPlayer';
+import FullLogoIcon from '../icons/FullLogoIcon';
 
 export default memo(function Controls() {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
@@ -63,13 +64,18 @@ export default memo(function Controls() {
 				<Box
 					as={motion.div}
 					w='100%'
-					p='20px'
+					p={discordActivityStatus.isOverlay ? '15px' : '20px'}
 					pt='0px'
 					initial={{ y: 10, opacity: 0 }}
 					animate={{ y: 0, opacity: 1 }}
 					exit={{ y: 10, opacity: 0 }}
 				>
 					<Flex w='100%' h='100%' direction='column' gap='10px'>
+						{discordActivityStatus.isOverlay && (
+							<Box pb='5px'>
+								<FullLogoIcon width='auto' height='22' color='#FFFFFF' />
+							</Box>
+						)}
 						<MediaPlayer />
 						<Flex
 							w='100%'
@@ -85,6 +91,7 @@ export default memo(function Controls() {
 						>
 							<AnimatePresence mode='wait'>
 								<Flex
+									w={discordActivityStatus.isOverlay ? '100%' : undefined}
 									key={currentMedia.id}
 									as={motion.div}
 									gap='12px'
@@ -97,25 +104,30 @@ export default memo(function Controls() {
 										width={60}
 										height={60}
 										src={currentMedia.thumbnail ?? ''}
-										alt={currentMedia.name}
+										alt=' '
 										objectFit='cover'
 										style={{
 											borderRadius: '5px'
 										}}
 										referrerPolicy='no-referrer'
-										unoptimized={!discordActivityStatus?.isActivity}
+										unoptimized={!discordActivityStatus.isActivity}
 									/>
 									<Flex gap='4px' direction='column'>
-										<Heading size='md'>{currentMedia.name}</Heading>
-										<Text>
+										<Heading size={discordActivityStatus.isOverlay ? 'xs' : 'md'}>
+											{currentMedia.name}
+										</Heading>
+										<Text fontSize={discordActivityStatus.isOverlay ? 'sm' : undefined}>
 											{currentMedia.album && `${currentMedia.album.name} - `}
 											{currentMedia.artist.name}
 										</Text>
 									</Flex>
-									<IconButton icon={<MdFavoriteBorder fontSize='24px' />} aria-label='Favorite' />
+									{!discordActivityStatus.isOverlay && (
+										<IconButton icon={<MdFavoriteBorder fontSize='24px' />} aria-label='Favorite' />
+									)}
+									{discordActivityStatus.isOverlay && <Spacer />}
 								</Flex>
 							</AnimatePresence>
-							{!discordActivityStatus?.isOverlay && (
+							{!discordActivityStatus.isOverlay && (
 								<Flex
 									gap='10px'
 									w='100%'

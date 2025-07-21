@@ -46,7 +46,7 @@ export default function Navbar({ searchInput, setSearchInput }: any) {
 	};
 
 	return (
-		!discordActivityStatus?.isOverlay && (
+		!discordActivityStatus.isOverlay && (
 			<Box w='100%' p='20px' pb='0px'>
 				<Flex
 					w='100%'

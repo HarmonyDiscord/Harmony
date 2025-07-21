@@ -34,9 +34,7 @@ export default function MediaPlayer() {
 
 		setCurrentSeconds(0);
 
-		const res = await api
-			.getMediaStream(currentMedia.id, discordActivityStatus?.isActivity ?? false)
-			.catch(() => null);
+		const res = await api.getMediaStream(currentMedia.id).catch(() => null);
 
 		if (currentSetup !== setupCountRef.current) {
 			if (res) {
@@ -120,7 +118,7 @@ export default function MediaPlayer() {
 					: []
 			});
 		}
-	}, [currentMedia, setCurrentMedia, toast, discordActivityStatus?.isActivity]);
+	}, [currentMedia, setCurrentMedia, toast, discordActivityStatus.isActivity]);
 
 	useEffect(() => {
 		if (currentMedia) {
@@ -157,7 +155,7 @@ export default function MediaPlayer() {
 	);
 
 	return (
-		<Flex direction='column' w='100%' h='100%' gap='10px' maxH='100%'>
+		<Flex direction='column' w='100%' h='100%' gap='0px' maxH='100%'>
 			<ReactPlayer
 				key='player'
 				ref={playerRef}
@@ -194,7 +192,6 @@ export default function MediaPlayer() {
 					})
 				}
 			/>
-			<Spacer />
 			<MediaSlider seekTo={seekTo} />
 		</Flex>
 	);

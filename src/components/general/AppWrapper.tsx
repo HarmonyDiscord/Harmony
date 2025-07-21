@@ -19,7 +19,7 @@ export default function AppWrapper({ children }: Readonly<{ children: any }>) {
 				<Fade in={isBackgroundLoaded} style={{ zIndex: -1, height: '100%' }}>
 					<Image
 						src={gradient}
-						alt='Background'
+						alt=' '
 						style={{
 							position: 'absolute',
 							width: '100vw',

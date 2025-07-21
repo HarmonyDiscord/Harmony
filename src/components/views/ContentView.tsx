@@ -8,9 +8,11 @@ import type { Song } from '../../types/content/Song';
 import formatDuration from '../../util/formatDuration';
 import ContentList from '../layout/ContentList';
 import { MdArrowBack } from 'react-icons/md';
+import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 
 export default function ContentView() {
 	const [currentContent, setCurrentContent] = useAtom(currentContentAtom);
+	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 
 	if (!currentContent) return null;
 
@@ -53,12 +55,12 @@ export default function ContentView() {
 					<Box position='relative' minW='300px' minH='300px' borderRadius='10px' overflow='hidden'>
 						<Image
 							src={thumbnail}
-							alt={name}
+							alt=' '
 							fill
 							style={{
 								objectFit: 'cover'
 							}}
-							unoptimized
+							unoptimized={!discordActivityStatus.isActivity}
 						/>
 					</Box>
 				)}

@@ -8,8 +8,8 @@ export default function LoadingScreen() {
 	return (
 		<Center h='100%' w='100%'>
 			<Stack alignItems='center'>
-				<Box py='20px'>
-					<LogoIcon width='auto' height='180px' color='#FFFFFF' />
+				<Box pb='15px' pt='25px'>
+					<LogoIcon width='auto' height='160px' color='#FFFFFF' />
 				</Box>
 				<BarLoader
 					color='#FFFFFF'

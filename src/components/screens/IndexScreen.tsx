@@ -20,6 +20,7 @@ import Navbar from '../layout/Navbar';
 import ArtistView from '../views/ArtistView';
 import ContentView from '../views/ContentView';
 import { mediaControlsAtom, defaultMediaControls } from '../../atoms/MediaControlAtom';
+import FullLogoIcon from '../icons/FullLogoIcon';
 
 export default function IndexScreen() {
 	const [feed] = useAtom(feedAtom);
@@ -95,7 +96,7 @@ export default function IndexScreen() {
 	return (
 		<Flex w='100%' h='100%' direction='column' overflow='hidden'>
 			<Navbar searchInput={searchInput} setSearchInput={setSearchInput} />
-			{!discordActivityStatus?.isActivity && (
+			{!discordActivityStatus.isOverlay && (
 				<Flex w='100%' h='100%' maxH='100%' overflow='hidden'>
 					{(isLg || !currentMedia || mediaControls?.isSidePanelClosed) &&
 						(isSearchLoading ? (
@@ -151,7 +152,18 @@ export default function IndexScreen() {
 				</Flex>
 			)}
 			<Spacer />
-			{currentMedia && <Controls />}
+			{currentMedia ? (
+				<Controls />
+			) : (
+				discordActivityStatus.isOverlay && (
+					<Center w='100%' h='100%' gap='5px'>
+						<Flex direction='column' alignItems='center'>
+							<FullLogoIcon width='auto' height='20px' color='#FFFFFF' />
+							<Heading>Select a song to start.</Heading>
+						</Flex>
+					</Center>
+				)
+			)}
 		</Flex>
 	);
 }

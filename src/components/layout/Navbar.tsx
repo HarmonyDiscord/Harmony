@@ -12,7 +12,8 @@ import {
 	InputRightElement,
 	Show,
 	SlideFade,
-	Spacer
+	Spacer,
+	useBreakpointValue
 } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
 import { MdMenu, MdSearch } from 'react-icons/md';
@@ -31,10 +32,17 @@ export default function Navbar({ searchInput, setSearchInput }: any) {
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [currentMedia] = useAtom(currentMediaAtom);
 	const [, setCurrentContent] = useAtom(currentContentAtom);
+	const isLg = useBreakpointValue([false, false, false, true]);
 
 	const handleLogoClick = () => {
 		setSearchInput('');
 		setCurrentContent(null);
+		if (!isLg) {
+			setMediaControls({
+				...(mediaControls ?? defaultMediaControls),
+				isSidePanelClosed: true
+			});
+		}
 	};
 
 	return (

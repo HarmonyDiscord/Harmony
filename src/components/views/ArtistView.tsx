@@ -3,13 +3,13 @@ import { motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
 import React from 'react';
+import { MdArrowBack } from 'react-icons/md';
 import { currentContentAtom } from '../../atoms/CurrentContentAtom';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
+import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import { ContentType } from '../../types/content/ContentType';
 import ContentList from '../layout/ContentList';
-import { MdArrowBack } from 'react-icons/md';
-import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 
 export default function ArtistView() {
 	const [currentContent, setCurrentContent] = useAtom(currentContentAtom);

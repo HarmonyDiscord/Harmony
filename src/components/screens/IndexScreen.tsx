@@ -7,11 +7,13 @@ import { currentContentAtom } from '../../atoms/CurrentContentAtom';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { feedAtom } from '../../atoms/FeedAtom';
+import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import { useDebounce } from '../../hooks/useDebounce';
 import type { SearchResult } from '../../types/SearchResult';
 import { ContentType } from '../../types/content/ContentType';
 import type { Media } from '../../types/content/Media';
 import { api } from '../../util/api';
+import FullLogoIcon from '../icons/FullLogoIcon';
 import ContentList from '../layout/ContentList';
 import Controls from '../layout/Controls';
 import Feed from '../layout/Feed';
@@ -19,8 +21,6 @@ import LeftMenu from '../layout/LeftMenu';
 import Navbar from '../layout/Navbar';
 import ArtistView from '../views/ArtistView';
 import ContentView from '../views/ContentView';
-import { mediaControlsAtom, defaultMediaControls } from '../../atoms/MediaControlAtom';
-import FullLogoIcon from '../icons/FullLogoIcon';
 
 export default function IndexScreen() {
 	const [feed] = useAtom(feedAtom);

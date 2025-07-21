@@ -2,13 +2,13 @@ import { Box, Button, Flex, Heading, Text } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
+import { MdArrowBack } from 'react-icons/md';
 import { currentContentAtom } from '../../atoms/CurrentContentAtom';
+import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { ContentType } from '../../types/content/ContentType';
 import type { Song } from '../../types/content/Song';
 import formatDuration from '../../util/formatDuration';
 import ContentList from '../layout/ContentList';
-import { MdArrowBack } from 'react-icons/md';
-import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 
 export default function ContentView() {
 	const [currentContent, setCurrentContent] = useAtom(currentContentAtom);

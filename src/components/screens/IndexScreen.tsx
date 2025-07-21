@@ -29,13 +29,22 @@ export default function IndexScreen() {
 	const [searchMediaResults, setSearchMediaResults] = useState<Media[] | null>(null);
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
 	const [currentMedia] = useAtom(currentMediaAtom);
-	const [currentContent] = useAtom(currentContentAtom);
+	const [currentContent, setCurrentContent] = useAtom(currentContentAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 
 	const searchCountRef = useRef(0);
 	const debouncedSearchInput = useDebounce(searchInput, 300);
 
 	const isLg = useBreakpointValue([false, false, false, true]);
+
+	useEffect(() => {
+		if (currentContent && !isLg) {
+			setMediaControls({
+				...(mediaControls ?? defaultMediaControls),
+				isSidePanelClosed: true
+			});
+		}
+	}, [currentContent, isLg]);
 
 	useEffect(() => {
 		if (debouncedSearchInput && !isLg) {
@@ -52,13 +61,13 @@ export default function IndexScreen() {
 				setSearchResults(null);
 				setSearchMediaResults(null);
 				setIsSearchLoading(false);
-
 				return;
 			}
 
 			const currentSearchCount = ++searchCountRef.current;
 
 			setIsSearchLoading(true);
+			setCurrentContent(null);
 
 			const [results, songs] = await Promise.all([
 				api.content.search(debouncedSearchInput),

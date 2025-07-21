@@ -6,6 +6,7 @@ import React from 'react';
 import { currentContentAtom } from '../../atoms/CurrentContentAtom';
 import { ContentType } from '../../types/content/ContentType';
 import ContentList from '../layout/ContentList';
+import { MdArrowBack } from 'react-icons/md';
 
 export default function ArtistView() {
 	const [currentContent, setCurrentContent] = useAtom(currentContentAtom);
@@ -49,9 +50,11 @@ export default function ArtistView() {
 				maskMode: 'alpha'
 			}}
 		>
-			<Button onClick={() => setCurrentContent(null)} w='fit-content'>
-				Back
-			</Button>
+			<Box>
+				<Button onClick={() => setCurrentContent(null)} size='md' leftIcon={<MdArrowBack />}>
+					Back
+				</Button>
+			</Box>
 			<Flex gap='32px' direction={{ base: 'column', md: 'row' }} align='center'>
 				{thumbnail && (
 					<Box position='relative' minW='200px' minH='200px' borderRadius='50%' overflow='hidden'>

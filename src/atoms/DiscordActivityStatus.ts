@@ -5,4 +5,3 @@ export const discordActivityStatusAtom = atom<DiscordActivityStatus>({
 	isActivity: false,
 	isOverlay: false
 });
-

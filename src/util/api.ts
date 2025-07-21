@@ -4,7 +4,7 @@ export function setIsDiscordActivity(isActive: boolean) {
 	isDiscordActivity = isActive;
 }
 
-const getPrefix = () => isDiscordActivity ? '/.proxy' : '';
+const getPrefix = () => (isDiscordActivity ? '/.proxy' : '');
 
 export const api = {
 	getMediaStream: async (songId: string) => {

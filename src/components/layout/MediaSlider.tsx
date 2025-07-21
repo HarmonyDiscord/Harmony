@@ -1,3 +1,4 @@
+import { discordActivityStatusAtom } from '@/atoms/DiscordActivityStatus';
 import { Box, Center, Flex, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
@@ -6,7 +7,6 @@ import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentSecondsAtom } from '../../atoms/CurrentSecondsAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import formatDuration from '../../util/formatDuration';
-import { discordActivityStatusAtom } from '@/atoms/DiscordActivityStatus';
 
 export default function MediaSlider({ seekTo }: { seekTo: any }) {
 	const [currentMedia] = useAtom(currentMediaAtom);

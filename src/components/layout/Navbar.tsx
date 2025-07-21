@@ -17,12 +17,12 @@ import {
 } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
 import { MdMenu, MdSearch } from 'react-icons/md';
+import { currentContentAtom } from '../../atoms/CurrentContentAtom';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
+import { feedAtom } from '../../atoms/FeedAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import { userAtom } from '../../atoms/UserAtom';
-import { currentContentAtom } from '../../atoms/CurrentContentAtom';
-import { feedAtom } from '../../atoms/FeedAtom';
 import FullLogoIcon from '../icons/FullLogoIcon';
 import LogoIcon from '../icons/LogoIcon';
 

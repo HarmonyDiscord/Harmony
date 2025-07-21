@@ -26,7 +26,7 @@ export default function AppFlow({
 	const [_feed, setFeed] = useAtom(feedAtom);
 
 	async function setup() {
-		const results = await api.content.mediaSearch('robe');
+		const results = await api.content.mediaSearch('robe extremoduro');
 		if (!results) return setFeed(null);
 		setFeed(results);
 

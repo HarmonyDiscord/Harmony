@@ -6,15 +6,17 @@ import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentSecondsAtom } from '../../atoms/CurrentSecondsAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import formatDuration from '../../util/formatDuration';
+import { discordActivityStatusAtom } from '@/atoms/DiscordActivityStatus';
 
 export default function MediaSlider({ seekTo }: { seekTo: any }) {
 	const [currentMedia] = useAtom(currentMediaAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 	const [currentSeconds, setCurrentSeconds] = useAtom(currentSecondsAtom);
+	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 
 	return (
 		currentMedia && (
-			<Center my='5px' h='16px'>
+			<Center mt={discordActivityStatus.isOverlay ? '0px' : '5px'} mb='5px' h='16px'>
 				<Box w='100%'>
 					<AnimatePresence mode='wait'>
 						<Flex w='100%' gap='12px'>

@@ -76,7 +76,7 @@ export default function MediaCard(media: Readonly<Media>) {
 						objectFit: 'cover',
 						borderRadius: '10px'
 					}}
-					unoptimized={!discordActivityStatus?.isActivity}
+					unoptimized={!discordActivityStatus.isActivity}
 					referrerPolicy='no-referrer'
 					quality={100}
 				/>

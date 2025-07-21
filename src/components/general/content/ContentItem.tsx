@@ -143,7 +143,7 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 				{item.thumbnail && (
 					<Image
 						src={item.thumbnail}
-						alt={item.name}
+						alt=' '
 						width={60}
 						height={60}
 						priority
@@ -156,7 +156,7 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 							objectFit: 'cover',
 							borderRadius: item.type === ContentType.Artist ? '50%' : '5px'
 						}}
-						unoptimized={!discordActivityStatus?.isActivity}
+						unoptimized={!discordActivityStatus.isActivity}
 						quality={100}
 						referrerPolicy='no-referrer'
 					/>

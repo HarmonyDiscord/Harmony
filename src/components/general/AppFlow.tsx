@@ -1,11 +1,11 @@
 import { DiscordSDK } from '@discord/embedded-app-sdk';
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
-import { defaultDiscordActivityStatus, discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
+import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { feedAtom } from '../../atoms/FeedAtom';
 import { loadingAtom } from '../../atoms/LoadingAtom';
 import { userAtom } from '../../atoms/UserAtom';
-import { api } from '../../util/api';
+import { api, setIsDiscordActivity } from '../../util/api';
 
 const clientId = process.env['NEXT_PUBLIC_DISCORD_CLIENT_ID'] ?? '';
 
@@ -20,22 +20,22 @@ export default function AppFlow({
 }: Readonly<{
 	children: any;
 }>) {
-	const [discordActivityStatus, setDiscordActivityStatus] = useAtom(discordActivityStatusAtom);
-	const [_isLoading, setIsLoading] = useAtom(loadingAtom);
-	const [_user, setUser] = useAtom(userAtom);
-	const [_feed, setFeed] = useAtom(feedAtom);
+	const [, setDiscordActivityStatus] = useAtom(discordActivityStatusAtom);
+	const [, setIsLoading] = useAtom(loadingAtom);
+	const [, setUser] = useAtom(userAtom);
+	const [, setFeed] = useAtom(feedAtom);
 
 	async function setup() {
+		if (discordSDK) {
+			setIsDiscordActivity(true);
+			setDiscordActivityStatus((prev) => ({ ...prev, isActivity: true }));
+		}
+
 		const results = await api.content.mediaSearch('robe extremoduro');
 		if (!results) return setFeed(null);
 		setFeed(results);
 
 		if (discordSDK) {
-			setDiscordActivityStatus({
-				...(discordActivityStatus ?? defaultDiscordActivityStatus),
-				isActivity: true
-			});
-
 			await discordSDK.ready();
 
 			const { code } = await discordSDK.commands.authorize({
@@ -45,7 +45,7 @@ export default function AppFlow({
 				scope: ['identify']
 			});
 
-			const response = await fetch('/api/token', {
+			const response = await fetch('/.proxy/api/token', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -72,10 +72,7 @@ export default function AppFlow({
 
 			await discordSDK.subscribe('ACTIVITY_LAYOUT_MODE_UPDATE', ({ layout_mode }) => {
 				console.log('sdk update', layout_mode);
-				setDiscordActivityStatus({
-					...(discordActivityStatus ?? defaultDiscordActivityStatus),
-					isOverlay: layout_mode === 1
-				});
+				setDiscordActivityStatus((prev) => ({ ...prev, isOverlay: layout_mode === 1 }));
 			});
 		} else {
 			setIsLoading(false);

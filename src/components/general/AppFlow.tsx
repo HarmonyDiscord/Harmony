@@ -339,7 +339,9 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 	useEffect(() => {
 		function onHashChange() {
 			if (window.location.hash !== initialHashRef.current) {
-				window.location.reload();
+				if (!discordSDK) {
+					window.location.reload();
+				}
 			}
 		}
 		window.addEventListener('hashchange', onHashChange);

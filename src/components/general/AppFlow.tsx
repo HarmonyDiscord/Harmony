@@ -9,11 +9,11 @@ import {
 	ModalOverlay,
 	Text
 } from '@chakra-ui/react';
-import { DiscordSDK, Events, type Types } from '@discord/embedded-app-sdk';
+import { DiscordSDK, Events } from '@discord/embedded-app-sdk';
 import { useAtom } from 'jotai';
 import { atom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
-import { MdArrowForward, MdPlayArrow } from 'react-icons/md';
+import { MdArrowForward } from 'react-icons/md';
 import { io } from 'socket.io-client';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
@@ -23,9 +23,10 @@ import { feedAtom } from '../../atoms/FeedAtom';
 import { loadingAtom } from '../../atoms/LoadingAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import { participantsAtom } from '../../atoms/ParticipantsAtom';
-import { userAtom } from '../../atoms/UserAtom';
 import { api, setIsDiscordActivity } from '../../util/api';
 import LogoIcon from '../icons/LogoIcon';
+import { userIDAtom } from '../../atoms/UserIDAtom';
+import { hostIDAtom } from '../../atoms/HostIDAtom';
 
 const clientId = process.env['NEXT_PUBLIC_DISCORD_CLIENT_ID'] ?? '';
 
@@ -50,8 +51,7 @@ function generateRoomId() {
 export default function AppFlow({ children }: Readonly<{ children: any }>) {
 	const [, setDiscordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [, setIsLoading] = useAtom(loadingAtom);
-	const [user, setUser] = useAtom(userAtom);
-	const [participants, setParticipants] = useAtom(participantsAtom);
+	const [, setParticipants] = useAtom(participantsAtom);
 	const [, setFeed] = useAtom(feedAtom);
 	const [, setCurrentMedia] = useAtom(currentMediaAtom);
 	const [currentMedia] = useAtom(currentMediaAtom);
@@ -59,13 +59,16 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
 	const [currentSeconds] = useAtom(currentSecondsAtom);
 	const [isHost] = useAtom(isHostAtom);
+	const isHostRef = useRef(isHost);
 	const [, setIsHost] = useAtom(isHostAtom);
 	const [, setMediaControls] = useAtom(mediaControlsAtom);
 	const [, setCurrentSeconds] = useAtom(currentSecondsAtom);
 	const [, setCurrentPlaylist] = useAtom(currentPlaylistAtom);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [, setAutoplayRequested] = useState(false);
-
+	const [userID, setUserID] = useAtom(userIDAtom);
+	const userIDRef = useRef(userID);
+	const [, setHostID] = useAtom(hostIDAtom);
 	const currentValuesRef = useRef({
 		currentMedia: null as any,
 		mediaControls: null as any,
@@ -79,6 +82,13 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 			currentSeconds
 		};
 	}, [currentMedia, mediaControls, currentSeconds]);
+
+	useEffect(() => {
+		userIDRef.current = userID;
+	}, [userID]);
+	useEffect(() => {
+		isHostRef.current = isHost;
+	}, [isHost]);
 
 	function handleAutoplayRequest() {
 		setAutoplayRequested(true);
@@ -128,7 +138,10 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 
 	const handleReady = (data: any) => {
 		console.log('handleReady', data);
-		setIsHost(data.isHost);
+		setUserID(data.id);
+		const isHost = data.id === data.hostId;
+		setIsHost(isHost);
+		setHostID(data.hostId);
 		setCurrentMedia(data.currentMedia);
 		setMediaControls((prev: any) => {
 			const nextPlaying = data.currentMediaControls?.isPlaying;
@@ -139,7 +152,8 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 			};
 		});
 		setCurrentPlaylist(data.currentPlaylist);
-		if (!data.isHost) {
+		setParticipants(data.participants);
+		if (!isHost) {
 			setIsLoading(true);
 			setIsModalOpen(true);
 		} else {
@@ -149,14 +163,22 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 	};
 
 	const handleNewHost = (data: any) => {
-		setIsHost(data.isHost);
-		if (data.isHost) {
+		setHostID(data.hostId);
+		console.log('handleNewHost', userIDRef.current, data);
+		const isHost = userIDRef.current === data.hostId;
+		setIsHost(isHost);
+		if (isHost) {
 			setIsModalOpen(false);
 			setIsLoading(false);
 		}
 	};
 
+	const handleSyncParticipants = (data: any) => {
+		setParticipants(data);
+	};
+
 	async function appSetup() {
+		let auth: any = undefined;
 		if (discordSDK) {
 			setIsDiscordActivity(true);
 			setDiscordActivityStatus((prev) => ({ ...prev, isActivity: true }));
@@ -173,7 +195,7 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 				client_id: clientId,
 				response_type: 'code',
 				prompt: 'none',
-				scope: ['identify']
+				scope: ['identify', 'rpc.activities.write']
 			});
 
 			const response = await fetch('/.proxy/api/token', {
@@ -188,39 +210,15 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 
 			const { access_token } = await response.json();
 
-			const auth = await discordSDK.commands.authenticate({
+			auth = await discordSDK.commands.authenticate({
 				access_token
 			});
 
-			setUser({
-				id: auth.user.id,
-				name: auth.user.username,
-				avatarURL: auth.user.avatar
-					? `https://cdn.discordapp.com/avatars/${auth.user.id}/${auth.user.avatar}.png`
-					: undefined
-			});
-
-			const { participants } = await discordSDK.commands.getInstanceConnectedParticipants();
-
-			setParticipants(
-				participants.map((p) => ({
-					id: p.id,
-					name: p.username,
-					avatarURL: p.avatar ? `https://cdn.discordapp.com/avatars/${p.id}/${p.avatar}.png` : undefined
-				}))
-			);
-
-			function updateParticipants({ participants }: Types.GetActivityInstanceConnectedParticipantsResponse) {
-				setParticipants(
-					participants.map((p) => ({
-						id: p.id,
-						name: p.username,
-						avatarURL: p.avatar ? `https://cdn.discordapp.com/avatars/${p.id}/${p.avatar}.png` : undefined
-					}))
-				);
-			}
-
-			discordSDK.subscribe(Events.ACTIVITY_INSTANCE_PARTICIPANTS_UPDATE, updateParticipants);
+			/*await discordSDK.commands
+				.setConfig({
+					use_interactive_pip: true
+				})
+				.catch(() => null);*/
 
 			discordSDK.subscribe(Events.ACTIVITY_LAYOUT_MODE_UPDATE, ({ layout_mode }) => {
 				setDiscordActivityStatus((prev) => ({ ...prev, isOverlay: layout_mode === 1 }));
@@ -248,7 +246,11 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 				transports: process.env.NODE_ENV === 'production' ? ['polling', 'websocket'] : ['polling', 'websocket'],
 				path: `${discordSDK ? '/.proxy/events/' : '/events'}`,
 				auth: {
-					roomId
+					roomId,
+					name: auth?.user?.username,
+					avatarURL: auth?.user?.avatar
+						? `https://cdn.discordapp.com/avatars/${auth.user.id}/${auth.user.avatar}.png`
+						: undefined
 				},
 				reconnection: true,
 				reconnectionAttempts: Infinity,
@@ -278,6 +280,7 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 
 			socket.on('ready', handleReady);
 			socket.on('newHost', handleNewHost);
+			socket.on('syncParticipants', handleSyncParticipants);
 			socket.on('syncMedia', handleSyncMedia);
 			socket.on('requestSyncMedia', handleRequestSyncMedia);
 			socket.on('seekTo', handleSeekTo);
@@ -286,6 +289,7 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 			return () => {
 				socket?.off('ready', handleReady);
 				socket?.off('newHost', handleNewHost);
+				socket?.off('syncParticipants', handleSyncParticipants);
 				socket?.off('syncMedia', handleSyncMedia);
 				socket?.off('requestSyncMedia', handleRequestSyncMedia);
 				socket?.off('seekTo', handleSeekTo);
@@ -308,10 +312,10 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 		return () => {
 			if (cleanup) cleanup();
 		};
-	}, [user, participants]);
+	}, []);
 
 	useEffect(() => {
-		if (isHost && socket) {
+		if (isHostRef.current && socket) {
 			socket.emit('syncMedia', {
 				currentMedia,
 				currentMediaControls: {
@@ -324,7 +328,7 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 	}, [currentMedia?.id, mediaControls?.isPlaying, mediaControls?.isLooping, isHost]);
 
 	useEffect(() => {
-		if (isHost && socket) {
+		if (isHostRef.current && socket) {
 			socket.emit('syncPlaylist', {
 				currentPlaylist
 			});

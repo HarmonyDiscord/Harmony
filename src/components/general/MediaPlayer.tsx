@@ -130,6 +130,25 @@ export default memo(function MediaPlayer() {
 					: []
 			});
 		}
+		if (typeof window !== 'undefined' && window.discordSDK) {
+			await window.discordSDK.commands.setActivity({
+				activity: {
+					type: 2,
+					instance: true,
+					details: currentMedia.name,
+					state: currentMedia.album?.name
+						? currentMedia.album.name + ' - ' + currentMedia.artist.name
+						: currentMedia.artist.name,
+					assets: {
+						large_image: currentMedia.thumbnail
+					},
+					timestamps: {
+						start: Date.now(),
+						end: Date.now() + currentMedia.duration * 1000
+					}
+				}
+			});
+		}
 	}, [currentMedia?.id, setCurrentMedia]);
 
 	useEffect(() => {
@@ -245,6 +264,28 @@ export default memo(function MediaPlayer() {
 						...(mediaControls ?? defaultMediaControls),
 						isPlaying: true
 					});
+					if (typeof window !== 'undefined' && window.discordSDK && playerRef.current && currentMedia) {
+						const position = playerRef.current.getCurrentTime();
+						const start = Date.now() - position * 1000;
+						const end = start + currentMedia.duration * 1000;
+						window.discordSDK.commands.setActivity({
+							activity: {
+								type: 2,
+								instance: true,
+								details: currentMedia.name,
+								state: currentMedia.album?.name
+									? currentMedia.album.name + ' - ' + currentMedia.artist.name
+									: currentMedia.artist.name,
+								assets: {
+									large_image: currentMedia.thumbnail
+								},
+								timestamps: {
+									start,
+									end
+								}
+							}
+						});
+					}
 				}}
 				onBuffer={() => {
 					setMediaControls({

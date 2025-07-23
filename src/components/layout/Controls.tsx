@@ -9,18 +9,17 @@ import {
 	SliderThumb,
 	SliderTrack,
 	Spacer,
+	Spinner,
 	Text
 } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
-import { memo, useState } from 'react';
+import { memo } from 'react';
 import {
 	MdClose,
 	MdDownload,
 	MdFavoriteBorder,
-	MdFullscreen,
-	MdMusicVideo,
 	MdPause,
 	MdPlayArrow,
 	MdRepeat,
@@ -36,12 +35,14 @@ import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import MediaPlayer from '../general/MediaPlayer';
 import FullLogoIcon from '../icons/FullLogoIcon';
+import { isHostAtom } from '../general/AppFlow';
 
 export default memo(function Controls() {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
 	const [currentMedia, setCurrentMedia] = useAtom(currentMediaAtom);
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
+	const [isHost] = useAtom(isHostAtom);
 
 	const currentPlaylistIdArray = [...Object.keys(currentPlaylist)];
 
@@ -135,10 +136,11 @@ export default memo(function Controls() {
 									alignItems='center'
 								>
 									<Spacer />
+
 									<IconButton
 										icon={<MdSkipPrevious fontSize='24px' />}
 										aria-label='Previous'
-										isDisabled={!currentPlaylistIdArray[currentMediaIndex! - 1]}
+										isDisabled={!isHost || !currentPlaylistIdArray[currentMediaIndex! - 1]}
 									/>
 									<IconButton
 										icon={
@@ -149,7 +151,7 @@ export default memo(function Controls() {
 											)
 										}
 										size='lg'
-										isDisabled={mediaControls?.isLoading}
+										isDisabled={!isHost || mediaControls?.isLoading}
 										onClick={() =>
 											setMediaControls({
 												...(mediaControls ?? defaultMediaControls),
@@ -161,13 +163,25 @@ export default memo(function Controls() {
 									<IconButton
 										icon={<MdSkipNext fontSize='24px' />}
 										aria-label='Next'
-										isDisabled={!currentPlaylistIdArray[currentMediaIndex! + 1]}
+										isDisabled={!isHost || !currentPlaylistIdArray[currentMediaIndex! + 1]}
 									/>
 									<Spacer />
 								</Flex>
 							)}
 							<Hide below='sm'>
 								<Spacer />
+								<AnimatePresence>
+									{mediaControls?.isBuffering && (
+										<Box
+											as={motion.div}
+											initial={{ opacity: 0 }}
+											animate={{ opacity: 1 }}
+											exit={{ opacity: 0 }}
+										>
+											<Spinner size='md' borderWidth='3px' />
+										</Box>
+									)}
+								</AnimatePresence>
 								<Flex gap='10px' alignItems='center'>
 									<Flex w='200px' gap='20px'>
 										<Slider
@@ -214,6 +228,7 @@ export default memo(function Controls() {
 												isLooping: !mediaControls?.isLooping
 											})
 										}
+										isDisabled={!isHost}
 									/>
 									<IconButton
 										icon={<MdDownload fontSize='24px' />}
@@ -228,6 +243,7 @@ export default memo(function Controls() {
 										icon={<MdClose fontSize='24px' />}
 										aria-label='Close'
 										onClick={() => setCurrentMedia(null)}
+										isDisabled={!isHost}
 									/>
 								</Flex>
 							</Hide>

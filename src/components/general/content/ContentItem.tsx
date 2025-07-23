@@ -3,13 +3,16 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
 import { useState } from 'react';
-import { MdPauseCircle, MdPlayCircle, MdPlaylistAdd, MdPlaylistAddCheck } from 'react-icons/md';
+import { MdPauseCircle, MdPlayCircle, MdPlaylistAdd, MdPlaylistAddCheck, MdDelete } from 'react-icons/md';
 import { currentContentAtom } from '../../../atoms/CurrentContentAtom';
 import { currentMediaAtom } from '../../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../../atoms/CurrentPlaylistAtom';
 import { discordActivityStatusAtom } from '../../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../../atoms/MediaControlAtom';
+import { isHostAtom } from '../AppFlow';
+import { socket } from '../AppFlow';
 import type { SearchResult } from '../../../types/SearchResult';
+import type { Media } from '../../../types/content/Media';
 import { ContentType } from '../../../types/content/ContentType';
 import { api } from '../../../util/api';
 import formatDuration from '../../../util/formatDuration';
@@ -23,6 +26,7 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 	const [currentMedia, setCurrentMedia] = useAtom(currentMediaAtom);
 	const [currentContent, setCurrentContent] = useAtom(currentContentAtom);
 	const [isProcessing, setIsProcessing] = useState(false);
+	const [isHost] = useAtom(isHostAtom);
 
 	const isCurrentMedia = currentMedia?.id === item.id;
 	const isOnCurrentPlaylist = !!currentPlaylist[item.id];
@@ -81,10 +85,12 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 						}
 					}
 					if (isCurrentMedia) {
-						setMediaControls({
-							...(mediaControls ?? defaultMediaControls),
-							isPlaying: !mediaControls?.isPlaying
-						});
+						if (isHost) {
+							setMediaControls({
+								...(mediaControls ?? defaultMediaControls),
+								isPlaying: !mediaControls?.isPlaying
+							});
+						}
 						break;
 					}
 					setMediaControls({
@@ -93,7 +99,9 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 						isPlaying: false
 					});
 					setCurrentPlaylist({ ...currentPlaylist, [playItem.id]: playItem });
-					setCurrentMedia(playItem);
+					if (isHost && (!currentMedia || currentMedia.id !== playItem.id)) {
+						setCurrentMedia(playItem);
+					}
 					break;
 				}
 				case ContentType.Album:
@@ -176,14 +184,21 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 							position='absolute'
 						>
 							{(item.type === ContentType.Song || item.type === ContentType.Video) &&
-							mediaControls?.isPlaying &&
-							isCurrentMedia ? (
-								<MdPauseCircle fontSize='30px' />
-							) : mediaControls?.isLoading && isCurrentMedia ? (
-								<Spinner size='md' />
-							) : (
-								item.type !== ContentType.Artist && <MdPlayCircle fontSize='30px' />
-							)}
+								(isHost ? (
+									mediaControls?.isPlaying && isCurrentMedia ? (
+										<MdPauseCircle fontSize='30px' />
+									) : mediaControls?.isLoading && isCurrentMedia ? (
+										<Spinner size='md' />
+									) : (
+										<MdPlayCircle fontSize='30px' />
+									)
+								) : (
+									<MdPlaylistAdd fontSize='30px' />
+								))}
+							{item.type !== ContentType.Artist &&
+								![ContentType.Song, ContentType.Video].includes(item.type) && (
+									<MdPlayCircle fontSize='30px' />
+								)}
 						</Center>
 					)}
 				</AnimatePresence>
@@ -198,24 +213,55 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 				</Flex>
 				<Spacer />
 				<Fade in={isHovering && (item.type === ContentType.Song || item.type === ContentType.Video)}>
-					<IconButton
-						size='sm'
-						isDisabled={isOnCurrentPlaylist}
-						icon={
-							isOnCurrentPlaylist ? (
-								<MdPlaylistAddCheck fontSize='20px' />
-							) : (
-								<MdPlaylistAdd fontSize='20px' />
-							)
-						}
-						aria-label='Add to playlist'
-						onClick={(e) => {
-							if (item.type === ContentType.Song || item.type === ContentType.Video) {
-								e.stopPropagation();
-								setCurrentPlaylist({ ...currentPlaylist, [item.id]: item });
+					{isHost ? (
+						<IconButton
+							size='sm'
+							isDisabled={false}
+							icon={
+								isOnCurrentPlaylist ? <MdDelete fontSize='20px' /> : <MdPlaylistAdd fontSize='20px' />
 							}
-						}}
-					/>
+							aria-label={isOnCurrentPlaylist ? 'Remove from playlist' : 'Add to playlist'}
+							onClick={(e) => {
+								e.stopPropagation();
+								if (isOnCurrentPlaylist) {
+									const { [item.id]: _, ...rest } = currentPlaylist;
+									const filtered = Object.fromEntries(
+										Object.entries(rest).filter(([_, v]) => v && (v as Media).id)
+									) as Record<string, Media>;
+									setCurrentPlaylist(filtered);
+								} else {
+									setCurrentPlaylist({ ...currentPlaylist, [item.id]: item } as Record<
+										string,
+										Media
+									>);
+									setMediaControls({
+										...(mediaControls ?? defaultMediaControls),
+										isSidePanelClosed: false
+									});
+								}
+							}}
+						/>
+					) : (
+						<IconButton
+							size='sm'
+							isDisabled={isOnCurrentPlaylist}
+							icon={
+								isOnCurrentPlaylist ? (
+									<MdPlaylistAddCheck fontSize='20px' />
+								) : (
+									<MdPlaylistAdd fontSize='20px' />
+								)
+							}
+							aria-label='Add to playlist'
+							onClick={(e) => {
+								if (item.type === ContentType.Song || item.type === ContentType.Video) {
+									e.stopPropagation();
+									setCurrentPlaylist({ ...currentPlaylist, [item.id]: item });
+									socket?.emit('addMediaToPlaylist', item);
+								}
+							}}
+						/>
+					)}
 				</Fade>
 			</Flex>
 		</Flex>

@@ -75,7 +75,7 @@ type APIPlaylist = {
 	}>;
 };
 
-function normalizeSong(song: any): Song {
+export function normalizeSong(song: any): Song {
 	return {
 		type: ContentType.Song,
 		id: song.videoId ?? song.id ?? '',

@@ -87,13 +87,13 @@ const Lyrics = memo(function Lyrics({ mediaId }: Readonly<{ mediaId?: string }>)
 	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
-		async function setup() {
+		async function lyricsSetup() {
 			if (!mediaId) return;
 			setIsLoading(true);
 			setLyrics(await api.content.lyrics(mediaId));
 			setIsLoading(false);
 		}
-		setup();
+		lyricsSetup();
 	}, [mediaId]);
 
 	return (
@@ -128,13 +128,13 @@ const Related = memo(function Related({ query }: Readonly<{ query?: string }>) {
 	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
-		async function setup() {
+		async function relatedSetup() {
 			if (!query) return;
 			setIsLoading(true);
 			setRelated(await api.content.search(query));
 			setIsLoading(false);
 		}
-		setup();
+		relatedSetup();
 	}, [query]);
 
 	return (
@@ -164,11 +164,12 @@ const Related = memo(function Related({ query }: Readonly<{ query?: string }>) {
 
 export default memo(function LeftMenu() {
 	const [currentMedia] = useAtom(currentMediaAtom);
+	const [currentPlaylist] = useAtom(currentPlaylistAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 
 	return (
 		<AnimatePresence mode='popLayout'>
-			{currentMedia && !mediaControls?.isSidePanelClosed && (
+			{(Object.keys(currentPlaylist).length > 0 || currentMedia) && !mediaControls?.isSidePanelClosed && (
 				<Box
 					as={motion.div}
 					p='20px'
@@ -196,9 +197,9 @@ export default memo(function LeftMenu() {
 						backdropFilter='blur(5px)'
 					>
 						<TabList w='100%'>
-							<Tab>Playlist</Tab>
-							<Tab>Lyrics</Tab>
-							<Tab>Related</Tab>
+							<Tab isDisabled={Object.keys(currentPlaylist).length === 0}>Playlist</Tab>
+							<Tab isDisabled={!currentMedia}>Lyrics</Tab>
+							<Tab isDisabled={!currentMedia}>Related</Tab>
 							<Spacer />
 							<CloseButton
 								onClick={() =>
@@ -215,10 +216,18 @@ export default memo(function LeftMenu() {
 								<Playlist />
 							</TabPanel>
 							<TabPanel h='100%' w='100%' pb='40px'>
-								<Lyrics mediaId={currentMedia.id} />
+								{currentMedia ? (
+									<Lyrics mediaId={currentMedia.id} />
+								) : (
+									<Text>Select a song to view lyrics.</Text>
+								)}
 							</TabPanel>
 							<TabPanel h='100%' w='100%' pb='40px'>
-								<Related query={currentMedia.name} />
+								{currentMedia ? (
+									<Related query={currentMedia.name} />
+								) : (
+									<Text>Select a song to view related songs.</Text>
+								)}
 							</TabPanel>
 						</TabPanels>
 					</Tabs>

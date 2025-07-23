@@ -17,7 +17,7 @@ export default function ArtistView() {
 	const [mediaControls] = useAtom(mediaControlsAtom);
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 
-	const isSidePanelOpen = currentMedia && !mediaControls?.isSidePanelClosed;
+	const isSidePanelOpen =  !mediaControls?.isSidePanelClosed;
 
 	if (!currentContent || currentContent.type !== ContentType.Artist) return null;
 

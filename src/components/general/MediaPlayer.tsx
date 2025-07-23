@@ -3,13 +3,13 @@ import { useAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
+import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { currentSecondsAtom } from '../../atoms/CurrentSecondsAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import { api } from '../../util/api';
 import MediaSlider from '../layout/MediaSlider';
 import { hasRequestedSyncRef, isHostAtom, socket } from './AppFlow';
-import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 
 export default memo(function MediaPlayer() {
 	const [songURL, setSongURL] = useState<string | undefined>(undefined);

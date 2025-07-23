@@ -14,6 +14,7 @@ import type { SearchResult } from '../../types/SearchResult';
 import { ContentType } from '../../types/content/ContentType';
 import type { Media } from '../../types/content/Media';
 import { api } from '../../util/api';
+import { isHostAtom } from '../general/AppFlow';
 import FullLogoIcon from '../icons/FullLogoIcon';
 import ContentList from '../layout/ContentList';
 import Controls from '../layout/Controls';
@@ -22,7 +23,6 @@ import LeftMenu from '../layout/LeftMenu';
 import Navbar from '../layout/Navbar';
 import ArtistView from '../views/ArtistView';
 import ContentView from '../views/ContentView';
-import { isHostAtom } from '../general/AppFlow';
 
 export default function IndexScreen() {
 	const [feed] = useAtom(feedAtom);

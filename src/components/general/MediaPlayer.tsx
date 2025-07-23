@@ -2,7 +2,7 @@ import { Flex, useToast } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
-import { discordActivityStatusAtom } from 'src/atoms/DiscordActivityStatus';
+import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentSecondsAtom } from '../../atoms/CurrentSecondsAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';

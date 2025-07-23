@@ -7,7 +7,7 @@ import { currentSecondsAtom } from '../../atoms/CurrentSecondsAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import { api } from '../../util/api';
 import MediaSlider from '../layout/MediaSlider';
-import { isHostAtom, socket, hasRequestedSyncRef } from './AppFlow';
+import { hasRequestedSyncRef, isHostAtom, socket } from './AppFlow';
 
 export default memo(function MediaPlayer() {
 	const [songURL, setSongURL] = useState<string | undefined>(undefined);

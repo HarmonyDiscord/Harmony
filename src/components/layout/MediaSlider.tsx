@@ -1,7 +1,7 @@
 import { Box, Center, Flex, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
-import { memo, useRef, useState, useEffect } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { BarLoader } from 'react-spinners';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentSecondsAtom } from '../../atoms/CurrentSecondsAtom';

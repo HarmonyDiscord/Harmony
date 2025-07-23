@@ -3,20 +3,20 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
 import { useState } from 'react';
-import { MdPauseCircle, MdPlayCircle, MdPlaylistAdd, MdPlaylistAddCheck, MdDelete } from 'react-icons/md';
+import { MdDelete, MdPauseCircle, MdPlayCircle, MdPlaylistAdd, MdPlaylistAddCheck } from 'react-icons/md';
 import { currentContentAtom } from '../../../atoms/CurrentContentAtom';
 import { currentMediaAtom } from '../../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../../atoms/CurrentPlaylistAtom';
 import { discordActivityStatusAtom } from '../../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../../atoms/MediaControlAtom';
-import { isHostAtom } from '../AppFlow';
-import { socket } from '../AppFlow';
 import type { SearchResult } from '../../../types/SearchResult';
-import type { Media } from '../../../types/content/Media';
 import { ContentType } from '../../../types/content/ContentType';
+import type { Media } from '../../../types/content/Media';
 import { api } from '../../../util/api';
 import formatDuration from '../../../util/formatDuration';
 import { normalizeAlbum, normalizeArtist, normalizePlaylist } from '../../../util/normalizeContent';
+import { isHostAtom } from '../AppFlow';
+import { socket } from '../AppFlow';
 
 export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) {
 	const [isHovering, setIsHovering] = useState(false);

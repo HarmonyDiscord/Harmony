@@ -33,9 +33,9 @@ import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
+import { isHostAtom } from '../general/AppFlow';
 import MediaPlayer from '../general/MediaPlayer';
 import FullLogoIcon from '../icons/FullLogoIcon';
-import { isHostAtom } from '../general/AppFlow';
 
 export default memo(function Controls() {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);

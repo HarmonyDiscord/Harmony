@@ -5,6 +5,7 @@ import { useAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
 import { currentContentAtom } from '../../atoms/CurrentContentAtom';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
+import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { feedAtom } from '../../atoms/FeedAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
@@ -21,7 +22,6 @@ import LeftMenu from '../layout/LeftMenu';
 import Navbar from '../layout/Navbar';
 import ArtistView from '../views/ArtistView';
 import ContentView from '../views/ContentView';
-import { currentPlaylistAtom } from '@/atoms/CurrentPlaylistAtom';
 
 export default function IndexScreen() {
 	const [feed] = useAtom(feedAtom);

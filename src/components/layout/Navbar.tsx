@@ -1,4 +1,3 @@
-import { participantsAtom } from '@/atoms/ParticipantsAtom';
 import {
 	Avatar,
 	AvatarGroup,
@@ -20,11 +19,12 @@ import { useAtom } from 'jotai';
 import { MdMenu, MdSearch } from 'react-icons/md';
 import { currentContentAtom } from '../../atoms/CurrentContentAtom';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
+import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
+import { participantsAtom } from '../../atoms/ParticipantsAtom';
 import FullLogoIcon from '../icons/FullLogoIcon';
 import LogoIcon from '../icons/LogoIcon';
-import { currentPlaylistAtom } from '@/atoms/CurrentPlaylistAtom';
 
 export default function Navbar({ searchInput, setSearchInput }: any) {
 	const [participants] = useAtom(participantsAtom);

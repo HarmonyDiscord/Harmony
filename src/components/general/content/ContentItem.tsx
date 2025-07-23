@@ -16,9 +16,11 @@ import { api } from '../../../util/api';
 import formatDuration from '../../../util/formatDuration';
 import { normalizeAlbum, normalizeArtist, normalizePlaylist } from '../../../util/normalizeContent';
 import { isHostAtom, socket } from '../AppFlow';
+import { useBreakpointValue } from '@chakra-ui/react';
 
 export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) {
 	const [isHovering, setIsHovering] = useState(false);
+	const isMobile = useBreakpointValue({ base: true, md: false });
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [currentPlaylist, setCurrentPlaylist] = useAtom(currentPlaylistAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
@@ -171,7 +173,7 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 					/>
 				)}
 				<AnimatePresence>
-					{isHovering && (
+					{(isHovering || isMobile) && (
 						<Center
 							as={motion.div}
 							initial={{ opacity: 0 }}
@@ -215,7 +217,9 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 					{specificDetails}
 				</Flex>
 				<Spacer />
-				<Fade in={isHovering && (item.type === ContentType.Song || item.type === ContentType.Video)}>
+				<Fade
+					in={(isHovering || isMobile) && (item.type === ContentType.Song || item.type === ContentType.Video)}
+				>
 					{isHost ? (
 						<IconButton
 							size='sm'

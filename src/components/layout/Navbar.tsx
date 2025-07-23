@@ -13,10 +13,17 @@ import {
 	Show,
 	SlideFade,
 	Spacer,
-	useBreakpointValue
+	useBreakpointValue,
+	Popover,
+	PopoverTrigger,
+	PopoverContent,
+	PopoverBody,
+	Portal,
+	Text,
+	Button
 } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
-import { MdMenu, MdSearch } from 'react-icons/md';
+import { MdMenu, MdSearch, MdStar } from 'react-icons/md';
 import { currentContentAtom } from '../../atoms/CurrentContentAtom';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
@@ -25,6 +32,10 @@ import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaContro
 import { participantsAtom } from '../../atoms/ParticipantsAtom';
 import FullLogoIcon from '../icons/FullLogoIcon';
 import LogoIcon from '../icons/LogoIcon';
+import { isHostAtom } from '../general/AppFlow';
+import { userIDAtom } from '../../atoms/UserIDAtom';
+import { socket } from '../general/AppFlow';
+import { hostIDAtom } from '../../atoms/HostIDAtom';
 
 export default function Navbar({ searchInput, setSearchInput }: any) {
 	const [participants] = useAtom(participantsAtom);
@@ -34,6 +45,9 @@ export default function Navbar({ searchInput, setSearchInput }: any) {
 	const [, setCurrentContent] = useAtom(currentContentAtom);
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
 	const isLg = useBreakpointValue([false, false, false, true]);
+	const [isHost] = useAtom(isHostAtom);
+	const [userID] = useAtom(userIDAtom);
+	const [hostID] = useAtom(hostIDAtom);
 
 	const handleLogoClick = () => {
 		setSearchInput('');
@@ -89,13 +103,70 @@ export default function Navbar({ searchInput, setSearchInput }: any) {
 							</InputRightElement>
 						</SlideFade>
 					</InputGroup>
-					{participants.length ? (
-						<AvatarGroup size='md' max={2}>
-							{participants.map((p) => (
-								<Avatar width='40px' height='40px' key={p.id} src={p?.avatarURL} name={p.name} />
-							))}
-						</AvatarGroup>
-					) : null}
+
+					<Popover placement='bottom-end'>
+						<PopoverTrigger>
+							<Button variant='ghost' px='5px'>
+								<AvatarGroup size='sm' max={2} cursor='pointer'>
+									{participants?.map((p) => (
+										<Avatar
+											size='sm'
+											key={p.id}
+											src={
+												p.avatarURL
+													? p.avatarURL
+													: `https://api.dicebear.com/9.x/identicon/svg?seed=${p.id}&backgroundColor=111011`
+											}
+											name={p.name}
+										/>
+									))}
+								</AvatarGroup>
+							</Button>
+						</PopoverTrigger>
+						<Portal>
+							<PopoverContent bg='#222' color='#fff' border='none' minW='200px'>
+								<PopoverBody>
+									{participants?.map((p) => (
+										<Flex key={p.id} align='center' gap='2' mb='2'>
+											<Avatar
+												size='sm'
+												src={
+													p.avatarURL
+														? p.avatarURL
+														: `https://api.dicebear.com/9.x/identicon/svg?seed=${p.id}&backgroundColor=111011`
+												}
+												name={p.name}
+											/>
+											<Text size='md'>
+												{p.name ?? 'Anonymous'}
+												{hostID === p.id && (
+													<MdStar
+														style={{
+															display: 'inline',
+															marginLeft: 4,
+															verticalAlign: 'middle'
+														}}
+														color='#FFD700'
+														size={16}
+													/>
+												)}
+											</Text>
+											{isHost && userID !== p.id && (
+												<Button
+													size='xs'
+													ml='2'
+													onClick={() => socket?.emit('promoteHost', p.id)}
+												>
+													Promote
+												</Button>
+											)}
+										</Flex>
+									))}
+								</PopoverBody>
+							</PopoverContent>
+						</Portal>
+					</Popover>
+
 					{(Object.keys(currentPlaylist).length > 0 || currentMedia) && mediaControls?.isSidePanelClosed && (
 						<IconButton
 							icon={<MdMenu />}

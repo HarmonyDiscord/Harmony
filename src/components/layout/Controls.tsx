@@ -141,6 +141,13 @@ export default memo(function Controls() {
 										icon={<MdSkipPrevious fontSize='24px' />}
 										aria-label='Previous'
 										isDisabled={!isHost || !currentPlaylistIdArray[currentMediaIndex! - 1]}
+										onClick={() => {
+											const prevId = currentPlaylistIdArray[currentMediaIndex! - 1];
+											if (prevId) {
+												const prevMedia = currentPlaylist[prevId];
+												if (prevMedia) setCurrentMedia(prevMedia);
+											}
+										}}
 									/>
 									<IconButton
 										icon={
@@ -164,6 +171,13 @@ export default memo(function Controls() {
 										icon={<MdSkipNext fontSize='24px' />}
 										aria-label='Next'
 										isDisabled={!isHost || !currentPlaylistIdArray[currentMediaIndex! + 1]}
+										onClick={() => {
+											const nextId = currentPlaylistIdArray[currentMediaIndex! + 1];
+											if (nextId) {
+												const nextMedia = currentPlaylist[nextId];
+												if (nextMedia) setCurrentMedia(nextMedia);
+											}
+										}}
 									/>
 									<Spacer />
 								</Flex>

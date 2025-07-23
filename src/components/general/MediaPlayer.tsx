@@ -2,6 +2,7 @@ import { Flex, useToast } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
+import { discordActivityStatusAtom } from 'src/atoms/DiscordActivityStatus';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentSecondsAtom } from '../../atoms/CurrentSecondsAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
@@ -19,6 +20,8 @@ export default memo(function MediaPlayer() {
 	const [, setCurrentSeconds] = useAtom(currentSecondsAtom);
 	const setupCountRef = useRef(0);
 	const [pendingPlayback, setPendingPlayback] = useState(false);
+	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
+
 	const lastEmittedMediaIdRef = useRef<string | null>(null);
 
 	const mediaPlayerSetup = useCallback(async () => {
@@ -37,55 +40,93 @@ export default memo(function MediaPlayer() {
 
 		setCurrentSeconds(0);
 
-		const url = await api.getMediaStream(currentMedia.id).catch(() => null);
+		if (discordActivityStatus.isActivity) {
+			const res = await api.getMediaStream(currentMedia.id).catch(() => null);
 
-		if (currentSetup !== setupCountRef.current) {
-			return;
-		}
-
-		if (!url) {
-			setMediaControls((prev) => ({
-				...(prev ?? defaultMediaControls),
-				isLoading: false,
-				isPlaying: false
-			}));
-
-			setCurrentMedia(null);
-
-			toast({
-				status: 'error',
-				variant: 'subtle',
-				position: 'top',
-				title: 'Media not available. Please try again later.',
-				containerStyle: {
-					backdropFilter: 'blur(5px)'
+			if (currentSetup !== setupCountRef.current) {
+				if (res) {
+					res.body?.cancel();
 				}
-			});
+				return;
+			}
 
-			return;
+			if (!res) {
+				setMediaControls((prev) => ({
+					...(prev ?? defaultMediaControls),
+					isLoading: false,
+					isPlaying: false
+				}));
+
+				setCurrentMedia(null);
+
+				toast({
+					status: 'error',
+					variant: 'subtle',
+					position: 'top',
+					title: 'Unable to get media information. Please try again later.',
+					containerStyle: {
+						backdropFilter: 'blur(5px)'
+					}
+				});
+
+				return;
+			}
+
+			const blob = await res.blob().catch(() => null);
+
+			if (currentSetup !== setupCountRef.current) {
+				return;
+			}
+
+			if (!blob) {
+				setMediaControls((prev) => ({
+					...(prev ?? defaultMediaControls),
+					isLoading: false,
+					isPlaying: false
+				}));
+
+				setCurrentMedia(null);
+
+				toast({
+					status: 'error',
+					variant: 'subtle',
+					position: 'top',
+					title: 'Media not available. Please try again later.',
+					containerStyle: {
+						backdropFilter: 'blur(5px)'
+					}
+				});
+
+				return;
+			}
+
+			const newURL = URL.createObjectURL(blob);
+			setSongURL(newURL);
+		} else {
+			setSongURL(api.getStreamURL(currentMedia.id));
 		}
 
-		if (currentSetup === setupCountRef.current) {
-			setSongURL(url);
+		setMediaControls((prev) => ({
+			...(prev ?? defaultMediaControls),
+			isLoading: false,
+			isPlaying: true
+		}));
 
-			if ('mediaSession' in navigator) {
-				navigator.mediaSession.metadata = new MediaMetadata({
-					title: currentMedia.name,
-					artist: currentMedia.artist.name,
-					album: currentMedia.album?.name,
-					artwork: currentMedia.thumbnail
-						? [
-								{
-									src: currentMedia.thumbnail,
-									sizes: '250x250',
-									type: 'image/png'
-								}
-							]
-						: []
-				});
-			}
-		} else {
-			URL.revokeObjectURL(url);
+		if ('mediaSession' in navigator) {
+			navigator.mediaSession.metadata = new MediaMetadata({
+				title: currentMedia.name,
+				artist: currentMedia.artist.name,
+				album: currentMedia.album?.name,
+				artwork: currentMedia.thumbnail
+					? [
+							{
+								src: currentMedia.thumbnail,
+								sizes: '250x250',
+								type: 'image/png'
+							}
+						]
+					: []
+			});
 		}
 	}, [currentMedia?.id, setCurrentMedia]);
 
@@ -202,6 +243,17 @@ export default memo(function MediaPlayer() {
 						socket?.emit('requestSyncMedia');
 						hasRequestedSyncRef.current = true;
 					}
+				}}
+				onError={() => {
+					toast({
+						status: 'error',
+						variant: 'subtle',
+						position: 'top',
+						title: 'Unable to load media. Please try again later.',
+						containerStyle: {
+							backdropFilter: 'blur(5px)'
+						}
+					});
 				}}
 			/>
 			<MediaSlider seekTo={seekTo} />

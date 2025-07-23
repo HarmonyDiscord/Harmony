@@ -40,6 +40,10 @@ export const isHostAtom = atom<boolean>(false);
 
 const hasRequestedSyncRef = { current: false };
 
+function generateRoomId() {
+	return Math.random().toString(36).substring(2, 10);
+}
+
 export default function AppFlow({ children }: Readonly<{ children: any }>) {
 	const [, setDiscordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [, setIsLoading] = useAtom(loadingAtom);
@@ -222,22 +226,33 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 
 		if (socket) socket.disconnect();
 
-		if (discordSDK || process.env.NODE_ENV === 'development')
-			socket = io(
-				`${discordSDK ? `/` : process.env.NODE_ENV === 'production' ? 'https://harmony-events.tnfangel.com' : 'http://localhost:4001'}`,
-				{
-					transports:
-						process.env.NODE_ENV === 'production' ? ['polling', 'websocket'] : ['polling', 'websocket'],
-					path: `${discordSDK ? '/.proxy/events/' : '/events'}`,
-					auth: {
-						roomId: discordSDK?.instanceId ?? 'dev'
-					},
-					reconnection: true,
-					reconnectionAttempts: Infinity,
-					reconnectionDelay: 2000,
-					reconnectionDelayMax: 60000
-				}
-			);
+		let roomId = window.location.hash.replace('#', '');
+		let usingDiscordInstanceId = false;
+		if (discordSDK?.instanceId) {
+			roomId = discordSDK.instanceId;
+			usingDiscordInstanceId = true;
+		}
+		if (!roomId) {
+			roomId = generateRoomId();
+			window.location.hash = roomId;
+		} else if (usingDiscordInstanceId) {
+			window.location.hash = roomId;
+		}
+
+		socket = io(
+			`${discordSDK ? `/` : process.env.NODE_ENV === 'production' ? 'https://harmony-events.tnfangel.com' : 'http://localhost:4001'}`,
+			{
+				transports: process.env.NODE_ENV === 'production' ? ['polling', 'websocket'] : ['polling', 'websocket'],
+				path: `${discordSDK ? '/.proxy/events/' : '/events'}`,
+				auth: {
+					roomId
+				},
+				reconnection: true,
+				reconnectionAttempts: Infinity,
+				reconnectionDelay: 2000,
+				reconnectionDelayMax: 60000
+			}
+		);
 
 		if (socket) {
 			const handleRequestSyncMedia = ({ requesterId }: { requesterId: string }) => {
@@ -312,6 +327,26 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 			});
 		}
 	}, [currentPlaylist, isHost]);
+
+	const initialHashRef = useRef<string | null>(null);
+
+	useEffect(() => {
+		if (initialHashRef.current === null) {
+			initialHashRef.current = window.location.hash;
+		}
+	}, []);
+
+	useEffect(() => {
+		function onHashChange() {
+			if (window.location.hash !== initialHashRef.current) {
+				window.location.reload();
+			}
+		}
+		window.addEventListener('hashchange', onHashChange);
+		return () => {
+			window.removeEventListener('hashchange', onHashChange);
+		};
+	}, []);
 
 	return (
 		<>

@@ -2,13 +2,14 @@ import { Flex, useToast } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
-import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentSecondsAtom } from '../../atoms/CurrentSecondsAtom';
+import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import { api } from '../../util/api';
 import MediaSlider from '../layout/MediaSlider';
 import { hasRequestedSyncRef, isHostAtom, socket } from './AppFlow';
+import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 
 export default memo(function MediaPlayer() {
 	const [songURL, setSongURL] = useState<string | undefined>(undefined);
@@ -21,6 +22,7 @@ export default memo(function MediaPlayer() {
 	const setupCountRef = useRef(0);
 	const [pendingPlayback, setPendingPlayback] = useState(false);
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
+	const [currentPlaylist] = useAtom(currentPlaylistAtom);
 
 	const lastEmittedMediaIdRef = useRef<string | null>(null);
 
@@ -182,6 +184,9 @@ export default memo(function MediaPlayer() {
 		[playerRef]
 	);
 
+	const currentPlaylistIdArray = [...Object.keys(currentPlaylist)];
+	const currentMediaIndex = currentMedia && currentPlaylistIdArray.indexOf(currentMedia.id);
+
 	return (
 		<Flex direction='column' w='100%' h='100%' gap='0px' maxH='100%'>
 			<ReactPlayer
@@ -201,25 +206,46 @@ export default memo(function MediaPlayer() {
 				onProgress={(p) => {
 					setCurrentSeconds(p.playedSeconds);
 				}}
-				onPlay={() =>
+				onPlay={() => {
 					setMediaControls({
 						...(mediaControls ?? defaultMediaControls),
 						isPlaying: true
-					})
-				}
-				onPause={() =>
+					});
+				}}
+				onPause={() => {
 					setMediaControls({
 						...(mediaControls ?? defaultMediaControls),
 						isPlaying: false,
 						isBuffering: false
-					})
-				}
-				onEnded={() =>
+					});
+				}}
+				onEnded={() => {
+					if (
+						currentPlaylistIdArray.length > 0 &&
+						typeof currentMediaIndex === 'number' &&
+						currentMediaIndex >= 0
+					) {
+						const nextId = currentPlaylistIdArray[currentMediaIndex + 1];
+						if (nextId) {
+							const nextMedia = currentPlaylist[nextId];
+							if (nextMedia) {
+								setCurrentMedia(nextMedia);
+								return;
+							}
+						}
+					} else {
+						setMediaControls({
+							...(mediaControls ?? defaultMediaControls),
+							isPlaying: false
+						});
+					}
+				}}
+				onSeek={() => {
 					setMediaControls({
 						...(mediaControls ?? defaultMediaControls),
-						isPlaying: false
-					})
-				}
+						isPlaying: true
+					});
+				}}
 				onBuffer={() => {
 					setMediaControls({
 						...(mediaControls ?? defaultMediaControls),
@@ -229,7 +255,8 @@ export default memo(function MediaPlayer() {
 				onBufferEnd={() => {
 					setMediaControls({
 						...(mediaControls ?? defaultMediaControls),
-						isBuffering: false
+						isBuffering: false,
+						isPlaying: true
 					});
 				}}
 				onReady={() => {

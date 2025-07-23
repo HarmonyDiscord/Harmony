@@ -50,7 +50,7 @@ export default function RootLayout({
 			<head>
 				<title>Harmony</title>
 				<style>
-					{`::-webkit-scrollbar{width:6px;z-index:100000}::-webkit-scrollbar-track{border-radius:10px}::-webkit-scrollbar-track:hover{background-color:#FFFFFF05}::-webkit-scrollbar-thumb{border-radius:10px;background-color:#FFFFFF10}::-webkit-scrollbar-thumb:hover{background-color:#FFFFFF20}`}
+					{`::-webkit-scrollbar{width:6px;z-index:100000}::-webkit-scrollbar-track{border-radius:10px}::-webkit-scrollbar-track:hover{background-color:#FFFFFF05}::-webkit-scrollbar-thumb{border-radius:10px;background-color:#FFFFFF10}::-webkit-scrollbar-thumb:hover{background-color:#FFFFFF20}; html,body,*{scrollbar-gutter:stable;}`}
 				</style>
 			</head>
 			<body style={{ width: '100%', height: '100%', overflowX: 'hidden' }}>

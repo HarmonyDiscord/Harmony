@@ -155,6 +155,8 @@ export default function MediaCard(media: Readonly<Media>) {
 									) : (
 										<MdPlayCircle fontSize='60px' />
 									)
+								) : isOnCurrentPlaylist ? (
+									<MdPlaylistAddCheck fontSize='60px' />
 								) : (
 									<MdPlaylistAdd fontSize='60px' />
 								)}

@@ -1,30 +1,30 @@
-import { participantsAtom } from '@/atoms/ParticipantsAtom';
+import {
+	Box,
+	Button,
+	Modal,
+	ModalBody,
+	ModalContent,
+	ModalFooter,
+	ModalHeader,
+	ModalOverlay,
+	Text
+} from '@chakra-ui/react';
 import { DiscordSDK, Events, type Types } from '@discord/embedded-app-sdk';
 import { useAtom } from 'jotai';
 import { atom } from 'jotai';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { MdArrowForward, MdPlayArrow } from 'react-icons/md';
 import { io } from 'socket.io-client';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
+import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
+import { currentSecondsAtom } from '../../atoms/CurrentSecondsAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { feedAtom } from '../../atoms/FeedAtom';
 import { loadingAtom } from '../../atoms/LoadingAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
+import { participantsAtom } from '../../atoms/ParticipantsAtom';
 import { userAtom } from '../../atoms/UserAtom';
 import { api, setIsDiscordActivity } from '../../util/api';
-import { currentSecondsAtom } from '../../atoms/CurrentSecondsAtom';
-import { currentPlaylistAtom } from '@/atoms/CurrentPlaylistAtom';
-import {
-	Modal,
-	ModalOverlay,
-	ModalContent,
-	ModalHeader,
-	ModalBody,
-	ModalFooter,
-	Button,
-	Text,
-	Box
-} from '@chakra-ui/react';
-import { MdArrowForward, MdPlayArrow } from 'react-icons/md';
 import LogoIcon from '../icons/LogoIcon';
 
 const clientId = process.env['NEXT_PUBLIC_DISCORD_CLIENT_ID'] ?? '';
@@ -219,7 +219,7 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 				setDiscordActivityStatus((prev) => ({ ...prev, isOverlay: layout_mode === 1 }));
 			});
 		}
-		
+
 		if (socket) socket.disconnect();
 
 		if (discordSDK || process.env.NODE_ENV === 'development')

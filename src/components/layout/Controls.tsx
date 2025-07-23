@@ -234,9 +234,12 @@ export default memo(function Controls() {
 										icon={<MdDownload fontSize='24px' />}
 										aria-label='Download'
 										onClick={async () => {
-											open(
-												`https://harmony-streaming.tnfangel.com/stream?videoURL=https://www.youtube.com/watch?v=${encodeURIComponent(currentMedia.id)}`
-											);
+											const url = `https://harmony-streaming.tnfangel.com/stream?dl=1&videoURL=https://www.youtube.com/watch?v=${encodeURIComponent(currentMedia.id)}`;
+											if (typeof window !== 'undefined' && window.discordSDK) {
+												window.discordSDK.commands.openExternalLink({ url });
+											} else {
+												open(url);
+											}
 										}}
 									/>
 									<IconButton

@@ -73,7 +73,7 @@ export default memo(function Controls() {
 				>
 					<Flex w='100%' h='100%' direction='column' gap='10px'>
 						{discordActivityStatus.isOverlay && (
-							<Box pb='5px'>
+							<Box pb='0px'>
 								<FullLogoIcon width='auto' height='22' color='#FFFFFF' />
 							</Box>
 						)}

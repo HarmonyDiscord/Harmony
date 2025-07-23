@@ -34,6 +34,9 @@ let socket: ReturnType<typeof io> | null = null;
 
 try {
 	discordSDK = new DiscordSDK(clientId);
+	if (typeof window !== 'undefined') {
+		window.discordSDK = discordSDK;
+	}
 } catch {}
 
 export const isHostAtom = atom<boolean>(false);
@@ -396,3 +399,9 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 }
 
 export { socket, hasRequestedSyncRef };
+
+declare global {
+	interface Window {
+		discordSDK?: DiscordSDK | null;
+	}
+}

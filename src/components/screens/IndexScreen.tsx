@@ -22,6 +22,7 @@ import LeftMenu from '../layout/LeftMenu';
 import Navbar from '../layout/Navbar';
 import ArtistView from '../views/ArtistView';
 import ContentView from '../views/ContentView';
+import { isHostAtom } from '../general/AppFlow';
 
 export default function IndexScreen() {
 	const [feed] = useAtom(feedAtom);
@@ -36,7 +37,9 @@ export default function IndexScreen() {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
 	const searchCountRef = useRef(0);
 	const debouncedSearchInput = useDebounce(searchInput, 300);
-
+	const [isHost] = useAtom(isHostAtom);
+	const [showControls, setShowControls] = useState(true);
+	const prevMediaIdRef = useRef<string | null>(null);
 	const isLg = useBreakpointValue([false, false, true]);
 
 	useEffect(() => {
@@ -91,6 +94,15 @@ export default function IndexScreen() {
 
 		searchEffect();
 	}, [debouncedSearchInput]);
+
+	useEffect(() => {
+		if (!isHost && currentMedia?.id && prevMediaIdRef.current && prevMediaIdRef.current !== currentMedia.id) {
+			setShowControls(false);
+			const timeout = setTimeout(() => setShowControls(true), 100);
+			return () => clearTimeout(timeout);
+		}
+		prevMediaIdRef.current = currentMedia?.id || null;
+	}, [currentMedia?.id, isHost]);
 
 	const content = searchResults || feed;
 
@@ -155,7 +167,7 @@ export default function IndexScreen() {
 				</Flex>
 			)}
 			<Spacer />
-			{currentMedia ? (
+			{currentMedia && showControls ? (
 				<Controls />
 			) : (
 				discordActivityStatus.isOverlay && (

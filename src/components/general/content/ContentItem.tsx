@@ -92,11 +92,13 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 						}
 						break;
 					}
-					setMediaControls({
-						...(mediaControls ?? defaultMediaControls),
-						isLoading: true,
-						isPlaying: false
-					});
+					if (isHost) {
+						setMediaControls({
+							...(mediaControls ?? defaultMediaControls),
+							isLoading: true,
+							isPlaying: false
+						});
+					}
 					setCurrentPlaylist({ ...currentPlaylist, [playItem.id]: playItem });
 					if (isHost && (!currentMedia || currentMedia.id !== playItem.id)) {
 						setCurrentMedia(playItem);
@@ -191,6 +193,8 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 									) : (
 										<MdPlayCircle fontSize='30px' />
 									)
+								) : isOnCurrentPlaylist ? (
+									<MdPlaylistAddCheck fontSize='30px' />
 								) : (
 									<MdPlaylistAdd fontSize='30px' />
 								))}

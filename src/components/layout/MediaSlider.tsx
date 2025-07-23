@@ -64,7 +64,7 @@ export default memo(function MediaSlider({ seekTo }: { seekTo: any }) {
 										if (seekTimeout.current) clearTimeout(seekTimeout.current);
 										seekTimeout.current = setTimeout(() => {
 											setUseSliderValue(false);
-										}, 500);
+										}, 1000);
 									}}
 									focusThumbOnChange={false}
 									initial={{ opacity: 0 }}

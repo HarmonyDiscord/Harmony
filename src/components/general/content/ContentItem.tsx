@@ -15,8 +15,7 @@ import type { Media } from '../../../types/content/Media';
 import { api } from '../../../util/api';
 import formatDuration from '../../../util/formatDuration';
 import { normalizeAlbum, normalizeArtist, normalizePlaylist } from '../../../util/normalizeContent';
-import { isHostAtom } from '../AppFlow';
-import { socket } from '../AppFlow';
+import { isHostAtom, socket } from '../AppFlow';
 
 export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) {
 	const [isHovering, setIsHovering] = useState(false);
@@ -24,7 +23,7 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 	const [currentPlaylist, setCurrentPlaylist] = useAtom(currentPlaylistAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 	const [currentMedia, setCurrentMedia] = useAtom(currentMediaAtom);
-	const [currentContent, setCurrentContent] = useAtom(currentContentAtom);
+	const [, setCurrentContent] = useAtom(currentContentAtom);
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [isHost] = useAtom(isHostAtom);
 

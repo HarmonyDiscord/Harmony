@@ -1,18 +1,31 @@
-import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { Box, Center, Flex, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
+import { memo, useRef, useState, useEffect } from 'react';
 import { BarLoader } from 'react-spinners';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentSecondsAtom } from '../../atoms/CurrentSecondsAtom';
-import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
+import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
+import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import formatDuration from '../../util/formatDuration';
+import { isHostAtom, socket } from '../general/AppFlow';
 
-export default function MediaSlider({ seekTo }: { seekTo: any }) {
+export default memo(function MediaSlider({ seekTo }: { seekTo: any }) {
 	const [currentMedia] = useAtom(currentMediaAtom);
-	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
-	const [currentSeconds, setCurrentSeconds] = useAtom(currentSecondsAtom);
+	const [mediaControls] = useAtom(mediaControlsAtom);
+	const [currentSeconds] = useAtom(currentSecondsAtom);
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
+	const [isHost] = useAtom(isHostAtom);
+	const isDragging = useRef(false);
+	const [sliderValue, setSliderValue] = useState(0);
+	const [useSliderValue, setUseSliderValue] = useState(false);
+	const seekTimeout = useRef<NodeJS.Timeout | null>(null);
+
+	useEffect(() => {
+		return () => {
+			if (seekTimeout.current) clearTimeout(seekTimeout.current);
+		};
+	}, []);
 
 	return (
 		currentMedia && (
@@ -25,24 +38,33 @@ export default function MediaSlider({ seekTo }: { seekTo: any }) {
 								<Slider
 									key='slider'
 									as={motion.div}
-									isReadOnly={mediaControls?.isLoading}
-									value={((currentSeconds ?? 0) / currentMedia.duration) * 100}
+									isReadOnly={!isHost || mediaControls?.isLoading}
+									value={
+										isDragging.current || useSliderValue
+											? sliderValue
+											: (currentSeconds / currentMedia.duration) * 100
+									}
 									aria-label='track'
 									colorScheme='gray'
 									onChange={(v) => {
-										setMediaControls({
-											...(mediaControls ?? defaultMediaControls),
-											isPlaying: false
-										});
-
-										setCurrentSeconds((v / 100) * currentMedia.duration);
-										seekTo(v / 100);
+										if (!isHost) return;
+										setSliderValue(v);
+									}}
+									onChangeStart={() => {
+										isDragging.current = true;
 									}}
 									onChangeEnd={(v) => {
-										setMediaControls({
-											...(mediaControls ?? defaultMediaControls),
-											isPlaying: true
-										});
+										const currentSecondsValue = (v / 100) * currentMedia.duration;
+										seekTo(currentSecondsValue);
+
+										if (isHost) socket?.emit('seekTo', currentSecondsValue);
+
+										isDragging.current = false;
+										setUseSliderValue(true);
+										if (seekTimeout.current) clearTimeout(seekTimeout.current);
+										seekTimeout.current = setTimeout(() => {
+											setUseSliderValue(false);
+										}, 100);
 									}}
 									focusThumbOnChange={false}
 									initial={{ opacity: 0 }}
@@ -89,4 +111,4 @@ export default function MediaSlider({ seekTo }: { seekTo: any }) {
 			</Center>
 		)
 	);
-}
+});

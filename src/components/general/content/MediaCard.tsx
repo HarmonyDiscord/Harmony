@@ -11,6 +11,8 @@ import { defaultMediaControls, mediaControlsAtom } from '../../../atoms/MediaCon
 import { useDebounce } from '../../../hooks/useDebounce';
 import type { Media } from '../../../types/content/Media';
 import formatDuration from '../../../util/formatDuration';
+import { isHostAtom } from '../AppFlow';
+import { socket } from '../AppFlow';
 
 export default function MediaCard(media: Readonly<Media>) {
 	const [isHovering, setIsHovering] = useState(false);
@@ -20,6 +22,7 @@ export default function MediaCard(media: Readonly<Media>) {
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [isProcessing, setIsProcessing] = useState(false);
+	const [isHost] = useAtom(isHostAtom);
 
 	const { id, name, album, artist, thumbnail, duration } = media;
 
@@ -31,15 +34,20 @@ export default function MediaCard(media: Readonly<Media>) {
 		if (isProcessing) return;
 		setIsProcessing(true);
 		if (isCurrentMedia) {
-			setMediaControls({
-				...(mediaControls ?? defaultMediaControls),
-				isPlaying: !mediaControls?.isPlaying
-			});
+			if (isHost) {
+				setMediaControls({
+					...(mediaControls ?? defaultMediaControls),
+					isPlaying: !mediaControls?.isPlaying
+				});
+			}
 			setIsProcessing(false);
 			return;
 		}
-		setCurrentMedia(media);
+		if (isHost && (!currentMedia || currentMedia.id !== media.id)) {
+			setCurrentMedia(media);
+		}
 		setCurrentPlaylist({ ...currentPlaylist, [media.id]: media });
+		socket?.emit('addMediaToPlaylist', media);
 		setTimeout(() => setIsProcessing(false), 500);
 	};
 
@@ -120,6 +128,11 @@ export default function MediaCard(media: Readonly<Media>) {
 									onClick={(e) => {
 										e.stopPropagation();
 										setCurrentPlaylist({ ...currentPlaylist, [media.id]: media });
+										socket?.emit('addMediaToPlaylist', media);
+										setMediaControls({
+											...(mediaControls ?? defaultMediaControls),
+											isSidePanelClosed: false
+										});
 									}}
 								/>
 							</Flex>
@@ -134,12 +147,16 @@ export default function MediaCard(media: Readonly<Media>) {
 								animate={{ y: 0, opacity: 1 }}
 								exit={{ y: 10, opacity: 0 }}
 							>
-								{mediaControls?.isPlaying && isCurrentMedia ? (
-									<MdPauseCircle fontSize='60px' />
-								) : mediaControls?.isLoading && isCurrentMedia ? (
-									<Spinner size='xl' thickness='4px' />
+								{isHost ? (
+									mediaControls?.isPlaying && isCurrentMedia ? (
+										<MdPauseCircle fontSize='60px' />
+									) : mediaControls?.isLoading && isCurrentMedia ? (
+										<Spinner size='xl' thickness='4px' />
+									) : (
+										<MdPlayCircle fontSize='60px' />
+									)
 								) : (
-									<MdPlayCircle fontSize='60px' />
+									<MdPlaylistAdd fontSize='60px' />
 								)}
 							</Center>
 						)}

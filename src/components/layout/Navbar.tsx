@@ -1,9 +1,10 @@
+import { participantsAtom } from '@/atoms/ParticipantsAtom';
 import {
 	Avatar,
+	AvatarGroup,
 	Box,
 	CloseButton,
 	Flex,
-	Heading,
 	Hide,
 	IconButton,
 	Input,
@@ -20,18 +21,18 @@ import { MdMenu, MdSearch } from 'react-icons/md';
 import { currentContentAtom } from '../../atoms/CurrentContentAtom';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
-import { feedAtom } from '../../atoms/FeedAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
-import { userAtom } from '../../atoms/UserAtom';
 import FullLogoIcon from '../icons/FullLogoIcon';
 import LogoIcon from '../icons/LogoIcon';
+import { currentPlaylistAtom } from '@/atoms/CurrentPlaylistAtom';
 
 export default function Navbar({ searchInput, setSearchInput }: any) {
-	const [user] = useAtom(userAtom);
+	const [participants] = useAtom(participantsAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [currentMedia] = useAtom(currentMediaAtom);
 	const [, setCurrentContent] = useAtom(currentContentAtom);
+	const [currentPlaylist] = useAtom(currentPlaylistAtom);
 	const isLg = useBreakpointValue([false, false, false, true]);
 
 	const handleLogoClick = () => {
@@ -88,8 +89,14 @@ export default function Navbar({ searchInput, setSearchInput }: any) {
 							</InputRightElement>
 						</SlideFade>
 					</InputGroup>
-					{user ? <Avatar width='40px' height='40px' src={user?.avatarURL} /> : null}
-					{currentMedia && mediaControls?.isSidePanelClosed && (
+					{participants.length ? (
+						<AvatarGroup size='md' max={2}>
+							{participants.map((p) => (
+								<Avatar width='40px' height='40px' key={p.id} src={p?.avatarURL} name={p.name} />
+							))}
+						</AvatarGroup>
+					) : null}
+					{(Object.keys(currentPlaylist).length > 0 || currentMedia) && mediaControls?.isSidePanelClosed && (
 						<IconButton
 							icon={<MdMenu />}
 							aria-label='Open menu'

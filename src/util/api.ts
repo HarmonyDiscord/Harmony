@@ -8,10 +8,9 @@ const getPrefix = () => (isDiscordActivity ? '/.proxy' : '');
 
 export const api = {
 	getMediaStream: async (songId: string) => {
-		const response = await fetch(
+		return (
 			`${isDiscordActivity ? `${getPrefix()}/streaming` : 'https://harmony-streaming.tnfangel.com'}/stream?videoURL=https://www.youtube.com/watch?v=${encodeURIComponent(songId)}`
 		);
-		return response;
 	},
 	content: {
 		search: async (query: string) => {

@@ -21,6 +21,7 @@ import LeftMenu from '../layout/LeftMenu';
 import Navbar from '../layout/Navbar';
 import ArtistView from '../views/ArtistView';
 import ContentView from '../views/ContentView';
+import { currentPlaylistAtom } from '@/atoms/CurrentPlaylistAtom';
 
 export default function IndexScreen() {
 	const [feed] = useAtom(feedAtom);
@@ -32,11 +33,11 @@ export default function IndexScreen() {
 	const [currentMedia] = useAtom(currentMediaAtom);
 	const [currentContent, setCurrentContent] = useAtom(currentContentAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
-
+	const [currentPlaylist] = useAtom(currentPlaylistAtom);
 	const searchCountRef = useRef(0);
 	const debouncedSearchInput = useDebounce(searchInput, 300);
 
-	const isLg = useBreakpointValue([false, false, false, true]);
+	const isLg = useBreakpointValue([false, false, true]);
 
 	useEffect(() => {
 		if (currentContent && !isLg) {
@@ -98,7 +99,9 @@ export default function IndexScreen() {
 			<Navbar searchInput={searchInput} setSearchInput={setSearchInput} />
 			{!discordActivityStatus.isOverlay && (
 				<Flex w='100%' h='100%' maxH='100%' overflow='hidden'>
-					{(isLg || !currentMedia || mediaControls?.isSidePanelClosed) &&
+					{(isLg ||
+						(!currentMedia && Object.keys(currentPlaylist).length === 0) ||
+						mediaControls?.isSidePanelClosed) &&
 						(isSearchLoading ? (
 							<Center w='100%' h='100%'>
 								<Spinner size='xl' thickness='4px' />
@@ -156,10 +159,10 @@ export default function IndexScreen() {
 				<Controls />
 			) : (
 				discordActivityStatus.isOverlay && (
-					<Center w='100%' h='100%' gap='5px'>
-						<Flex direction='column' alignItems='center'>
+					<Center w='100%' h='100%'>
+						<Flex direction='column' alignItems='center' gap='5px'>
 							<FullLogoIcon width='auto' height='20px' color='#FFFFFF' />
-							<Heading>Select a song to start.</Heading>
+							<Heading size='md'>Select a song to start.</Heading>
 						</Flex>
 					</Center>
 				)

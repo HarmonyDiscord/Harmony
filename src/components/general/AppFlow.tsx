@@ -234,9 +234,9 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 		}
 		if (!roomId) {
 			roomId = generateRoomId();
-			window.location.hash = roomId;
+			setHash(roomId);
 		} else if (usingDiscordInstanceId) {
-			window.location.hash = roomId;
+			setHash(roomId);
 		}
 
 		socket = io(
@@ -329,6 +329,7 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 	}, [currentPlaylist, isHost]);
 
 	const initialHashRef = useRef<string | null>(null);
+	const isProgrammaticHashChange = useRef(false);
 
 	useEffect(() => {
 		if (initialHashRef.current === null) {
@@ -336,12 +337,19 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 		}
 	}, []);
 
+	function setHash(hash: string) {
+		isProgrammaticHashChange.current = true;
+		window.location.hash = hash;
+	}
+
 	useEffect(() => {
 		function onHashChange() {
+			if (isProgrammaticHashChange.current) {
+				isProgrammaticHashChange.current = false;
+				return;
+			}
 			if (window.location.hash !== initialHashRef.current) {
-				if (!discordSDK) {
-					window.location.reload();
-				}
+				window.location.reload();
 			}
 		}
 		window.addEventListener('hashchange', onHashChange);

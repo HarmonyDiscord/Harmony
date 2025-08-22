@@ -17,7 +17,7 @@ import {
 } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
-import { memo, useEffect, useState, useRef } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { MdContentCopy } from 'react-icons/md';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
@@ -25,9 +25,10 @@ import { currentSecondsAtom } from '../../atoms/CurrentSecondsAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import type { SearchResult } from '../../types/SearchResult';
 import { api } from '../../util/api';
+import { isHostAtom } from '../general/AppFlow';
 import ContentItem from '../general/content/ContentItem';
-import ContentList from './ContentList';
 import LogoIcon from '../icons/LogoIcon';
+import ContentList from './ContentList';
 
 const Playlist = memo(function Playlist() {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
@@ -57,8 +58,10 @@ const Playlist = memo(function Playlist() {
 
 function Lyric({ l, timestamp }: Readonly<{ l: string; timestamp?: number }>) {
 	const [isHovering, setIsHovering] = useState(false);
+	const [isHost] = useAtom(isHostAtom);
 
 	const handleClick = () => {
+		if (!isHost) return;
 		if (timestamp !== undefined) {
 			window.dispatchEvent(new CustomEvent('harmony-seek', { detail: { seconds: timestamp } }));
 		}
@@ -82,7 +85,7 @@ function Lyric({ l, timestamp }: Readonly<{ l: string; timestamp?: number }>) {
 			onMouseEnter={() => setIsHovering(true)}
 			onMouseLeave={() => setIsHovering(false)}
 			onClick={handleClick}
-			cursor={timestamp !== undefined ? 'pointer' : 'default'}
+			cursor={timestamp !== undefined && isHost ? 'pointer' : 'default'}
 		>
 			<Text w='100%' wordBreak='break-word' overflowWrap='break-word' whiteSpace='pre-wrap' maxW='100%' mr='6px'>
 				{l}
@@ -124,8 +127,10 @@ const SyncedLyrics = memo(function SyncedLyrics({ lyrics }: Readonly<{ lyrics: S
 	const [currentLineIndex, setCurrentLineIndex] = useState(0);
 	const containerRef = useRef<HTMLDivElement>(null);
 	const lineRefs = useRef<(HTMLDivElement | null)[]>([]);
+	const [isHost] = useAtom(isHostAtom);
 
 	const handleLyricClick = (timestamp: number) => {
+		if (!isHost) return;
 		window.dispatchEvent(new CustomEvent('harmony-seek', { detail: { seconds: timestamp } }));
 	};
 
@@ -237,7 +242,7 @@ const SyncedLyrics = memo(function SyncedLyrics({ lyrics }: Readonly<{ lyrics: S
 				return (
 					<motion.div
 						ref={(el) => {
-							lineRefs.current[index] = el;
+							lineRefs.current[index] = el as HTMLDivElement | null;
 						}}
 						key={`${index}-${lyric.text}`}
 						initial={{ opacity: 0, y: 20 }}
@@ -265,7 +270,7 @@ const SyncedLyrics = memo(function SyncedLyrics({ lyrics }: Readonly<{ lyrics: S
 							backdropFilter={isActive ? 'blur(10px)' : 'none'}
 							transition='all 0.3s ease'
 							overflow='hidden'
-							cursor='pointer'
+							cursor={isHost ? 'pointer' : 'default'}
 							onClick={() => handleLyricClick(lyric.timestamp)}
 							_hover={{
 								bg: isActive ? '#FFFFFF30' : '#FFFFFF10'

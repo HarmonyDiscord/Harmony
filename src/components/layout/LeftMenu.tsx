@@ -251,10 +251,10 @@ const SyncedLyrics = memo(function SyncedLyrics({
 						key={`${index}-${lyric.text}`}
 						initial={{ opacity: 0, y: 20 }}
 						animate={{
-							opacity: isActive ? 1 : isPast ? 0.6 : 0.3,
+							opacity: isActive ? 1 : isPast ? 0.8 : 0.5,
 							y: 0,
 							scaleY: isActive ? 1.06 : 1,
-							color: isActive ? '#FFFFFF' : isPast ? '#CCCCCC' : '#888888'
+							color: isActive ? '#FFFFFF' : isPast ? '#CCCCCC' : '#979797'
 						}}
 						transition={{
 							duration: 0.3,
@@ -338,8 +338,9 @@ const SyncedLyrics = memo(function SyncedLyrics({
 const Lyrics = memo(function Lyrics({
 	mediaId,
 	mediaName,
-	mediaArtist
-}: Readonly<{ mediaId?: string; mediaName?: string; mediaArtist?: string }>) {
+	mediaArtist,
+	mediaAlbum
+}: Readonly<{ mediaId?: string; mediaName?: string; mediaArtist?: string; mediaAlbum?: string }>) {
 	const [lyricsRes, setLyricsRes] = useState<{
 		lyrics: string[];
 		type: 'synced' | 'plain';
@@ -351,7 +352,12 @@ const Lyrics = memo(function Lyrics({
 		async function lyricsSetup() {
 			if (!mediaId) return;
 			setIsLoading(true);
-			const result = await api.content.lyrics(mediaId, mediaName || undefined, mediaArtist || undefined);
+			const result = await api.content.lyrics(
+				mediaId,
+				mediaName || undefined,
+				mediaArtist || undefined,
+				mediaAlbum || undefined
+			);
 			setLyricsRes(result);
 			setIsLoading(false);
 		}
@@ -508,6 +514,7 @@ export default memo(function LeftMenu() {
 										mediaId={currentMedia.id}
 										mediaName={currentMedia.name}
 										mediaArtist={currentMedia.artist.name}
+										mediaAlbum={currentMedia.album?.name}
 									/>
 								) : (
 									<Text>Select a song to view lyrics.</Text>

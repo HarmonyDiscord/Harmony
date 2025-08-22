@@ -30,11 +30,12 @@ export const api = {
 		lyrics: async (
 			mediaId: string,
 			name?: string,
-			artist?: string
+			artist?: string,
+			album?: string
 		): Promise<{ lyrics: string[]; type: 'synced' | 'plain' } | null> => {
 			if (!mediaId) return null;
 			const res = await fetch(
-				`${getPrefix()}/api/content/media/lyrics?id=${encodeURIComponent(mediaId)}&name=${encodeURIComponent(name ?? '')}&artist=${encodeURIComponent(artist ?? '')}`
+				`${getPrefix()}/api/content/media/lyrics?id=${encodeURIComponent(mediaId)}&name=${encodeURIComponent(name ?? '')}&artist=${encodeURIComponent(artist ?? '')}&album=${encodeURIComponent(album ?? '')}`
 			);
 			if (!res.ok) return null;
 			return res.json();

@@ -2,6 +2,7 @@ import {
 	Avatar,
 	AvatarGroup,
 	Box,
+	Button,
 	CloseButton,
 	Flex,
 	Hide,
@@ -10,17 +11,16 @@ import {
 	InputGroup,
 	InputLeftElement,
 	InputRightElement,
+	Popover,
+	PopoverBody,
+	PopoverContent,
+	PopoverTrigger,
+	Portal,
 	Show,
 	SlideFade,
 	Spacer,
-	useBreakpointValue,
-	Popover,
-	PopoverTrigger,
-	PopoverContent,
-	PopoverBody,
-	Portal,
 	Text,
-	Button
+	useBreakpointValue
 } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
 import { MdMenu, MdSearch, MdStar } from 'react-icons/md';
@@ -28,14 +28,14 @@ import { currentContentAtom } from '../../atoms/CurrentContentAtom';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
+import { hostIDAtom } from '../../atoms/HostIDAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import { participantsAtom } from '../../atoms/ParticipantsAtom';
+import { userIDAtom } from '../../atoms/UserIDAtom';
+import { isHostAtom } from '../general/AppFlow';
+import { socket } from '../general/AppFlow';
 import FullLogoIcon from '../icons/FullLogoIcon';
 import LogoIcon from '../icons/LogoIcon';
-import { isHostAtom } from '../general/AppFlow';
-import { userIDAtom } from '../../atoms/UserIDAtom';
-import { socket } from '../general/AppFlow';
-import { hostIDAtom } from '../../atoms/HostIDAtom';
 
 export default function Navbar({ searchInput, setSearchInput }: any) {
 	const [participants] = useAtom(participantsAtom);

@@ -1,4 +1,5 @@
 import { Center, Fade, Flex, Heading, IconButton, Spacer, Spinner, Text } from '@chakra-ui/react';
+import { useBreakpointValue } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
@@ -16,7 +17,6 @@ import { api } from '../../../util/api';
 import formatDuration from '../../../util/formatDuration';
 import { normalizeAlbum, normalizeArtist, normalizePlaylist } from '../../../util/normalizeContent';
 import { isHostAtom, socket } from '../AppFlow';
-import { useBreakpointValue } from '@chakra-ui/react';
 
 export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) {
 	const [isHovering, setIsHovering] = useState(false);

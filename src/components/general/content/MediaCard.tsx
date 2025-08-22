@@ -1,4 +1,5 @@
 import { Card, CardBody, Center, Flex, Heading, IconButton, Spacer, Spinner, Text } from '@chakra-ui/react';
+import { useBreakpointValue } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
@@ -13,7 +14,6 @@ import type { Media } from '../../../types/content/Media';
 import formatDuration from '../../../util/formatDuration';
 import { isHostAtom } from '../AppFlow';
 import { socket } from '../AppFlow';
-import { useBreakpointValue } from '@chakra-ui/react';
 
 export default function MediaCard(media: Readonly<Media>) {
 	const [isHovering, setIsHovering] = useState(false);

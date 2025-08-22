@@ -14,7 +14,8 @@ export async function GET(req: Request) {
 			.catch(() => null);
 
 		const syncedLyricsItem = data?.find((item: any) => item.syncedLyrics);
-		if (syncedLyricsItem) return Response.json({ lyrics: syncedLyricsItem.syncedLyrics.split('\n'), type: 'synced' });
+		if (syncedLyricsItem)
+			return Response.json({ lyrics: syncedLyricsItem.syncedLyrics.split('\n'), type: 'synced' });
 	}
 
 	if (!id) return new Response('Invalid', { status: 400 });

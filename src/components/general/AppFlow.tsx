@@ -20,13 +20,13 @@ import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { currentSecondsAtom } from '../../atoms/CurrentSecondsAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { feedAtom } from '../../atoms/FeedAtom';
+import { hostIDAtom } from '../../atoms/HostIDAtom';
 import { loadingAtom } from '../../atoms/LoadingAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import { participantsAtom } from '../../atoms/ParticipantsAtom';
+import { userIDAtom } from '../../atoms/UserIDAtom';
 import { api, setIsDiscordActivity } from '../../util/api';
 import LogoIcon from '../icons/LogoIcon';
-import { userIDAtom } from '../../atoms/UserIDAtom';
-import { hostIDAtom } from '../../atoms/HostIDAtom';
 
 const clientId = process.env['NEXT_PUBLIC_DISCORD_CLIENT_ID'] ?? '';
 
@@ -241,7 +241,7 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 		}
 
 		socket = io(
-			`${discordSDK ? `/` : process.env.NODE_ENV === 'production' ? 'https://harmony-events.tnfangel.com' : 'http://localhost:4001'}`,
+			`${discordSDK ? `/` : process.env.NODE_ENV === 'production' ? 'https://harmony-events.tnfangel.com' : 'https://harmony-events.tnfangel.com'}`,
 			{
 				transports: process.env.NODE_ENV === 'production' ? ['polling', 'websocket'] : ['polling', 'websocket'],
 				path: `${discordSDK ? '/.proxy/events/' : '/events'}`,

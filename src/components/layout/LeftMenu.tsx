@@ -122,7 +122,10 @@ function parseSyncedLyrics(lyrics: string[]): SyncedLyric[] {
 		}));
 }
 
-const SyncedLyrics = memo(function SyncedLyrics({ lyrics }: Readonly<{ lyrics: SyncedLyric[] }>) {
+const SyncedLyrics = memo(function SyncedLyrics({
+	lyrics,
+	currentMedia
+}: Readonly<{ lyrics: SyncedLyric[]; currentMedia: any }>) {
 	const [currentSeconds] = useAtom(currentSecondsAtom);
 	const [currentLineIndex, setCurrentLineIndex] = useState(0);
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -208,7 +211,8 @@ const SyncedLyrics = memo(function SyncedLyrics({ lyrics }: Readonly<{ lyrics: S
 	const getCharacterHighlightProgress = (lyric: SyncedLyric, charIndex: number, totalChars: number) => {
 		if (currentSeconds < lyric.timestamp) return 0;
 
-		const lineDuration = lyric.nextTimestamp ? lyric.nextTimestamp - lyric.timestamp : 2;
+		const nextTime = lyric.nextTimestamp ?? (currentMedia?.duration || 2);
+		const lineDuration = nextTime - lyric.timestamp;
 		const timeInLine = currentSeconds - lyric.timestamp;
 		const progress = Math.min(timeInLine / lineDuration, 1);
 
@@ -298,20 +302,29 @@ const SyncedLyrics = memo(function SyncedLyrics({ lyrics }: Readonly<{ lyrics: S
 									{lyric.text}
 								</Text>
 							)}
-							{isActive && (
-								<Box
-									position='absolute'
-									top='0'
-									left='0'
-									h='100%'
-									bg='linear-gradient(90deg, #FFFFFF20 0%, #FFFFFF40 50%, #FFFFFF20 100%)'
-									transition='width 0.1s linear'
-									style={{
-										width: `${Math.min(100, ((currentSeconds - lyric.timestamp) / (lyric.nextTimestamp ? lyric.nextTimestamp - lyric.timestamp : 2)) * 100)}%`
-									}}
-									zIndex={1}
-								/>
-							)}
+							{isActive &&
+								(() => {
+									const nextTime = lyric.nextTimestamp ?? (currentMedia?.duration || 2);
+									const duration = nextTime - lyric.timestamp;
+									const rawProgress = (currentSeconds - lyric.timestamp) / duration;
+									const progress = Math.max(0, Math.min(1, rawProgress));
+									const percent = progress * 100;
+									const fadeWidth = 2;
+									const leftFade = Math.max(0, percent - fadeWidth);
+									const rightFade = Math.min(100, percent + fadeWidth);
+									return (
+										<Box
+											position='absolute'
+											top='0'
+											left='0'
+											h='100%'
+											bg={`linear-gradient(90deg, #FFFFFF00 0%, #FFFFFF40 ${leftFade}%, #FFFFFF30 ${percent}%, #FFFFFF00 ${rightFade}%, #FFFFFF00 100%)`}
+											transition='background 0.1s linear'
+											width='100%'
+											zIndex={1}
+										/>
+									);
+								})()}
 						</Box>
 					</motion.div>
 				);
@@ -364,7 +377,7 @@ const Lyrics = memo(function Lyrics({
 	if (lyricsRes.type === 'synced') {
 		const syncedLyrics = parseSyncedLyrics(lyricsRes.lyrics);
 		if (syncedLyrics.length > 0) {
-			return <SyncedLyrics lyrics={syncedLyrics} />;
+			return <SyncedLyrics lyrics={syncedLyrics} currentMedia={currentMedia} />;
 		}
 	}
 

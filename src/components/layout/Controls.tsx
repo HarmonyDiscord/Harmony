@@ -15,7 +15,7 @@ import {
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
-import { memo } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import {
 	MdClose,
 	MdDownload,
@@ -37,12 +37,14 @@ import { isHostAtom } from '../general/AppFlow';
 import MediaPlayer from '../general/MediaPlayer';
 import FullLogoIcon from '../icons/FullLogoIcon';
 
+
 export default memo(function Controls() {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
 	const [currentMedia, setCurrentMedia] = useAtom(currentMediaAtom);
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
 	const [isHost] = useAtom(isHostAtom);
+	const ref = useRef<HTMLImageElement>(null);
 
 	const currentPlaylistIdArray = [...Object.keys(currentPlaylist)];
 
@@ -74,7 +76,7 @@ export default memo(function Controls() {
 					<Flex w='100%' h='100%' direction='column' gap='10px'>
 						{discordActivityStatus.isOverlay && (
 							<Box pb='0px'>
-								<FullLogoIcon width='auto' height='22' color='#FFFFFF' />
+								<FullLogoIcon width='auto' height='22px' color='#FFFFFF' />
 							</Box>
 						)}
 						<MediaPlayer />
@@ -102,6 +104,7 @@ export default memo(function Controls() {
 									exit={{ y: 10, opacity: 0 }}
 								>
 									<Image
+										ref={ref}
 										width={60}
 										height={60}
 										src={currentMedia.thumbnail ?? ''}

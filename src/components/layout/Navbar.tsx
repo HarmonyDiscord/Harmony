@@ -77,10 +77,10 @@ export default function Navbar({ searchInput, setSearchInput }: any) {
 					<Flex gap='10px' cursor='pointer' onClick={handleLogoClick} alignItems='center'>
 						<Box pl='5px' minW='max-content'>
 							<Hide above='sm'>
-								<LogoIcon width='auto' height='28' color='#FFFFFF' />
+								<LogoIcon width='auto' height='28px' color='#FFFFFF' />
 							</Hide>
 							<Show above='sm'>
-								<FullLogoIcon width='auto' height='25' color='#FFFFFF' />
+								<FullLogoIcon width='auto' height='25px' color='#FFFFFF' />
 							</Show>
 						</Box>
 					</Flex>

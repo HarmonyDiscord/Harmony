@@ -13,7 +13,7 @@ import { hasRequestedSyncRef, isHostAtom, socket } from './AppFlow';
 
 export default memo(function MediaPlayer() {
 	const [songURL, setSongURL] = useState<string | undefined>(undefined);
-	const playerRef = useRef<ReactPlayer>(null);
+	const playerRef = useRef<any>(null);
 	const [isHost] = useAtom(isHostAtom);
 	const toast = useToast();
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
@@ -199,7 +199,11 @@ export default memo(function MediaPlayer() {
 	useEffect(() => {
 		function handleHarmonySeek(e: any) {
 			if (typeof e.detail?.seconds === 'number' && playerRef.current) {
-				playerRef.current.seekTo(e.detail.seconds, 'seconds');
+				if (typeof playerRef.current.seekTo === 'function') {
+					playerRef.current.seekTo(e.detail.seconds, 'seconds');
+				} else if ('currentTime' in playerRef.current) {
+					playerRef.current.currentTime = e.detail.seconds;
+				}
 			}
 		}
 		window.addEventListener('harmony-seek', handleHarmonySeek);
@@ -211,7 +215,11 @@ export default memo(function MediaPlayer() {
 	const seekTo = useCallback(
 		(to: number) => {
 			if (!playerRef.current) return;
-			playerRef.current.seekTo(to, 'seconds');
+			if (typeof playerRef.current.seekTo === 'function') {
+				playerRef.current.seekTo(to, 'seconds');
+			} else if ('currentTime' in playerRef.current) {
+				playerRef.current.currentTime = to;
+			}
 		},
 		[playerRef]
 	);
@@ -222,21 +230,30 @@ export default memo(function MediaPlayer() {
 	return (
 		<Flex direction='column' w='100%' h='100%' gap='0px' maxH='100%'>
 			<ReactPlayer
-				key='player'
+				wrapper='div'
+				src={songURL}
 				ref={playerRef}
-				url={songURL}
 				width='0px'
 				height='0px'
 				style={{
+					display: 'none',
 					overflow: 'hidden'
 				}}
 				playing={mediaControls?.isPlaying ?? false}
 				volume={mediaControls?.volume ?? 1}
 				muted={mediaControls?.isMuted ?? false}
 				loop={mediaControls?.isLooping ?? false}
-				progressInterval={1}
-				onProgress={(p) => {
-					setCurrentSeconds(p.playedSeconds);
+				onTimeUpdate={(eOrState: any) => {
+					const seconds =
+						typeof eOrState?.target?.currentTime === 'number'
+							? eOrState.target.currentTime
+							: typeof eOrState?.playedSeconds === 'number'
+								? eOrState.playedSeconds
+								: undefined;
+					if (typeof seconds === 'number') setCurrentSeconds(seconds);
+				}}
+				onProgress={(p: any) => {
+					if (typeof p?.playedSeconds === 'number') setCurrentSeconds(p.playedSeconds);
 				}}
 				onPlay={() => {
 					setMediaControls({
@@ -272,13 +289,15 @@ export default memo(function MediaPlayer() {
 						});
 					}
 				}}
-				onSeek={() => {
-					setMediaControls({
-						...(mediaControls ?? defaultMediaControls),
-						isPlaying: true
-					});
+				onSeeked={() => {
+					const position =
+						typeof playerRef.current.currentTime === 'number'
+							? playerRef.current.currentTime
+							: typeof playerRef.current.getCurrentTime === 'function'
+								? playerRef.current.getCurrentTime()
+								: 0;
+					if (isHost) socket?.emit('seekTo', position);
 					if (typeof window !== 'undefined' && playerRef.current && currentMedia) {
-						const position = playerRef.current.getCurrentTime();
 						const start = Date.now() - position * 1000;
 						const end = start + currentMedia.duration * 1000;
 						if (window.discordSDK)
@@ -313,13 +332,13 @@ export default memo(function MediaPlayer() {
 						}
 					}
 				}}
-				onBuffer={() => {
+				onWaiting={() => {
 					setMediaControls({
 						...(mediaControls ?? defaultMediaControls),
 						isBuffering: true
 					});
 				}}
-				onBufferEnd={() => {
+				onPlaying={() => {
 					setMediaControls({
 						...(mediaControls ?? defaultMediaControls),
 						isBuffering: false,
@@ -331,7 +350,7 @@ export default memo(function MediaPlayer() {
 						...(mediaControls ?? defaultMediaControls),
 						isBuffering: false,
 						isLoading: false,
-						isPlaying: isHost ? true : hasRequestedSyncRef.current ? false : true
+						isPlaying: true
 					});
 					if (!isHost && !hasRequestedSyncRef.current) {
 						socket?.emit('requestSyncMedia');

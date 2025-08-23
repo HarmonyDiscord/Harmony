@@ -10,7 +10,7 @@ import { mediaControlsAtom } from '../../atoms/MediaControlAtom';
 import formatDuration from '../../util/formatDuration';
 import { isHostAtom, socket } from '../general/AppFlow';
 
-export default memo(function MediaSlider({ seekTo }: { seekTo: any }) {
+export default memo(function MediaSlider({ seekTo, isDisabled }: { seekTo: any; isDisabled?: boolean }) {
 	const [currentMedia] = useAtom(currentMediaAtom);
 	const [mediaControls] = useAtom(mediaControlsAtom);
 	const [currentSeconds] = useAtom(currentSecondsAtom);
@@ -39,6 +39,7 @@ export default memo(function MediaSlider({ seekTo }: { seekTo: any }) {
 									key='slider'
 									as={motion.div}
 									isReadOnly={!isHost || mediaControls?.isLoading}
+									isDisabled={isDisabled}
 									value={
 										isDragging.current || useSliderValue
 											? sliderValue
@@ -56,8 +57,6 @@ export default memo(function MediaSlider({ seekTo }: { seekTo: any }) {
 									onChangeEnd={(v) => {
 										const currentSecondsValue = (v / 100) * currentMedia.duration;
 										seekTo(currentSecondsValue);
-
-										if (isHost) socket?.emit('seekTo', currentSecondsValue);
 
 										isDragging.current = false;
 										setUseSliderValue(true);

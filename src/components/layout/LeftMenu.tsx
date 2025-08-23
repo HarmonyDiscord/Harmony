@@ -15,7 +15,7 @@ import {
 	Tabs,
 	Text
 } from '@chakra-ui/react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { animate, AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { memo, useEffect, useRef, useState } from 'react';
 import { MdContentCopy } from 'react-icons/md';
@@ -131,6 +131,7 @@ const SyncedLyrics = memo(function SyncedLyrics({
 	const containerRef = useRef<HTMLDivElement>(null);
 	const lineRefs = useRef<(HTMLDivElement | null)[]>([]);
 	const [isHost] = useAtom(isHostAtom);
+	const [mediaControls] = useAtom(mediaControlsAtom);
 
 	const handleLyricClick = (timestamp: number) => {
 		if (!isHost) return;
@@ -208,17 +209,36 @@ const SyncedLyrics = memo(function SyncedLyrics({
 		}
 	}, [currentLineIndex]);
 
-	const getCharacterHighlightProgress = (lyric: SyncedLyric, charIndex: number, totalChars: number) => {
-		if (currentSeconds < lyric.timestamp) return 0;
+	const progressValue = useMotionValue(0);
+	const gradient = useTransform(progressValue, (p) => {
+		const percent = p * 100;
+		const fadeWidth = 2;
+		const leftFade = Math.max(0, percent - fadeWidth);
+		const rightFade = Math.min(100, percent + fadeWidth);
+		return `linear-gradient(90deg, #FFFFFF00 0%, #FFFFFF40 ${leftFade}%, #FFFFFF30 ${percent}%, #FFFFFF00 ${rightFade}%, #FFFFFF00 100%)`;
+	});
 
-		const nextTime = lyric.nextTimestamp ?? (currentMedia?.duration || 2);
-		const lineDuration = nextTime - lyric.timestamp;
-		const timeInLine = currentSeconds - lyric.timestamp;
-		const progress = Math.min(timeInLine / lineDuration, 1);
+	const isPlaying = mediaControls?.isPlaying ?? false;
 
-		const charProgress = (progress * totalChars - charIndex) / 1;
-		return Math.max(0, Math.min(1, charProgress));
-	};
+	useEffect(() => {
+		const activeLyric = lyrics[currentLineIndex];
+		if (!activeLyric) return;
+
+		const totalDuration =
+			(activeLyric.nextTimestamp ?? currentMedia?.duration ?? activeLyric.timestamp + 2) - activeLyric.timestamp;
+		const elapsed = Math.max(0, currentSeconds - activeLyric.timestamp);
+		const remainingDuration = Math.max(totalDuration - elapsed, 0);
+
+		progressValue.set(Math.max(0, Math.min(1, elapsed / totalDuration)));
+
+		if (isPlaying && remainingDuration > 0) {
+			const controls = animate(progressValue, 1, {
+				duration: remainingDuration,
+				ease: 'linear'
+			});
+			return () => controls.stop();
+		}
+	}, [currentLineIndex, currentSeconds, isPlaying, lyrics, currentMedia]);
 
 	return (
 		<Flex
@@ -236,8 +256,6 @@ const SyncedLyrics = memo(function SyncedLyrics({
 				maskMode: 'alpha'
 			}}
 		>
-			<Box h='50vh' />
-
 			{lyrics.map((lyric, index) => {
 				const isActive = currentLineIndex >= 0 && index === currentLineIndex;
 				const isPast = currentLineIndex >= 0 && index < currentLineIndex;
@@ -314,11 +332,12 @@ const SyncedLyrics = memo(function SyncedLyrics({
 									const rightFade = Math.min(100, percent + fadeWidth);
 									return (
 										<Box
+											as={motion.div}
 											position='absolute'
 											top='0'
 											left='0'
 											h='100%'
-											bg={`linear-gradient(90deg, #FFFFFF00 0%, #FFFFFF40 ${leftFade}%, #FFFFFF30 ${percent}%, #FFFFFF00 ${rightFade}%, #FFFFFF00 100%)`}
+											style={{ background: gradient }}
 											transition='background 0.1s linear'
 											width='100%'
 											zIndex={1}

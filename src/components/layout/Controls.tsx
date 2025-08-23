@@ -37,7 +37,6 @@ import { isHostAtom } from '../general/AppFlow';
 import MediaPlayer from '../general/MediaPlayer';
 import FullLogoIcon from '../icons/FullLogoIcon';
 
-
 export default memo(function Controls() {
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
 	const [currentMedia, setCurrentMedia] = useAtom(currentMediaAtom);

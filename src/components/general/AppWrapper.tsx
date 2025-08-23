@@ -1,14 +1,14 @@
 'use client';
 
 import { Box, Fade, ScaleFade } from '@chakra-ui/react';
+import ColorThief from 'colorthief';
+import { motion } from 'framer-motion';
 import { useAtom } from 'jotai';
+import { useEffect, useState } from 'react';
+import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { loadingAtom } from '../../atoms/LoadingAtom';
 import IndexLoadingScreen from '../screens/LoadingScreen';
 import AppFlow from './AppFlow';
-import { currentMediaAtom } from 'src/atoms/CurrentMediaAtom';
-import { useEffect, useState } from 'react';
-import ColorThief from 'colorthief';
-import { motion } from 'framer-motion';
 
 export default function AppWrapper({ children }: Readonly<{ children: any }>) {
 	const [isLoading] = useAtom(loadingAtom);

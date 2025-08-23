@@ -15,7 +15,7 @@ import {
 	Tabs,
 	Text
 } from '@chakra-ui/react';
-import { animate, AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion';
+import { AnimatePresence, animate, motion, useMotionValue, useTransform } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { memo, useEffect, useRef, useState } from 'react';
 import { MdContentCopy } from 'react-icons/md';

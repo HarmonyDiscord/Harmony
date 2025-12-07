@@ -1,45 +1,8 @@
-import type { SearchResult } from '../types/SearchResult';
 import type { Album } from '../types/content/Album';
 import type { Artist } from '../types/content/Artist';
 import { ContentType } from '../types/content/ContentType';
 import type { Playlist } from '../types/content/Playlist';
 import type { Song } from '../types/content/Song';
-
-type APIAlbum = {
-	type: string;
-	albumId: string;
-	name: string;
-	playlistId: string;
-	artist: {
-		artistId: string;
-		name: string;
-	};
-	year: number;
-	thumbnails: Array<{
-		url: string;
-		width: number;
-		height: number;
-	}>;
-	songs: Array<{
-		type: string;
-		videoId: string;
-		name: string;
-		artist: {
-			artistId: string;
-			name: string;
-		};
-		album: {
-			albumId: string;
-			name: string;
-		};
-		duration: number;
-		thumbnails: Array<{
-			url: string;
-			width: number;
-			height: number;
-		}>;
-	}>;
-};
 
 type APIPlaylist = {
 	type: string;

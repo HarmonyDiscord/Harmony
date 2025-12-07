@@ -29,6 +29,12 @@ jobs:
             - name: 'Checkout'
               uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
+            - name: 'Free disk space'
+              run: |
+                sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+                sudo docker image prune --all --force
+                sudo docker builder prune -a
+
             - name: 'Setup tags'
               id: setup-tags
               run: |

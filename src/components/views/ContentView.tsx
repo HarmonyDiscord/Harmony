@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
 import { MdArrowBack } from 'react-icons/md';
+import { getImageUrl } from 'src/util/api';
 import { currentContentAtom } from '../../atoms/CurrentContentAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { ContentType } from '../../types/content/ContentType';
@@ -54,13 +55,13 @@ export default function ContentView() {
 				{thumbnail && (
 					<Box position='relative' minW='300px' minH='300px' borderRadius='10px' overflow='hidden'>
 						<Image
-							src={thumbnail}
+							src={getImageUrl(thumbnail)}
 							alt=' '
 							fill
 							style={{
 								objectFit: 'cover'
 							}}
-							unoptimized={!discordActivityStatus.isActivity}
+							unoptimized
 						/>
 					</Box>
 				)}

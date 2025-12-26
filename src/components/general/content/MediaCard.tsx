@@ -5,6 +5,7 @@ import { useAtom } from 'jotai';
 import Image from 'next/image';
 import { useRef, useState } from 'react';
 import { MdPauseCircle, MdPlayCircle, MdPlaylistAdd, MdPlaylistAddCheck } from 'react-icons/md';
+import { getImageUrl } from 'src/util/api';
 import { currentMediaAtom } from '../../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../../atoms/CurrentPlaylistAtom';
 import { discordActivityStatusAtom } from '../../../atoms/DiscordActivityStatus';
@@ -71,7 +72,7 @@ export default function MediaCard(media: Readonly<Media>) {
 		>
 			{thumbnail && (
 				<Image
-					src={thumbnail}
+					src={getImageUrl(thumbnail)}
 					alt=' '
 					width={250}
 					height={200}
@@ -86,9 +87,9 @@ export default function MediaCard(media: Readonly<Media>) {
 						objectFit: 'cover',
 						borderRadius: '10px'
 					}}
-					unoptimized={!discordActivityStatus.isActivity}
 					referrerPolicy='no-referrer'
 					quality={100}
+					unoptimized
 				/>
 			)}
 			<CardBody

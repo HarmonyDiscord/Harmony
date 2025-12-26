@@ -6,6 +6,8 @@ export function setIsDiscordActivity(isActive: boolean) {
 
 const getPrefix = () => (isDiscordActivity ? '/.proxy' : '');
 
+export const getImageUrl = (url: string) => (isDiscordActivity ? `/.proxy/image?url=${encodeURIComponent(url)}` : url);
+
 export const api = {
 	getStreamURL: (songId: string) => {
 		return `${isDiscordActivity ? `${getPrefix()}/streaming` : 'https://harmony-streaming.tnfangel.com'}/stream?videoURL=https://www.youtube.com/watch?v=${encodeURIComponent(songId)}`;

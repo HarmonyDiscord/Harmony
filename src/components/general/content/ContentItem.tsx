@@ -13,7 +13,7 @@ import { defaultMediaControls, mediaControlsAtom } from '../../../atoms/MediaCon
 import type { SearchResult } from '../../../types/SearchResult';
 import { ContentType } from '../../../types/content/ContentType';
 import type { Media } from '../../../types/content/Media';
-import { api } from '../../../util/api';
+import { api, getImageUrl } from '../../../util/api';
 import formatDuration from '../../../util/formatDuration';
 import { normalizeAlbum, normalizeArtist, normalizePlaylist } from '../../../util/normalizeContent';
 import { isHostAtom, socket } from '../AppFlow';
@@ -153,7 +153,7 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 			<Center>
 				{item.thumbnail && (
 					<Image
-						src={item.thumbnail}
+						src={getImageUrl(item.thumbnail)}
 						alt=' '
 						width={60}
 						height={60}
@@ -167,9 +167,9 @@ export default function ContentItem({ item }: Readonly<{ item: SearchResult }>) 
 							objectFit: 'cover',
 							borderRadius: item.type === ContentType.Artist ? '50%' : '5px'
 						}}
-						unoptimized={!discordActivityStatus.isActivity}
 						quality={100}
 						referrerPolicy='no-referrer'
+						unoptimized
 					/>
 				)}
 				<AnimatePresence>

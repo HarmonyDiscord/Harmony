@@ -29,6 +29,7 @@ import {
 	MdVolumeOff,
 	MdVolumeUp
 } from 'react-icons/md';
+import { getImageUrl } from 'src/util/api';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
@@ -106,14 +107,14 @@ export default memo(function Controls() {
 										ref={ref}
 										width={60}
 										height={60}
-										src={currentMedia.thumbnail ?? ''}
+										src={getImageUrl(currentMedia.thumbnail ?? '')}
 										alt=' '
 										objectFit='cover'
 										style={{
 											borderRadius: '5px'
 										}}
 										referrerPolicy='no-referrer'
-										unoptimized={!discordActivityStatus.isActivity}
+										unoptimized
 									/>
 									<Flex gap='4px' direction='column'>
 										<Heading size={discordActivityStatus.isOverlay ? 'xs' : 'md'}>

@@ -4,6 +4,7 @@ import { useAtom } from 'jotai';
 import Image from 'next/image';
 import React from 'react';
 import { MdArrowBack } from 'react-icons/md';
+import { getImageUrl } from 'src/util/api';
 import { currentContentAtom } from '../../atoms/CurrentContentAtom';
 import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
@@ -71,7 +72,7 @@ export default function ArtistView() {
 						}}
 					>
 						<Image
-							src={thumbnail}
+							src={getImageUrl(thumbnail)}
 							alt=' '
 							fill
 							style={{
@@ -79,7 +80,7 @@ export default function ArtistView() {
 								opacity: 0.7,
 								mask: 'linear-gradient(to bottom, #000000 5%, #000000 25%, transparent 100%)'
 							}}
-							unoptimized={!discordActivityStatus.isActivity}
+							unoptimized
 						/>
 					</Box>
 					<Flex

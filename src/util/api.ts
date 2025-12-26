@@ -6,7 +6,7 @@ export function setIsDiscordActivity(isActive: boolean) {
 
 const getPrefix = () => (isDiscordActivity ? '/.proxy' : '');
 
-export const getImageUrl = (url: string) => (isDiscordActivity ? `/.proxy/image?url=${encodeURIComponent(url)}` : url);
+export const getImageUrl = (url: string) => (isDiscordActivity ? `/.proxy/image?url=${url}` : url);
 
 export const api = {
 	getStreamURL: (songId: string) => {

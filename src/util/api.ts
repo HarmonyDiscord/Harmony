@@ -4,7 +4,7 @@ export function setIsDiscordActivity(isActive: boolean) {
 	isDiscordActivity = isActive;
 }
 
-const getPrefix = () => (isDiscordActivity ? '/.proxy' : '');
+const getPrefix = () => (isDiscordActivity ? '/.proxy' : 'https://harmony-api.tnfangel.com');
 
 export const getImageUrl = (url: string) => (isDiscordActivity ? `/.proxy/image?url=${url}` : url);
 

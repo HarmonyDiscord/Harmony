@@ -3,7 +3,7 @@ import { useBreakpointValue } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MdPauseCircle, MdPlayCircle, MdPlaylistAdd, MdPlaylistAddCheck } from 'react-icons/md';
 import { getImageUrl } from 'src/util/api';
 import { currentMediaAtom } from '../../../atoms/CurrentMediaAtom';
@@ -19,8 +19,9 @@ import { participantsAtom } from 'src/atoms/ParticipantsAtom';
 
 export default function MediaCard(media: Readonly<Media>) {
 	const [isHovering, setIsHovering] = useState(false);
+	const [isMounted, setIsMounted] = useState(false);
 	const isMobile = useBreakpointValue({ base: true, md: false });
-	const debouncedIsHovering = useDebounce(isHovering || isMobile, 100);
+	const debouncedIsHovering = useDebounce(isHovering || (isMobile && isMounted), 100);
 	const [currentMedia, setCurrentMedia] = useAtom(currentMediaAtom);
 	const [currentPlaylist, setCurrentPlaylist] = useAtom(currentPlaylistAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
@@ -33,6 +34,10 @@ export default function MediaCard(media: Readonly<Media>) {
 	const isCurrentMedia = currentMedia?.id === id;
 	const isOnCurrentPlaylist = !!currentPlaylist[media.id];
 	const shouldAddToPlaylist = isHost && participants.length > 1;
+
+	useEffect(() => {
+		setIsMounted(true);
+	}, []);
 
 	const handleMainClick = async () => {
 		if (isProcessing) return;

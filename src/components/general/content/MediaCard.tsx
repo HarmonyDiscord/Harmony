@@ -3,7 +3,7 @@ import { useBreakpointValue } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { MdPauseCircle, MdPlayCircle, MdPlaylistAdd, MdPlaylistAddCheck } from 'react-icons/md';
 import { getImageUrl } from 'src/util/api';
 import { currentMediaAtom } from '../../../atoms/CurrentMediaAtom';
@@ -15,6 +15,7 @@ import type { Media } from '../../../types/content/Media';
 import formatDuration from '../../../util/formatDuration';
 import { isHostAtom } from '../AppFlow';
 import { socket } from '../AppFlow';
+import { participantsAtom } from 'src/atoms/ParticipantsAtom';
 
 export default function MediaCard(media: Readonly<Media>) {
 	const [isHovering, setIsHovering] = useState(false);
@@ -23,19 +24,20 @@ export default function MediaCard(media: Readonly<Media>) {
 	const [currentMedia, setCurrentMedia] = useAtom(currentMediaAtom);
 	const [currentPlaylist, setCurrentPlaylist] = useAtom(currentPlaylistAtom);
 	const [mediaControls, setMediaControls] = useAtom(mediaControlsAtom);
-	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [isHost] = useAtom(isHostAtom);
+	const [participants] = useAtom(participantsAtom);
 
 	const { id, name, album, artist, thumbnail, duration } = media;
 
 	const isCurrentMedia = currentMedia?.id === id;
-
 	const isOnCurrentPlaylist = !!currentPlaylist[media.id];
+	const shouldAddToPlaylist = isHost && participants.length > 1;
 
-	const handleClick = async () => {
+	const handleMainClick = async () => {
 		if (isProcessing) return;
 		setIsProcessing(true);
+
 		if (isCurrentMedia) {
 			if (isHost) {
 				setMediaControls({
@@ -46,12 +48,43 @@ export default function MediaCard(media: Readonly<Media>) {
 			setIsProcessing(false);
 			return;
 		}
-		if (isHost && (!currentMedia || currentMedia.id !== media.id)) {
+
+		if (shouldAddToPlaylist) {
+			setCurrentPlaylist({ ...currentPlaylist, [media.id]: media });
+			socket?.emit('addMediaToPlaylist', media);
+		} else {
+			if (isHost) {
+				setCurrentMedia(media);
+			}
+			setCurrentPlaylist({ ...currentPlaylist, [media.id]: media });
+			socket?.emit('addMediaToPlaylist', media);
+		}
+
+		setTimeout(() => setIsProcessing(false), 500);
+	};
+
+	const handleDirectPlay = (e: React.MouseEvent) => {
+		e.stopPropagation();
+		if (isProcessing) return;
+		setIsProcessing(true);
+
+		if (isHost) {
 			setCurrentMedia(media);
 		}
 		setCurrentPlaylist({ ...currentPlaylist, [media.id]: media });
 		socket?.emit('addMediaToPlaylist', media);
+
 		setTimeout(() => setIsProcessing(false), 500);
+	};
+
+	const handleAddToPlaylist = (e: React.MouseEvent) => {
+		e.stopPropagation();
+		setCurrentPlaylist({ ...currentPlaylist, [media.id]: media });
+		socket?.emit('addMediaToPlaylist', media);
+		setMediaControls({
+			...(mediaControls ?? defaultMediaControls),
+			isSidePanelClosed: false
+		});
 	};
 
 	return (
@@ -68,7 +101,7 @@ export default function MediaCard(media: Readonly<Media>) {
 			p='0px'
 			onMouseEnter={() => setIsHovering(true)}
 			onMouseLeave={() => setIsHovering(false)}
-			onClick={handleClick}
+			onClick={handleMainClick}
 		>
 			{thumbnail && (
 				<Image
@@ -117,27 +150,28 @@ export default function MediaCard(media: Readonly<Media>) {
 									{name}
 								</Heading>
 								<Spacer />
-								<IconButton
-									size='sm'
-									isDisabled={isOnCurrentPlaylist}
-									icon={
-										isOnCurrentPlaylist ? (
-											<MdPlaylistAddCheck fontSize='20px' />
-										) : (
-											<MdPlaylistAdd fontSize='20px' />
-										)
-									}
-									aria-label='Add to playlist'
-									onClick={(e) => {
-										e.stopPropagation();
-										setCurrentPlaylist({ ...currentPlaylist, [media.id]: media });
-										socket?.emit('addMediaToPlaylist', media);
-										setMediaControls({
-											...(mediaControls ?? defaultMediaControls),
-											isSidePanelClosed: false
-										});
-									}}
-								/>
+								{shouldAddToPlaylist ? (
+									<IconButton
+										size='sm'
+										icon={<MdPlayCircle fontSize='20px' />}
+										aria-label='Play now'
+										onClick={handleDirectPlay}
+									/>
+								) : (
+									<IconButton
+										size='sm'
+										isDisabled={isOnCurrentPlaylist}
+										icon={
+											isOnCurrentPlaylist ? (
+												<MdPlaylistAddCheck fontSize='20px' />
+											) : (
+												<MdPlaylistAdd fontSize='20px' />
+											)
+										}
+										aria-label='Add to playlist'
+										onClick={handleAddToPlaylist}
+									/>
+								)}
 							</Flex>
 						)}
 					</AnimatePresence>
@@ -155,6 +189,12 @@ export default function MediaCard(media: Readonly<Media>) {
 										<MdPauseCircle fontSize='60px' />
 									) : mediaControls?.isLoading && isCurrentMedia ? (
 										<Spinner size='xl' thickness='4px' />
+									) : shouldAddToPlaylist ? (
+										isOnCurrentPlaylist ? (
+											<MdPlaylistAddCheck fontSize='60px' />
+										) : (
+											<MdPlaylistAdd fontSize='60px' />
+										)
 									) : (
 										<MdPlayCircle fontSize='60px' />
 									)
@@ -194,7 +234,8 @@ export default function MediaCard(media: Readonly<Media>) {
 								animate={{ y: 0, opacity: 1 }}
 								exit={{ y: 10, opacity: 0 }}
 							>
-								{isCurrentMedia ? 'Now playing' : 'Play'} - {formatDuration(duration)}
+								{isCurrentMedia ? 'Now playing' : shouldAddToPlaylist ? 'Add to playlist' : 'Play now'}{' '}
+								- {formatDuration(duration)}
 							</Heading>
 						)}
 					</AnimatePresence>

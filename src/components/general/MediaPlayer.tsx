@@ -226,7 +226,6 @@ export default memo(function MediaPlayer() {
 
 	const seekTo = useCallback(
 		(to: number) => {
-			console.log('seekTo called', { to });
 			if (!playerRef.current) return;
 			if (typeof playerRef.current.seekTo === 'function') {
 				playerRef.current.seekTo(to, 'seconds');

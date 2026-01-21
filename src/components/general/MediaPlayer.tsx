@@ -189,13 +189,21 @@ export default memo(function MediaPlayer() {
 	}, []);
 
 	useEffect(() => {
-		if (upNext.length > 0) return;
-		if (!currentMedia) return;
+		const hasPlaylist = Object.keys(currentPlaylist).length > 0;
 
-		api.content.getUpNext(currentMedia.id).then((results) => {
-			setUpNext(results || []);
-		});
-	}, [currentMedia?.id, upNext.length]);
+		if (hasPlaylist && upNext.length === 0) {
+			const playlistArray = Object.values(currentPlaylist);
+			const seedMedia = playlistArray[0] || currentMedia;
+
+			if (seedMedia) {
+				api.content.getUpNext(seedMedia.id).then((results) => {
+					setUpNext(results || []);
+				});
+			}
+		} else if (!hasPlaylist && upNext.length > 0) {
+			setUpNext([]);
+		}
+	}, [Object.keys(currentPlaylist).length > 0]);
 
 	useEffect(() => {
 		if (pendingPlayback && songURL) {

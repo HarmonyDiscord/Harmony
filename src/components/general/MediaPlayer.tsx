@@ -7,6 +7,7 @@ import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { currentSecondsAtom } from '../../atoms/CurrentSecondsAtom';
 import { discordActivityStatusAtom } from '../../atoms/DiscordActivityStatus';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
+import { upNextAtom } from '../../atoms/UpNextAtom';
 import { api } from '../../util/api';
 import MediaSlider from '../layout/MediaSlider';
 import { hasRequestedSyncRef, isHostAtom, socket } from './AppFlow';
@@ -23,13 +24,11 @@ export default memo(function MediaPlayer() {
 	const [pendingPlayback, setPendingPlayback] = useState(false);
 	const [discordActivityStatus] = useAtom(discordActivityStatusAtom);
 	const [currentPlaylist] = useAtom(currentPlaylistAtom);
-
-	const lastEmittedMediaIdRef = useRef<string | null>(null);
+	const [upNext, setUpNext] = useAtom(upNextAtom);
 
 	const mediaPlayerSetup = useCallback(async () => {
 		console.log('mediaPlayerSetup called', { currentMedia });
 		if (!currentMedia) {
-			lastEmittedMediaIdRef.current = null;
 			return null;
 		}
 
@@ -190,6 +189,23 @@ export default memo(function MediaPlayer() {
 	}, []);
 
 	useEffect(() => {
+		const hasPlaylist = Object.keys(currentPlaylist).length > 0;
+
+		if (hasPlaylist && upNext.length === 0) {
+			const playlistArray = Object.values(currentPlaylist);
+			const seedMedia = playlistArray[0] || currentMedia;
+
+			if (seedMedia) {
+				api.content.getUpNext(seedMedia.id).then((results) => {
+					setUpNext(results || []);
+				});
+			}
+		} else if (!hasPlaylist && upNext.length > 0) {
+			setUpNext([]);
+		}
+	}, [Object.keys(currentPlaylist).length > 0]);
+
+	useEffect(() => {
 		if (pendingPlayback && songURL) {
 			setMediaControls((prev) => ({ ...(prev ?? defaultMediaControls), isPlaying: true }));
 			setPendingPlayback(false);
@@ -282,12 +298,21 @@ export default memo(function MediaPlayer() {
 								return;
 							}
 						}
-					} else {
-						setMediaControls({
-							...(mediaControls ?? defaultMediaControls),
-							isPlaying: false
-						});
 					}
+
+					if (upNext.length > 0) {
+						const nextMedia = upNext[0];
+						if (nextMedia) {
+							setCurrentMedia(nextMedia);
+							setUpNext((prev) => prev.slice(1));
+							return;
+						}
+					}
+
+					setMediaControls({
+						...(mediaControls ?? defaultMediaControls),
+						isPlaying: false
+					});
 				}}
 				onSeeked={() => {
 					const position =

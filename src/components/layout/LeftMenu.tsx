@@ -23,6 +23,7 @@ import { currentMediaAtom } from '../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../atoms/CurrentPlaylistAtom';
 import { currentSecondsAtom } from '../../atoms/CurrentSecondsAtom';
 import { defaultMediaControls, mediaControlsAtom } from '../../atoms/MediaControlAtom';
+import { upNextAtom } from '../../atoms/UpNextAtom';
 import type { SearchResult } from '../../types/SearchResult';
 import { api } from '../../util/api';
 import { isHostAtom } from '../general/AppFlow';
@@ -52,6 +53,27 @@ const Playlist = memo(function Playlist() {
 					<ContentItem item={media} />
 				</SlideFade>
 			))}
+		</Flex>
+	);
+});
+
+const UpNext = memo(function UpNext() {
+	const [upNext] = useAtom(upNextAtom);
+
+	if (upNext.length === 0) return null;
+
+	return (
+		<Flex w='100%' direction='column' gap='10px' mt='20px'>
+			<Text fontWeight='bold' fontSize='sm' color='whiteAlpha.600' px='10px'>
+				UP NEXT
+			</Text>
+			<Flex w='100%' direction='column' gap='20px'>
+				{upNext.map((media, i) => (
+					<SlideFade in delay={i * 0.02} key={media.id + i}>
+						<ContentItem item={media} />
+					</SlideFade>
+				))}
+			</Flex>
 		</Flex>
 	);
 });
@@ -509,7 +531,7 @@ export default memo(function LeftMenu() {
 						backdropFilter='blur(5px)'
 					>
 						<TabList w='100%'>
-							<Tab isDisabled={Object.keys(currentPlaylist).length === 0}>Playlist</Tab>
+							<Tab>Playlist</Tab>
 							<Tab isDisabled={!currentMedia}>Lyrics</Tab>
 							<Tab isDisabled={!currentMedia}>Related</Tab>
 							<Spacer />
@@ -524,8 +546,11 @@ export default memo(function LeftMenu() {
 						</TabList>
 						<TabIndicator mt='2px' px='2px' height='2px' bg='white' borderRadius='1px' />
 						<TabPanels h='100%' w='100%'>
-							<TabPanel h='100%' w='100%' pb='40px'>
-								<Playlist />
+							<TabPanel h='100%' w='100%' pb='40px' overflowY='auto'>
+								<Flex direction='column'>
+									<Playlist />
+									<UpNext />
+								</Flex>
 							</TabPanel>
 							<TabPanel h='100%' w='100%' pb='40px'>
 								{currentMedia ? (

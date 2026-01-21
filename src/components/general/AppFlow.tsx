@@ -184,7 +184,7 @@ export default function AppFlow({ children }: Readonly<{ children: any }>) {
 			setDiscordActivityStatus((prev) => ({ ...prev, isActivity: true }));
 		}
 
-		const results = await api.content.mediaSearch('robe extremoduro');
+		const results = await api.content.getFeed();
 		if (!results) return setFeed(null);
 		setFeed(results);
 

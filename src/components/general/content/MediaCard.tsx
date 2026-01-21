@@ -3,8 +3,9 @@ import { useBreakpointValue } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { MdPauseCircle, MdPlayCircle, MdPlaylistAdd, MdPlaylistAddCheck } from 'react-icons/md';
+import { participantsAtom } from 'src/atoms/ParticipantsAtom';
 import { getImageUrl } from 'src/util/api';
 import { currentMediaAtom } from '../../../atoms/CurrentMediaAtom';
 import { currentPlaylistAtom } from '../../../atoms/CurrentPlaylistAtom';
@@ -15,7 +16,6 @@ import type { Media } from '../../../types/content/Media';
 import formatDuration from '../../../util/formatDuration';
 import { isHostAtom } from '../AppFlow';
 import { socket } from '../AppFlow';
-import { participantsAtom } from 'src/atoms/ParticipantsAtom';
 
 export default function MediaCard(media: Readonly<Media>) {
 	const [isHovering, setIsHovering] = useState(false);
@@ -254,7 +254,7 @@ export default function MediaCard(media: Readonly<Media>) {
 						<Text overflow='hidden' whiteSpace='nowrap' textOverflow='ellipsis'>
 							{album?.name}
 						</Text>
-						<Text>-</Text>
+						{album?.name && <Text>-</Text>}
 						<Text whiteSpace='nowrap' textOverflow='ellipsis'>
 							{artist.name}
 						</Text>

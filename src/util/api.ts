@@ -4,7 +4,12 @@ export function setIsDiscordActivity(isActive: boolean) {
 	isDiscordActivity = isActive;
 }
 
-const getPrefix = () => (isDiscordActivity ? '/.proxy' : 'https://harmony-api.tnfangel.com');
+const getPrefix = () =>
+	isDiscordActivity
+		? '/.proxy'
+		: process.env.NODE_ENV === 'development'
+			? 'http://localhost:4004'
+			: 'https://harmony-api.tnfangel.com';
 
 export const getImageUrl = (url: string) => (isDiscordActivity ? `/.proxy/image?url=${url}` : url);
 
@@ -26,6 +31,11 @@ export const api = {
 		mediaSearch: async (query: string) => {
 			if (!query) return null;
 			const res = await fetch(`${getPrefix()}/api/content/media/search?q=${encodeURIComponent(query)}`);
+			if (!res.ok) return null;
+			return res.json();
+		},
+		getFeed: async () => {
+			const res = await fetch(`${getPrefix()}/api/content/feed`);
 			if (!res.ok) return null;
 			return res.json();
 		},
@@ -69,6 +79,12 @@ export const api = {
 		video: async (videoId: string) => {
 			if (!videoId) return null;
 			const res = await fetch(`${getPrefix()}/api/content/video?id=${encodeURIComponent(videoId)}`);
+			if (!res.ok) return null;
+			return res.json();
+		},
+		getUpNext: async (mediaId: string) => {
+			if (!mediaId) return null;
+			const res = await fetch(`${getPrefix()}/api/content/media/up-next?id=${encodeURIComponent(mediaId)}`);
 			if (!res.ok) return null;
 			return res.json();
 		}

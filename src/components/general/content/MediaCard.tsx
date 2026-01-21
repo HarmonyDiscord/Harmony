@@ -254,7 +254,7 @@ export default function MediaCard(media: Readonly<Media>) {
 						<Text overflow='hidden' whiteSpace='nowrap' textOverflow='ellipsis'>
 							{album?.name}
 						</Text>
-						<Text>-</Text>
+						{album?.name && <Text>-</Text>}
 						<Text whiteSpace='nowrap' textOverflow='ellipsis'>
 							{artist.name}
 						</Text>

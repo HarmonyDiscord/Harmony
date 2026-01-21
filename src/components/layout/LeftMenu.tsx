@@ -531,7 +531,7 @@ export default memo(function LeftMenu() {
 						backdropFilter='blur(5px)'
 					>
 						<TabList w='100%'>
-							<Tab isDisabled={Object.keys(currentPlaylist).length === 0}>Playlist</Tab>
+							<Tab>Playlist</Tab>
 							<Tab isDisabled={!currentMedia}>Lyrics</Tab>
 							<Tab isDisabled={!currentMedia}>Related</Tab>
 							<Spacer />

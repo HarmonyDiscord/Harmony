@@ -189,17 +189,13 @@ export default memo(function MediaPlayer() {
 	}, []);
 
 	useEffect(() => {
-		const playlistArray = Object.values(currentPlaylist);
-		const seedMedia = playlistArray.length > 0 ? playlistArray[playlistArray.length - 1] : currentMedia;
+		if (upNext.length > 0) return;
+		if (!currentMedia) return;
 
-		if (seedMedia) {
-			api.content.getUpNext(seedMedia.id).then((results) => {
-				setUpNext(results || []);
-			});
-		} else {
-			setUpNext([]);
-		}
-	}, [Object.keys(currentPlaylist).length]);
+		api.content.getUpNext(currentMedia.id).then((results) => {
+			setUpNext(results || []);
+		});
+	}, [currentMedia?.id, upNext.length]);
 
 	useEffect(() => {
 		if (pendingPlayback && songURL) {

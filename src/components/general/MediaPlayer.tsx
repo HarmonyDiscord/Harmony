@@ -130,35 +130,28 @@ export default memo(function MediaPlayer() {
 			});
 		}
 		if (typeof window !== 'undefined') {
+			const activity = {
+				type: 2,
+				instance: true,
+				details: currentMedia.name,
+				state: currentMedia.album?.name
+					? currentMedia.album.name + ' - ' + currentMedia.artist.name
+					: currentMedia.artist.name,
+				assets: {
+					large_image: currentMedia.thumbnail
+				},
+				timestamps: {
+					start: Date.now(),
+					end: Date.now() + currentMedia.duration * 1000
+				}
+			};
 			if (window.discordSDK)
 				await window.discordSDK.commands.setActivity({
-					activity: {
-						type: 2,
-						instance: true,
-						details: currentMedia.name,
-						state: currentMedia.album?.name
-							? currentMedia.album.name + ' - ' + currentMedia.artist.name
-							: currentMedia.artist.name,
-						assets: {
-							large_image: currentMedia.thumbnail
-						},
-						timestamps: {
-							start: Date.now(),
-							end: Date.now() + currentMedia.duration * 1000
-						}
-					}
+					activity
 				});
 			if ('api' in window) {
 				// @ts-expect-error Desktop API
-				window.api.setActivity({
-					details: currentMedia.name,
-					state: currentMedia.album?.name
-						? currentMedia.album.name + ' - ' + currentMedia.artist.name
-						: currentMedia.artist.name,
-					largeImageKey: currentMedia.thumbnail,
-					startTimestamp: Date.now(),
-					endTimestamp: Date.now() + currentMedia.duration * 1000
-				});
+				window.api.setActivity(activity);
 			}
 		}
 	}, [currentMedia?.id, setCurrentMedia]);
@@ -325,35 +318,28 @@ export default memo(function MediaPlayer() {
 					if (typeof window !== 'undefined' && playerRef.current && currentMedia) {
 						const start = Date.now() - position * 1000;
 						const end = start + currentMedia.duration * 1000;
+						const activity = {
+							type: 2,
+							instance: true,
+							details: currentMedia.name,
+							state: currentMedia.album?.name
+								? currentMedia.album.name + ' - ' + currentMedia.artist.name
+								: currentMedia.artist.name,
+							assets: {
+								large_image: currentMedia.thumbnail
+							},
+							timestamps: {
+								start,
+								end
+							}
+						};
 						if (window.discordSDK)
 							window.discordSDK.commands.setActivity({
-								activity: {
-									type: 2,
-									instance: true,
-									details: currentMedia.name,
-									state: currentMedia.album?.name
-										? currentMedia.album.name + ' - ' + currentMedia.artist.name
-										: currentMedia.artist.name,
-									assets: {
-										large_image: currentMedia.thumbnail
-									},
-									timestamps: {
-										start,
-										end
-									}
-								}
+								activity
 							});
 						if ('api' in window) {
 							// @ts-expect-error Desktop API
-							window.api.setActivity({
-								details: currentMedia.name,
-								state: currentMedia.album?.name
-									? currentMedia.album.name + ' - ' + currentMedia.artist.name
-									: currentMedia.artist.name,
-								largeImageKey: currentMedia.thumbnail,
-								startTimestamp: start,
-								endTimestamp: end
-							});
+							window.api.setActivity(activity);
 						}
 					}
 				}}
